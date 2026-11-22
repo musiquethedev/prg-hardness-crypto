@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Section 1 Study Notes</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\(',right:'\\)',display:false}],macros:{'\\negl':'\\mathrm{negl}','\\Adv':'\\mathrm{Adv}','\\poly':'\\mathrm{poly}','\\BPP':'\\mathsf{BPP}','\\Ppoly':'\\mathsf{P/poly}','\\NP':'\\mathsf{NP}','\\Pclass':'\\mathsf{P}','\\DTIME':'\\mathsf{DTIME}','\\SUBEXP':'\\mathsf{SUBEXP}','\\EXP':'\\mathsf{EXP}','\\bits':'\\{0,1\\}'}});"></script>
+<style>
+:root{
+  --bg:#fdfcf9; --fg:#1f1f1f; --muted:#666; --rule:#e2ded6; --card:#f4f1ea;
+  --accent:#2b5c8a; --warn-bg:#fff4d6; --warn-fg:#6b4e00; --warn-rule:#e9c766;
+  --src-bg:#e7eef6; --src-fg:#234a70; --me-bg:#fbe3e3; --me-fg:#8a2b2b;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16181b; --fg:#e6e3dc; --muted:#a0a0a0; --rule:#33363b; --card:#1f2226;
+    --accent:#8db8e0; --warn-bg:#3a3014; --warn-fg:#f2d78a; --warn-rule:#7a6420;
+    --src-bg:#1f3247; --src-fg:#b5d2ee; --me-bg:#4a2222; --me-fg:#f2b8b8;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16181b; --fg:#e6e3dc; --muted:#a0a0a0; --rule:#33363b; --card:#1f2226;
+  --accent:#8db8e0; --warn-bg:#3a3014; --warn-fg:#f2d78a; --warn-rule:#7a6420;
+  --src-bg:#1f3247; --src-fg:#b5d2ee; --me-bg:#4a2222; --me-fg:#f2b8b8;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:Georgia,"Times New Roman",serif;line-height:1.65;font-size:17px}
+main{max-width:780px;margin:0 auto;padding:2rem 16px 5rem}
+h1{font-size:1.9rem;line-height:1.25;margin:.2rem 0 .4rem}
+h2{font-size:1.4rem;margin:2.8rem 0 .6rem;padding-top:.6rem;border-top:1px solid var(--rule)}
+h3{font-size:1.1rem;margin:1.8rem 0 .4rem}
+a{color:var(--accent)}
+.banner{background:var(--warn-bg);color:var(--warn-fg);border:1px solid var(--warn-rule);border-radius:6px;padding:.8rem 1rem;margin:1rem 0 1.5rem;font-family:system-ui,sans-serif;font-size:.92rem;line-height:1.5}
+.box{background:var(--card);border-left:3px solid var(--accent);border-radius:4px;padding:.7rem 1rem;margin:1rem 0;overflow-x:auto}
+.box > .label{font-family:system-ui,sans-serif;font-weight:600;font-size:.85rem;letter-spacing:.02em;text-transform:uppercase;color:var(--accent);margin-bottom:.2rem}
+.proof{border-left:2px solid var(--rule);padding:.2rem 0 .2rem 1rem;margin:.6rem 0 1rem}
+.proof > .label{font-style:italic}
+.src,.me{display:inline-block;font-family:system-ui,sans-serif;font-size:.72rem;line-height:1.3;padding:.08rem .45rem;border-radius:999px;margin:0 .1rem;vertical-align:.1em;white-space:nowrap}
+.src{background:var(--src-bg);color:var(--src-fg)}
+.me{background:var(--me-bg);color:var(--me-fg)}
+table{border-collapse:collapse;width:100%;font-size:.92rem;margin:1rem 0;display:block;overflow-x:auto}
+th,td{border:1px solid var(--rule);padding:.4rem .55rem;text-align:left;vertical-align:top}
+th{background:var(--card);font-family:system-ui,sans-serif;font-size:.85rem}
+.toc{font-family:system-ui,sans-serif;font-size:.92rem;background:var(--card);border-radius:6px;padding:.6rem 1rem}
+.toc ol{margin:.3rem 0;padding-left:1.3rem}
+.katex-display{overflow-x:auto;overflow-y:hidden;padding:.2rem 0}
+.muted{color:var(--muted)}
+code{font-size:.9em}
+</style>
+</head>
+<body>
+<main>
+
+<p class="muted" style="font-family:system-ui,sans-serif;font-size:.85rem;margin:0"><a href="../index.html">← site home</a></p>
+<h1>Section 1 study notes: one-way functions, PRGs, and derandomization</h1>
+
+<div class="banner">
+<strong>AI-generated study material, not part of the project submission.</strong> Claude (an AI assistant) wrote this page to summarize the sources below for my own learning. Under the course rules, the explanatory text on the real site must be my own writing, so I will rewrite everything here in my own words before submitting, and this page will be removed.
+</div>
+
+<h3>How to read the source tags</h3>
+<p>Every claim has a tag saying where it comes from. Blue tags point to a source. <span class="me">Claude</span> tags mark material that is <em>not</em> in any of our sources: arguments or framing that Claude supplied. Check those more carefully than the rest.</p>
+<table>
+<tr><th>Tag</th><th>Source (file in <code>sources/</code>)</th><th>Page convention</th></tr>
+<tr><td><span class="src">BS</span></td><td>Boneh &amp; Shoup, <em>A Graduate Course in Applied Cryptography</em>, v0.6 (<code>BonehShoup_0_6.pdf</code>)</td><td>Printed page numbers. The PDF viewer page is the printed page + 16.</td></tr>
+<tr><td><span class="src">V</span></td><td>Vadhan, <em>Pseudorandomness</em>, Aug 2012 draft (<code>vadhan_pseudorandomness_Aug12.pdf</code>)</td><td>Printed page numbers</td></tr>
+<tr><td><span class="src">HILL</span></td><td>Håstad, Impagliazzo, Levin, Luby, “A pseudorandom generator from any one-way function,” SIAM J. Comput. 28(4), 1999 (<code>hill.pdf</code>)</td><td>Journal page numbers (1364–1396)</td></tr>
+<tr><td><span class="src">MIT</span></td><td>Aaronson, 6.080 Lecture 16 scribe notes, “Private-Key Cryptography” (<code>mit_6045_lec13.pdf</code>)</td><td>Notes page (16-1 … 16-4)</td></tr>
+<tr><td><span class="src">455-PTC2</span></td><td>CS455 notes, “Probabilistic Time Complexity 2”</td><td>Page of the saved PDF (1–9)</td></tr>
+<tr><td><span class="src">455-BC1/2/3</span></td><td>CS455 notes, “Boolean Circuits 1/2/3”</td><td>Lecture name only</td></tr>
+</table>
+
+<div class="toc"><strong>Contents</strong>
+<ol>
+<li><a href="#s1">Where the course left off</a></li>
+<li><a href="#s2">Formal setup: negligible functions, adversaries, uniformity</a></li>
+<li><a href="#s3">Indistinguishability and the attack-game style</a></li>
+<li><a href="#s4">Pseudorandom generators (two different kinds)</a></li>
+<li><a href="#s5">One-way functions</a></li>
+<li><a href="#s6">Proof strategy 1: reductions (PRG ⇒ OWF, PRG ⇒ P ≠ NP)</a></li>
+<li><a href="#s7">Proof strategy 2: the hybrid argument</a></li>
+<li><a href="#s8">Next-bit unpredictability (Yao)</a></li>
+<li><a href="#s9">Final theorem: PRGs derandomize BPP</a></li>
+</ol></div>
+
+<!-- ============================================================ -->
+<h2 id="s1">1. Where the course left off</h2>
+
+<p>We already know the trivial derandomization \(\BPP \subseteq \EXP\): run the machine on every possible random string and take the majority answer <span class="src">455-PTC2 p.2</span>. If a machine uses only \(p(n) = O(\log n)\) random bits, the same enumeration takes \(2^{O(\log n)}\cdot\poly(n) = \poly(n)\) time. So to prove \(\Pclass = \BPP\), it suffices to convert every probabilistic TM into one that uses only \(O(\log n)\) random bits <span class="src">455-PTC2 p.2</span>.</p>
+
+<p>The lecture's plan is a <strong>pseudorandom generator (PRG)</strong>: a TM \(G\) that turns \(O(\log n)\) truly random seed bits into \(\poly(n)\) bits that “look random” to (“fool”) poly-time machines. The new machine is \(M'(x,s) = M(x, G(s))\), and then we enumerate all seeds <span class="src">455-PTC2 p.2–3</span>. The course then says we <em>believe</em> such PRGs exist because hard functions can be turned into pseudorandomness (“Hardness ⟹ Derandomization”), but gives no definitions or proofs. It also notes the converse direction: putting PIT in P would imply circuit lower bounds (“Derandomization ⟹ Hardness”) <span class="src">455-PTC2 p.3, p.7</span> <span class="src">455-BC1</span>. The slogan is “randomness is in the eye of the beholder” <span class="src">455-PTC2 p.3</span>.</p>
+
+<p>This page makes that sketch precise. It answers four questions:</p>
+<ol>
+<li>What exactly does “looks random to poly-time machines” mean?</li>
+<li>What exactly is a “hard function”? (One-way functions.)</li>
+<li>What proof techniques let us use these definitions? (Reductions and hybrid arguments.)</li>
+<li>What is the exact derandomization theorem, with exact parameters?</li>
+</ol>
+
+<h3>Why not a statistical definition of “looks random”?</h3>
+<p>Vadhan rules out the natural alternatives <span class="src">V §7.1, p.140–141</span>:</p>
+<ul>
+<li><strong>Entropy / statistical distance.</strong> A deterministic function cannot increase entropy. So \(G(U_d)\) has at most \(d = O(\log n)\) bits of entropy and is statistically far from uniform on \(\poly(n)\) bits.</li>
+<li><strong>Pairwise independence.</strong> There are algorithms that fail when their random bits are only pairwise independent.</li>
+<li><strong>Kolmogorov complexity.</strong> If \(G\) is computable, every output can be described by the seed plus the code of \(G\), so every output is highly compressible.</li>
+</ul>
+<p>What's left is <strong>computational indistinguishability</strong>. Statistical distance is a max over <em>all</em> tests \(T\); we restrict the max to <em>efficient</em> tests <span class="src">V p.141</span>. Section 3 makes this formal.</p>
+
+<!-- ============================================================ -->
+<h2 id="s2">2. Formal setup</h2>
+
+<h3>2.1 Negligible functions</h3>
+<div class="box"><div class="label">Definition (negligible)</div>
+\(f:\mathbb{Z}_{\ge 1}\to\mathbb{R}\) is <em>negligible</em> if for every \(c\gt 0\) there is an \(n_0\) such that \(|f(n)| \lt 1/n^c\) for all \(n\ge n_0\). Equivalently, \(\lim_{n\to\infty} f(n)\,n^c = 0\) for every \(c\gt 0\).
+<span class="src">BS Def. 2.5 &amp; Thm. 2.11, p.28</span></div>
+<p>Examples: \(2^{-n}\), \(2^{-\sqrt n}\) and \(n^{-\log n}\) are negligible. \(1/n^{100}\) is not <span class="src">BS Ex. 2.10, p.28</span>. A function is <em>super-poly</em> if \(1/f\) is negligible <span class="src">BS Def. 2.6, p.28</span>. The closure facts used constantly: negligible + negligible is negligible, and poly-bounded × negligible is negligible <span class="src">BS Fact 2.6, p.18</span>. The second fact is why a hybrid argument over polynomially many steps (Section 7) keeps advantages negligible.</p>
+<p><em>Why negligible is the right threshold.</em> If an adversary had advantage \(1/p(n)\), repeating it polynomially many times would amplify that to a constant <span class="src">MIT p.16-3</span>. This is the same boosting idea as error reduction for BPP <span class="src">455-PTC2 p.4–5</span>.</p>
+
+<h3>2.2 The security parameter</h3>
+<p>Every object comes in a family indexed by a <em>security parameter</em> \(n\) (Boneh–Shoup write \(\lambda\)). “Secure” means an adversary's advantage is a negligible function of \(n\) <span class="src">BS §3.1.2, p.48</span>. HILL define the security parameter as the length of the <em>private</em> input, meaning the part kept secret from the adversary, such as a seed <span class="src">HILL §3.1, p.1371</span>.</p>
+
+<h3>2.3 Who are the adversaries? Uniform vs. nonuniform</h3>
+<p>There are two standard choices, and the difference matters in Section 9.</p>
+<ul>
+<li><strong>Uniform:</strong> “efficient adversary” = probabilistic polynomial-time algorithm (PPT). Boneh–Shoup use this <span class="src">BS §2.3, p.28</span>, and so do HILL and the MIT notes.</li>
+<li><strong>Nonuniform:</strong> “efficient adversary” = a family of polynomial-size circuits, i.e. a \(\Ppoly\) machine. Vadhan uses this throughout: “nonuniform algorithm running in time \(t\)” means “Boolean circuit of size \(t\)” <span class="src">V §7.1.1, p.141</span>.</li>
+</ul>
+<p>We already know the circuit side from class: \(\Ppoly = \bigcup_k \mathsf{SIZE}(n^k)\), \(\Pclass \subseteq \Ppoly\), circuits can hard-code advice, and \(\BPP\subseteq\Ppoly\) by fixing a good random string for each input length <span class="src">455-BC1</span> <span class="src">455-BC2</span>. Two consequences for cryptography:</p>
+<ul>
+<li>A randomized nonuniform distinguisher is no stronger than a deterministic one. Fix its coins to the best choice and hard-code them, which keeps the advantage <span class="src">V p.141–142</span>. This is the same trick as \(\BPP\subseteq\Ppoly\).</li>
+<li>Nonuniform security is the <em>stronger</em> assumption: it must hold even against adversaries with advice. Section 9 needs it, because the proof hard-codes the BPP input \(x\) into the distinguisher <span class="src">V Claim 7.6, p.143</span>.</li>
+</ul>
+
+<h3>2.4 Concrete vs. asymptotic security (aside)</h3>
+<p>Vadhan states results concretely: “\((t,\varepsilon)\)” means every circuit of size \(t\) has advantage at most \(\varepsilon\) <span class="src">V Def. 7.1, p.141</span>. Boneh–Shoup write explicit equations like \(\mathrm{PRGadv}[A,G'] = n\cdot \mathrm{PRGadv}[B,G]\) <span class="src">BS Thm. 3.2, p.55</span>. HILL measure security by the <em>time–success ratio</em> \(T_n/\mathrm{sp}_n(A)\) of a breaking adversary <span class="src">HILL Def. 3.1, p.1371</span>. All three say the same thing; the concrete versions also record how much security a reduction loses.</p>
+
+<!-- ============================================================ -->
+<h2 id="s3">3. Indistinguishability and the attack-game style</h2>
+
+<h3>3.1 Attack games</h3>
+<p>Boneh–Shoup phrase every security definition as an <strong>attack game</strong> between a <em>challenger</em> and an <em>adversary</em>. The challenger follows a fixed, simple protocol. The adversary may do anything efficient. Many games have two <em>experiments</em> (0 and 1) in which the challenger behaves differently. The adversary outputs a bit \(\hat b\), and its <strong>advantage</strong> is \(|\Pr[W_0]-\Pr[W_1]|\), where \(W_b\) is the event “\(A\) outputs 1 in Experiment \(b\)” <span class="src">BS §2.2.2, p.15–16</span>. The first example is semantic security of a cipher (Attack Game 2.1): the adversary submits \(m_0,m_1\) and gets back an encryption of \(m_b\) <span class="src">BS Attack Game 2.1, p.16</span>.</p>
+
+<div class="box"><div class="label">Attack Game (distinguishing \(P_0\) from \(P_1\))</div>
+For distributions \(P_0,P_1\) on a finite set \(R\). In Experiment \(b\in\{0,1\}\), the challenger samples \(x\leftarrow P_b\) and sends \(x\) to \(A\). Then \(A\) outputs \(\hat b\in\{0,1\}\).
+$$\mathrm{Distadv}[A,P_0,P_1] := \big|\Pr[W_0]-\Pr[W_1]\big|.$$
+\(P_0, P_1\) are <strong>computationally indistinguishable</strong> if \(\mathrm{Distadv}\) is negligible for every efficient \(A\).
+<span class="src">BS Attack Game 3.3 &amp; Def. 3.4, p.82</span> <span class="src">V Def. 7.1–7.2, p.141–142</span> <span class="src">HILL Def. 3.3, p.1372</span></div>
+
+<p><strong>Bit-guessing form.</strong> Instead of two experiments, the challenger flips a random \(b\) and runs Experiment \(b\), and the adversary tries to guess \(b\). The bit-guessing advantage \(|\Pr[\hat b=b]-1/2|\) is exactly half the distinguishing advantage <span class="src">BS §2.2.5 eq. (2.11); eq. (3.14), p.83</span>. The two forms are interchangeable; use whichever makes a proof cleaner.</p>
+
+<p><strong>Dropping the absolute value.</strong> In proofs we usually assume \(\Pr[T(X)=1]-\Pr[T(Y)=1] \gt \varepsilon\) without the absolute value. If the difference is negative, flip \(T\)'s output, which costs nothing <span class="src">V proof of Prop. 7.14, p.149</span>.</p>
+
+<h3>3.2 Statistical distance, the unbounded case</h3>
+<div class="box"><div class="label">Definition (statistical distance)</div>
+$$\Delta[P_0,P_1] := \tfrac12\sum_{r\in R}|P_0(r)-P_1(r)| \;=\; \max_{R'\subseteq R}\big|P_0[R']-P_1[R']\big|.$$
+<span class="src">BS Def. 3.5 &amp; Thm. 3.10, p.83</span> <span class="src">V Def. 6.2 &amp; Lemma 6.3(7), p.111–112</span></div>
+<p>For the max form, view a set \(R'\) as a test that accepts exactly the strings in \(R'\). The best test accepts exactly the \(r\) where \(P_0(r)\ge P_1(r)\) <span class="src">BS proof of Thm. 3.10, p.83–84</span>. Useful properties <span class="src">V Lemma 6.3, p.112</span>:</p>
+<ul>
+<li>triangle inequality;</li>
+<li>\(\Delta(f(X),f(Y))\le\Delta(X,Y)\) for every function \(f\) (processing can't increase distance);</li>
+<li>for independent pairs, \(\Delta((X_1,X_2),(Y_1,Y_2))\le\Delta(X_1,Y_1)+\Delta(X_2,Y_2)\).</li>
+</ul>
+
+<div class="box"><div class="label">Theorem (statistical ⇒ computational)</div>
+For <em>every</em> adversary \(A\), even an unbounded one, \(\mathrm{Distadv}[A,P_0,P_1]\le\Delta[P_0,P_1]\).
+<span class="src">BS Thm. 3.11, p.84</span></div>
+<div class="proof"><span class="label">Proof sketch.</span> A deterministic \(A\) is a function \(f\). Its advantage is \(|P_0[R']-P_1[R']|\) for \(R'=\{r: f(r)=1\}\), which is at most \(\Delta\) by the max form. A randomized \(A\) is an average of deterministic ones, so its advantage is at most the average of their advantages, which is at most \(\Delta\) <span class="src">BS p.84</span>. ∎</div>
+<p>So computational indistinguishability is a <em>relaxation</em> of statistical closeness: it only quantifies over efficient tests. That relaxation is what lets \(G(U_d)\) be “random-looking” even though it is statistically far from uniform.</p>
+
+<!-- ============================================================ -->
+<h2 id="s4">4. Pseudorandom generators</h2>
+
+<div class="box"><div class="label">Definition (secure PRG, attack-game form)</div>
+\(G\) is an efficient deterministic algorithm \(S\to R\), for example \(\bits^\ell\to\bits^L\) with \(L\gt\ell\).
+<br>Attack Game: in Experiment 0, the challenger picks \(s\leftarrow S\) and sends \(r=G(s)\). In Experiment 1, it sends a uniform \(r\leftarrow R\). The adversary outputs \(\hat b\).
+<br>\(\mathrm{PRGadv}[A,G] := |\Pr[W_0]-\Pr[W_1]|\). \(G\) is <strong>secure</strong> if this is negligible for every efficient \(A\).
+<span class="src">BS §3.1.1, Attack Game 3.1 &amp; Def. 3.1, p.46–47</span></div>
+<p>Equivalently: \(G(U_\ell)\) and \(U_L\) are computationally indistinguishable <span class="src">BS p.82</span> <span class="src">HILL Def. 3.5, p.1373</span> <span class="src">MIT p.16-3</span>. Two remarks:</p>
+<ul>
+<li><strong>One bit of stretch suffices.</strong> The definition only asks for \(L\ge\ell+1\), because any PRG with 1 bit of stretch can be extended to any polynomial stretch. This is the Goldreich–Micali construction <span class="src">HILL Prop. 3.6, p.1373</span>, also Blum–Micali sequential composition <span class="src">BS §3.4.2, p.59</span>, proved in Section 7 below.</li>
+<li><strong>Why a fixed battery of statistical tests isn't enough.</strong> Classical generators were checked against fixed tests (bit counts, χ²). Some generators pass all of those yet are completely predictable from a prefix of their output, the linear congruential generator for example. The definition above demands security against <em>every</em> efficient test <span class="src">BS p.46</span> <span class="src">V p.142</span> <span class="src">MIT p.16-2</span>.</li>
+</ul>
+
+<h3>4.1 Two kinds of PRG: the most important distinction on this page</h3>
+<p>The phrase “PRG” is used for two different objects. The course lecture mixes them, so here they are side by side.</p>
+<table>
+<tr><th></th><th>Cryptographic PRG</th><th>Derandomization PRG</th></tr>
+<tr><td>Must fool</td><td><em>every</em> poly-time (or poly-size) adversary, of any polynomial running time</td><td>circuits of one <em>fixed</em> size, e.g. size \(m\) when the output length is \(m\)</td></tr>
+<tr><td>Generator's running time</td><td>a fixed polynomial (“fully explicit”). The adversary may run longer than \(G\).</td><td>may be \(\poly(m, 2^{d})\) (“mildly explicit”). \(G\) may run longer than the tests it fools.</td></tr>
+<tr><td>Seed length \(d\)</td><td>must be \(\omega(\log m)\)</td><td>can be \(O(\log m)\)</td></tr>
+<tr><td>Sources</td><td><span class="src">V Def. 7.9, p.145</span> <span class="src">BS Def. 3.1</span> <span class="src">HILL Def. 3.5</span></td><td><span class="src">V Def. 7.3, 7.7, p.142–143</span></td></tr>
+</table>
+
+<div class="box"><div class="label">Fact: a cryptographic PRG cannot have an \(O(\log m)\)-bit seed</div>
+<span class="src">V Problem 7.3(1), p.178</span> (stated as an exercise) <span class="src">BS p.48, Exercise 3.5</span> (the seed space must be super-poly). Proof below: <span class="me">Claude</span></div>
+<div class="proof"><span class="label">Proof.</span> Suppose \(G:\bits^d\to\bits^m\) with \(d \le c\log m\). Distinguisher \(D(y)\): for every seed \(s\in\bits^d\), check whether \(G(s)=y\); output 1 if any match. There are \(2^d\le m^c\) seeds and each check takes \(\poly(m)\) time, so \(D\) runs in polynomial time. On \(y = G(U_d)\), \(D\) always outputs 1. On uniform \(y\), \(D\) outputs 1 only if \(y\in\mathrm{Im}(G)\), a set of size at most \(2^d\), which happens with probability at most \(2^{d-m}\le 1/2\). So the advantage is at least \(1/2\). ∎</div>
+<p><strong>What this means for the lecture's definition.</strong> The lecture's PRG takes \(O(\log n)\) bits, outputs \(\poly(n)\) bits, and fools any poly-time TM <span class="src">455-PTC2 p.2</span>. Taken literally that's impossible: the enumeration distinguisher above is a poly-time TM, just with a bigger polynomial than \(G\). The correct reading is the right-hand column. For derandomization, \(G\) only has to fool the one BPP algorithm we're simulating, which runs in some fixed time \(n^c\), and \(G\) may take more time than that <span class="src">V p.143, p.146</span>. <span class="me">Claude: the observation that the lecture's wording is literally impossible</span></p>
+
+<!-- ============================================================ -->
+<h2 id="s5">5. One-way functions</h2>
+
+<div class="box"><div class="label">Definition (one-way function, OWF)</div>
+\(f:\bits^*\to\bits^*\) is one-way if
+<ol style="margin:.3rem 0">
+<li>\(f\) is computable in polynomial time, and</li>
+<li>for every efficient \(A\), \(\displaystyle\Pr_{x\leftarrow\bits^n}\big[f(A(f(x)))=f(x)\big]\) is negligible in \(n\).</li>
+</ol>
+<span class="src">MIT p.16-4</span> <span class="src">HILL Def. 3.2, p.1372</span> <span class="src">V Def. 7.10, p.145</span> (Vadhan's version is against nonuniform \(A\))</div>
+
+<ul>
+<li><strong>“Find <em>some</em> preimage,” not “find \(x\)”.</strong> \(A\) succeeds if it outputs any \(x'\) with \(f(x')=f(x)\). If success meant recovering \(x\) itself, a constant function \(f(x)=1\) would count as “one-way”: you can never tell which \(x\) was used, even though inverting it is trivial <span class="src">MIT p.16-4</span>.</li>
+<li><strong>Average case, not worst case.</strong> \(f\) must be hard to invert on a <em>random</em> input. NP-hardness is a worst-case notion (“some instance is hard”), which is useless for cryptography, where we need almost every key to be secure. This is why we assume OWFs instead of just \(\Pclass\ne\NP\) <span class="src">MIT §4, p.16-3–16-4</span> <span class="src">V p.145</span>.</li>
+<li><strong>The limits on how hard \(f\) can be.</strong> Inverting can't be easier than evaluating \(f\), and brute force over all \(2^n\) inputs always works. So the possible security levels lie between those two extremes <span class="src">HILL p.1372</span>.</li>
+<li><strong>Candidates, in one sentence.</strong> Multiplying two random \(n/2\)-bit numbers is believed one-way, because inverting it is factoring <span class="src">V p.145</span>. The RSA function \(x\mapsto x^e \bmod N\) is the familiar related example <span class="src">BS §10.3</span>.</li>
+<li><strong>Special cases used in Section 2 of the site.</strong>
+  <ul>
+  <li><em>One-way permutation:</em> \(f\) is a bijection on \(\bits^n\).</li>
+  <li><em>One-to-one OWF:</em> \(f\) is injective but may be length-increasing.</li>
+  <li><em>Regular OWF:</em> every image has the same number of preimages.</li>
+  </ul>
+  <span class="src">HILL Def. 2.11–2.12, p.1370</span> <span class="src">V p.147</span></li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="s6">6. Proof strategy 1: reductions</h2>
+
+<p>Almost every theorem in this area has the form “if primitive \(P\) is secure, then construction \(C\) is secure.” It is proved by <strong>reduction</strong>, usually in the contrapositive: given any efficient adversary \(A\) that breaks \(C\), build an efficient adversary \(B\) that breaks \(P\). Usually \(B\) runs \(A\) as a subroutine and plays the challenger for \(A\) <span class="src">BS p.52</span>. Boneh–Shoup call such a \(B\) an <em>elementary wrapper</em> around \(A\). If \(A\) is efficient then so is \(B\), and wrappers compose <span class="src">BS p.20, p.34</span>. The idea is the same as NP-completeness reductions, except that we must also track <em>probabilities</em> and keep \(B\) efficient <span class="src">V p.148</span>.</p>
+
+<p>The template, from the stream-cipher proof <span class="src">BS §3.2, p.49–52</span>:</p>
+<ol>
+<li>Start with the real game. Modify it into a game where \(A\)'s advantage is easy to compute (often 0).</li>
+<li>Show the two games differ by only a negligible amount. To do this, exhibit a \(B\) whose advantage against \(P\) <em>equals</em> that difference.</li>
+<li>Conclude \(A\)'s real advantage is at most (easy advantage) + (negligible).</li>
+</ol>
+<p>Two short, complete examples follow. Both use only the definitions.</p>
+
+<div class="box"><div class="label">Theorem 6.1 (PRG ⇒ OWF)</div>
+If \(G:\bits^n\to\bits^{\ell(n)}\) is a secure PRG with \(\ell(n)\ge 2n\), then \(G\) is a one-way function. (Any PRG can first be stretched to \(\ell\ge 2n\) using Section 7.)
+<br>Idea: <span class="src">MIT p.16-4</span> (one-sentence argument). HILL credit this direction to Levin '87 <span class="src">HILL Thm. 6.3, p.1385</span>. Written-out proof: <span class="me">Claude</span></div>
+<div class="proof"><span class="label">Proof.</span> Contrapositive. Suppose an efficient \(A\) inverts \(G\) with non-negligible probability
+\(p(n)=\Pr_{s}[G(A(G(s)))=G(s)]\). Define the distinguisher \(B(y)\): compute \(s'=A(y)\), and output 1 iff \(G(s')=y\). \(B\) is efficient because \(A\) and \(G\) are.
+<ul>
+<li><em>Experiment 0</em> (\(y=G(s)\)): \(B\) outputs 1 exactly when \(A\) inverts successfully, so \(\Pr[W_0]=p(n)\).</li>
+<li><em>Experiment 1</em> (\(y\) uniform in \(\bits^{\ell}\)): \(B\) can output 1 only if \(y\in\mathrm{Im}(G)\), and \(|\mathrm{Im}(G)|\le 2^n\). So \(\Pr[W_1]\le 2^{n-\ell}\le 2^{-n}\).</li>
+</ul>
+\(\mathrm{PRGadv}[B,G]\ge p(n)-2^{-n}\), which is non-negligible, so \(G\) is not secure. ∎
+<br><span class="muted">Why \(\ell\ge 2n\)? With only \(\ell = n+1\), the bound on \(\Pr[W_1]\) is \(1/2\), and \(p(n)-1/2\) could be negative. Stretching first avoids this.</span></div>
+
+<div class="box"><div class="label">Theorem 6.2 (PRGs ⇒ P ≠ NP)</div>
+If a secure PRG exists (against uniform adversaries), then \(\Pclass\ne\NP\). If one exists against nonuniform adversaries, then \(\NP\not\subseteq\Ppoly\).
+<br><span class="src">V p.145 &amp; Problem 7.3(2), p.178</span> (stated as an exercise). Proof: <span class="me">Claude</span></div>
+<div class="proof"><span class="label">Proof.</span> Let \(G:\bits^n\to\bits^{\ell}\), \(\ell\gt n\). The language \(L=\{y:\exists s,\ G(s)=y\}\) is in \(\NP\), with witness \(s\) checked by computing \(G(s)\). If \(\Pclass=\NP\), let \(B\) be a poly-time decider for \(L\).
+<ul>
+<li>On \(G(U_n)\), \(B\) outputs 1 with probability 1.</li>
+<li>On \(U_\ell\), it outputs 1 with probability \(|\mathrm{Im}\,G|/2^\ell\le 2^{n-\ell}\le 1/2\).</li>
+</ul>
+That's advantage at least \(1/2\), contradicting security. The same argument with a polynomial-size circuit family deciding \(L\) gives the \(\Ppoly\) version. ∎</div>
+<p>This explains why nobody can prove that PRGs or OWFs exist outright: doing so would separate \(\Pclass\) from \(\NP\). Everything in this area is conditional. The best hope is to reduce one assumption to another, and HILL does exactly that <span class="src">V p.145</span>.</p>
+
+<!-- ============================================================ -->
+<h2 id="s7">7. Proof strategy 2: the hybrid argument</h2>
+
+<p>Often the two extreme distributions (fully pseudorandom vs. fully random) differ in many places at once. A <strong>hybrid argument</strong> interpolates between them one step at a time. If the extremes are distinguishable, some <em>adjacent</em> pair must be, and an adjacent pair differs in just one place, which a reduction can exploit.</p>
+
+<div class="box"><div class="label">Hybrid lemma (the core inequality)</div>
+Let \(H_0,\dots,H_k\) be distributions and \(T\) a test. Then
+$$\Pr[T(H_0)=1]-\Pr[T(H_k)=1] = \sum_{i=1}^{k}\big(\Pr[T(H_{i-1})=1]-\Pr[T(H_i)=1]\big),$$
+so if the left side exceeds \(k\varepsilon\), some term exceeds \(\varepsilon\).
+<span class="src">V proof of Prop. 7.14, p.149</span> <span class="src">BS proof of Thm. 3.2, p.56–59</span></div>
+
+<h3>7.1 Example: multiple samples / parallel composition</h3>
+<div class="box"><div class="label">Theorem 7.1</div>
+<strong>Vadhan's version:</strong> if \(X\) and \(Y\) are \((t,\varepsilon)\)-indistinguishable, then \(k\) independent copies \(X^k\) and \(Y^k\) are \((t,k\varepsilon)\)-indistinguishable <span class="src">V Prop. 7.14, p.148</span>.
+<br><strong>Boneh–Shoup's version:</strong> if \(G\) is a secure PRG, then \(G'(s_1,\dots,s_n)=(G(s_1),\dots,G(s_n))\) is secure, and \(\mathrm{PRGadv}[A,G'] = n\cdot\mathrm{PRGadv}[B,G]\) <span class="src">BS Thm. 3.2, p.55</span>.</div>
+<div class="proof"><span class="label">Proof (nonuniform, following V p.149).</span> Let \(H_i = X^{k-i}Y^{i}\), so \(H_0=X^k\) and \(H_k=Y^k\). If \(T\) has advantage \(\gt k\varepsilon\), then by the lemma some \(i\) has
+\(\Pr[T(X^{k-i}\,X\,Y^{i-1})=1]-\Pr[T(X^{k-i}\,Y\,Y^{i-1})=1]\gt\varepsilon\). By averaging, there is a fixed choice of the other \(k-1\) coordinates for which the gap is still \(\gt\varepsilon\). Hard-code \(i\) and those coordinates into \(T'(z)=T(x_1..x_{k-i},z,y_{k-i+2}..y_k)\). This is a circuit of the same size with advantage \(\gt\varepsilon\) on \(X\) vs. \(Y\), a contradiction. ∎</div>
+
+<p><strong>The uniform version needs a trick.</strong> A uniform adversary can't “hard-code the right \(i\)”, because which \(i\) works may change with \(n\). Boneh–Shoup instead build a single adversary \(B\) that <em>picks \(i\) at random</em> and samples the other coordinates itself (it can, because \(G\) is efficient). Averaging over \(i\), the telescoping sum gives \(\mathrm{PRGadv}[B,G]=\frac1n|p_n-p_0|\) exactly <span class="src">BS p.56–59</span>. Boneh–Shoup also explain why the tempting alternative fails for non-constant \(n\): “one of \(B_1,\dots,B_n\) must work” doesn't give a single fixed machine <span class="src">BS p.63</span>. Vadhan notes that the uniform version requires \(X\) and \(Y\) to be efficiently samplable <span class="src">V p.149</span>. <em>Takeaway:</em> in the uniform setting, “pick the hybrid index at random” is the standard move. In the nonuniform setting you may simply fix the best index.</p>
+
+<h3>7.2 Example: stretching a PRG (sequential / Blum–Micali composition)</h3>
+<div class="box"><div class="label">Theorem 7.2</div>
+Let \(G:S\to R\times S\) be a secure PRG. Define \(G'(s)\): set \(s_0=s\); for \(i=1..n\), set \((r_i,s_i)\leftarrow G(s_{i-1})\); output \((r_1,\dots,r_n,s_n)\). Then \(G'\) is secure, with \(\mathrm{PRGadv}[A,G']=n\cdot\mathrm{PRGadv}[B,G]\).
+<br>In particular, a PRG \(\bits^\ell\to\bits^{\ell+1}\) gives a PRG \(\bits^\ell\to\bits^{\ell+n}\) for any polynomial \(n\).
+<span class="src">BS §3.4.2, Thm. 3.3, p.59</span> <span class="src">HILL Prop. 3.6, p.1373</span> <span class="src">MIT p.16-3</span></div>
+<div class="proof"><span class="label">Proof sketch.</span> Hybrid \(j\): the first \(j\) blocks \(r_1..r_j\) are uniform, \(s_j\) is a fresh uniform seed, and the rest is computed honestly from \(s_j\). Hybrid 0 is the real \(G'\). Hybrid \(n\) is fully uniform. Hybrids \(j\) and \(j+1\) differ only in whether \((r_{j+1},s_{j+1})\) is \(G(\text{uniform seed})\) or uniform. A PRG adversary \(B\) for \(G\) receives a challenge \(z\), picks \(j\) at random, fills in uniform blocks before position \(j+1\), puts \(z\) at position \(j+1\), computes the rest honestly from \(z\)'s seed part, and runs \(A\). Telescoping as in 7.1 gives the factor \(n\) <span class="src">BS p.60–61</span>. ∎</div>
+<p>This is the result that justifies “1 bit of stretch is enough”. Section 2 of the site builds a 1-bit-stretch PRG and relies on this theorem for the rest.</p>
+
+<!-- ============================================================ -->
+<h2 id="s8">8. Next-bit unpredictability (Yao)</h2>
+
+<p>A seemingly weaker property: given the first \(i\) bits of the output, no efficient algorithm can predict bit \(i+1\) noticeably better than a coin flip.</p>
+<div class="box"><div class="label">Definition (unpredictable PRG)</div>
+Attack Game: the adversary picks an index \(i\). The challenger samples \(s\), computes \(r=G(s)\), and sends \(r[0..i-1]\). The adversary outputs a guess \(g\) and wins if \(g=r[i]\).
+\(\mathrm{Predadv}[A,G]=|\Pr[\text{win}]-1/2|\). \(G\) is unpredictable if this is negligible for all efficient \(A\).
+<span class="src">BS Attack Game 3.2 &amp; Def. 3.3, p.64</span> <span class="src">V Def. 7.15, p.150</span></div>
+
+<div class="box"><div class="label">Theorem 8.1 (Yao: pseudorandom ⇔ next-bit unpredictable)</div>
+(a) Secure ⇒ unpredictable, with \(\mathrm{Predadv}[A,G]=\mathrm{PRGadv}[B,G]\).
+<br>(b) Unpredictable ⇒ secure, with \(\mathrm{PRGadv}[A,G]=L\cdot\mathrm{Predadv}[B,G]\), where \(L\) is the output length.
+<span class="src">BS Thm. 3.4, p.64 and Thm. 3.6, p.67</span> <span class="src">V Prop. 7.16, p.150</span></div>
+
+<div class="proof"><span class="label">Proof of (a).</span> Given a predictor \(A\) that chooses index \(i\), define \(B(r)\): give \(r[0..i-1]\) to \(A\), and output 1 iff \(A\)'s guess equals \(r[i]\). In Experiment 0, \(\Pr[W_0]=1/2+\varepsilon\). In Experiment 1, \(r[i]\) is a fresh uniform bit independent of \(A\)'s view, so \(\Pr[W_1]=1/2\) <span class="src">BS p.65</span>. ∎</div>
+
+<div class="proof"><span class="label">Proof of (b).</span> This direction is the interesting one: <em>any</em> statistical test that works can be turned into a next-bit predictor.
+<ol>
+<li><strong>Hybrids.</strong> Let \(H_j\) = the first \(L-j\) bits of \(G(s)\) followed by \(j\) uniform bits. Then \(H_0\) is pseudorandom and \(H_L\) is uniform. If \(A\) distinguishes with advantage \(\varepsilon\), a random adjacent pair is distinguished with advantage \(\varepsilon/L\) on average <span class="src">BS p.67</span> <span class="src">V p.150</span>.</li>
+<li><strong>Distinguisher/predictor lemma.</strong> Let \(X\) be side information, \(B\) a bit correlated with \(X\), and \(R\) a uniform bit independent of both. Suppose \(d\) satisfies \(\Pr[d(X,B)=1]-\Pr[d(X,R)=1]=\varepsilon\). Then the guess “\(R\) if \(d(X,R)=1\), else \(\bar R\)” equals \(B\) with probability exactly \(1/2+\varepsilon\) <span class="src">BS Lemma 3.5, p.66</span> (full proof there; it is a conditioning calculation on \(B=R\) vs. \(B\ne R\)).</li>
+<li><strong>The predictor.</strong> Pick \(\omega\in\{1..L\}\) at random. Ask for the first \(L-\omega\) bits \(x\). Append \(\omega\) random bits \(r_1\cdots r_\omega\) and run \(A\) on \(x\,\|\,r_1\cdots r_\omega\). If \(A\) outputs 1, guess \(r_1\); otherwise guess \(\bar r_1\). By steps 1–2, the success probability is \(1/2+\varepsilon/L\) <span class="src">BS p.67–68</span>. Vadhan gives the same computation in one display <span class="src">V p.151</span>. ∎</li>
+</ol></div>
+
+<p><strong>Why we need this.</strong> In Section 2 of the site, we'll build a PRG by showing that its last output bit is unpredictable from the earlier ones (the Goldreich–Levin “hardcore bit”). Theorem 8.1(b) turns that into full pseudorandomness. HILL's “hidden bit” is this same idea <span class="src">HILL §3.5, Def. 3.10, p.1374</span> <span class="src">HILL §1.1, p.1366</span>.</p>
+
+<!-- ============================================================ -->
+<h2 id="s9">9. Final theorem: the lecture's “Hardness ⟹ Derandomization”, made rigorous</h2>
+
+<div class="box"><div class="label">Theorem 9.1 (PRGs derandomize BPP)</div>
+Suppose that for every \(m\) there is a generator \(G_m:\bits^{d(m)}\to\bits^m\) such that
+<ul style="margin:.3rem 0">
+<li>\(G_m(U_{d(m)})\) and \(U_m\) are \((m,1/8)\)-indistinguishable, i.e. no circuit of size \(m\) has advantage more than \(1/8\); and</li>
+<li>\(G_m\) is computable in time \(t(m)\).</li>
+</ul>
+Then
+$$\BPP\subseteq\bigcup_{c}\DTIME\!\Big(2^{d(n^c)}\cdot\big(n^c+t(n^c)\big)\Big).$$
+<span class="src">V Thm. 7.5, p.143</span></div>
+
+<div class="proof"><span class="label">Proof.</span> <span class="src">V p.143</span>, expanded.
+<p>Let \(L\in\BPP\) be decided by \(A(x;r)\) with error at most \(1/3\). For inputs of length \(n\), \(A\) can be simulated by circuits of size at most \(n^c\) <span class="src">455-BC1</span> (TM to circuit). Without loss of generality \(|r|=n^c\). Set \(m=n^c\) and \(G=G_m\).</p>
+<p><strong>Claim.</strong> For every \(x\) of length \(n\), \(A(x;G(U_{d(m)}))\) errs with probability \(\lt 1/2\).</p>
+<p><em>Proof of claim.</em> Suppose some \(x\) has error \(\ge 1/2\) under pseudorandom bits. Let \(T(r)=A(x;r)\), with \(x\) <strong>hard-coded</strong>. Then \(T\) is a circuit of size \(\le m\). On truly random \(r\), \(T\) gives the correct answer with probability \(\ge 2/3\). On \(r=G(U_d)\), it does so with probability \(\le 1/2\). So \(T\) distinguishes with advantage \(\ge 2/3-1/2=1/6\gt 1/8\), a contradiction. <em>Note:</em> \(x\) is used as nonuniform advice. This is exactly why the PRG must fool <em>nonuniform</em> tests <span class="src">V p.143</span>.</p>
+<p><strong>Deterministic algorithm.</strong> For every seed \(s\in\bits^{d(m)}\), compute \(G(s)\) and run \(A(x;G(s))\). Output the majority answer. By the claim, strictly more than half of the seeds give the correct answer, so the majority is always correct. Running time: \(2^{d(m)}\) seeds, each costing \(t(m)\) to generate plus \(\poly(m)\) to run \(A\), giving \(2^{d(n^c)}\cdot(n^c+t(n^c))\) up to polynomial factors. ∎</p></div>
+
+<h3>9.1 Plugging in parameters</h3>
+<p>With a mildly explicit \(G\) (time \(\poly(m,2^{d(m)})\)) <span class="src">V p.144</span>:</p>
+<table>
+<tr><th>Seed length \(d(m)\)</th><th>Conclusion</th></tr>
+<tr><td>\(m^\varepsilon\) for every \(\varepsilon\gt 0\)</td><td>\(\BPP\subseteq\bigcap_\varepsilon\DTIME(2^{n^\varepsilon})=\SUBEXP\). This already beats \(\BPP\subseteq\EXP\).</td></tr>
+<tr><td>\(\mathrm{polylog}(m)\)</td><td>\(\BPP\subseteq\tilde{\Pclass}\) (quasi-polynomial time)</td></tr>
+<tr><td>\(O(\log m)\)</td><td>\(\BPP=\Pclass\). This is exactly the lecture's picture <span class="src">455-PTC2 p.2–3</span>.</td></tr>
+</table>
+
+<h3>9.2 Where the hardness comes in (preview of Section 2)</h3>
+<ul>
+<li><strong>From one-way functions.</strong> HILL show OWFs ⇒ cryptographic PRGs. Using an OWF secure against nonuniform adversaries, one gets seed length \(m^\varepsilon\) for every \(\varepsilon\), hence <strong>OWFs ⇒ \(\BPP\subseteq\SUBEXP\)</strong> <span class="src">V Thm. 7.11 &amp; Cor. 7.12, p.146</span>. Closing this loop is the goal of Section 2 of the site.</li>
+<li><strong>Why OWFs can't give \(\BPP=\Pclass\) this way.</strong> Cryptographic PRGs need \(\omega(\log m)\) seeds (Section 4.1). Even with exponentially hard OWFs, the known constructions only reach \(d=\mathrm{polylog}(m)\) <span class="src">V p.146</span>. Getting \(\BPP=\Pclass\) needs the other column of the table in 4.1: Nisan–Wigderson PRGs built from a function in \(\mathsf{E}\) that requires exponential-size circuits <span class="src">V Thm. 7.19, p.153</span>. That's outside our scope; state it only.</li>
+<li><strong>PRGs with log seeds exist non-constructively.</strong> A random function \(G:\bits^{O(\log m)}\to\bits^m\) fools all size-\(m\) circuits with high probability (Chernoff + union bound over \(2^{\poly(m)}\) circuits) <span class="src">V Prop. 7.8, p.144</span>. Hard-coding its truth table as advice and applying Theorem 9.1 re-proves \(\BPP\subseteq\Ppoly\) <span class="src">V p.144</span>, which we saw in class by a different route <span class="src">455-BC2</span>. So the whole difficulty is <em>explicitness</em>: making \(G\) efficiently computable.</li>
+<li><strong>The converse direction</strong> (derandomizing PIT ⇒ circuit lower bounds) appears in the lecture only as a statement <span class="src">455-PTC2 p.7</span>. We'll leave it as a statement too.</li>
+</ul>
+
+<h3>9.3 The statement Section 2 will prove (part of)</h3>
+<div class="box"><div class="label">Theorem (HILL)</div>
+One-way functions exist if and only if pseudorandom generators exist.
+<span class="src">HILL Thm. 6.3, p.1385</span> <span class="src">V Thm. 7.11, p.146</span>
+<br>(⇐) is Theorem 6.1 above. For (⇒), Section 2 will prove the case of one-to-one OWFs in full and outline the general case.</div>
+
+<p class="muted" style="margin-top:3rem;font-size:.9rem">Self-check questions, written by Claude (not from a source):
+(1) Where exactly does Theorem 9.1's proof use nonuniformity, and what would break with a uniform PRG?
+(2) Why does the hybrid argument in Theorem 7.2 lose a factor of \(n\), and why is that fine?
+(3) In Theorem 6.1, what goes wrong if \(\ell=n+1\)?
+(4) Why can't a cryptographic PRG have an \(O(\log m)\)-bit seed, while a derandomization PRG can?
+(5) Why does “fooling all statistical tests” mean no statistical test, including unbounded ones? (Trick question: it doesn't. Which definition is about unbounded tests?)</p>
+
+</main>
+</body>
+</html>
