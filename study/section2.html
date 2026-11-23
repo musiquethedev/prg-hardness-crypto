@@ -70,13 +70,17 @@ svg.diag .b-derand{fill:var(--dr-bg);stroke:var(--dr);stroke-width:2}
 .plan{background:var(--card);border-radius:4px;padding:.45rem .8rem;margin:.4rem 0 .8rem;font-size:.95rem}
 .plan p{margin:.25rem 0}
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap">
 <link rel="stylesheet" href="slides.css">
+<link rel="stylesheet" href="../assets/rococo.css">
 <script src="slides.js" defer></script>
 </head>
 <body>
 <main>
 <p class="muted" style="font-family:system-ui,sans-serif;font-size:.85rem;margin:0"><a href="../index.html">← site home</a> · <a href="section1.html">Section 1 study notes</a></p>
 <h1>Section 2 study notes: from one-way functions to PRGs (HILL)</h1>
+<figure class="painting"><div class="frame"><img src="../assets/paintings/lancret-camargo.jpg" width="960" height="686" alt="The ballerina Marie Camargo dances in a wooded glade, accompanied by musicians." loading="lazy" decoding="async"></div><figcaption><a href="https://commons.wikimedia.org/wiki/File:Nicolas_Lancret,_La_Camargo_Dancing,_c._1730,_NGA_96.jpg" rel="noopener"><span class="p-title">La Camargo Dancing</span></a><br><span class="p-artist">Nicolas Lancret, c. 1730</span></figcaption></figure>
 
 <div class="banner">
 <strong>AI-generated study material, not part of the project submission.</strong> Claude (an AI assistant) wrote this page to summarize the sources below for my own learning. Under the course rules, the explanatory text on the real site must be my own writing, so I will rewrite everything here in my own words before submitting, and this page will be removed.
@@ -124,6 +128,7 @@ One-way functions exist if and only if pseudorandom generators exist.
 
 <!-- ============================================================ -->
 <h2 id="t1">1. One-way functions</h2>
+<figure class="painting"><div class="frame"><img src="../assets/paintings/fragonard-pursuit.jpg" width="960" height="1419" alt="A young man offers a rose to a startled young woman in a flowering garden." loading="lazy" decoding="async"></div><figcaption><a href="https://commons.wikimedia.org/wiki/File:The_Progress_of_Love_-_The_Pursuit_-_Fragonard_1771-72.jpg" rel="noopener"><span class="p-title">The Progress of Love: The Pursuit</span></a><br><span class="p-artist">Jean-Honoré Fragonard, 1771–72</span></figcaption></figure>
 
 
 <div class="box"><div class="label">Definition 1.1 (one-way function, OWF)</div>
@@ -190,6 +195,7 @@ No structure beyond Definition 1.1. Different outputs can have <strong>different
 
 <!-- ============================================================ -->
 <h2 id="t2">2. The easy direction: PRG ⇒ one-way function</h2>
+<figure class="painting"><div class="frame"><img src="../assets/paintings/fragonard-meeting.jpg" width="960" height="1239" alt="A young man climbs a garden wall to meet a young woman, who glances back nervously." loading="lazy" decoding="async"></div><figcaption><a href="https://commons.wikimedia.org/wiki/File:Jean-Honor%C3%A9_Fragonard_-_Les_Progr%C3%A8s_de_l%27amour_-_Le_rendez-vous_-_Google_Art_Project.jpg" rel="noopener"><span class="p-title">The Progress of Love: The Meeting</span></a><br><span class="p-artist">Jean-Honoré Fragonard, 1771–73</span></figcaption></figure>
 <p>A short reduction in the style of S1 §5: from an adversary against one primitive, build an adversary against another.</p>
 <div class="box"><div class="label">Theorem 2.1 (PRG ⇒ OWF)</div>
 If \(G:\bits^n\to\bits^{\ell(n)}\) is a secure PRG with \(\ell(n)\ge 2n\), then \(G\) is a one-way function. (Any PRG can first be stretched to \(\ell\ge 2n\) using S1 Theorem 6.2.)
@@ -206,6 +212,7 @@ If \(G:\bits^n\to\bits^{\ell(n)}\) is a secure PRG with \(\ell(n)\ge 2n\), then 
 
 <!-- ============================================================ -->
 <h2 id="t3">3. Hardcore bits</h2>
+<figure class="painting"><div class="frame"><img src="../assets/paintings/fragonard-love-letter.jpg" width="960" height="1188" alt="A woman in blue silk at her writing desk turns toward the viewer, holding a letter and flowers." loading="lazy" decoding="async"></div><figcaption><a href="https://commons.wikimedia.org/wiki/File:The_Love_Letter_MET_DP-1014-001.jpg" rel="noopener"><span class="p-title">The Love Letter</span></a><br><span class="p-artist">Jean-Honoré Fragonard, early 1770s</span></figcaption></figure>
 
 <p><strong>The problem.</strong> A one-way function only promises that \(x\) is hard to recover <em>as a whole</em>. Individual bits of \(x\) can leak completely. Example <span class="me">Claude</span>: if \(f'\) is one-way, so is \(f(x_1,x_2)=(x_1,f'(x_2))\), where \(x_1,x_2\) are the two halves of \(x\). Yet \(f(x)\) reveals the whole first half of \(x\). To build a PRG we need at least one bit about \(x\) that is <em>provably</em> unpredictable from \(f(x)\).</p>
 
@@ -245,6 +252,7 @@ $$\Pr[P(V)=B]=\tfrac12\alpha+\tfrac12(1-\beta')=\tfrac12+\tfrac12(\alpha-\beta')
 
 <!-- ============================================================ -->
 <h2 id="t4">4. The Goldreich–Levin theorem</h2>
+<figure class="painting"><div class="frame"><img src="../assets/paintings/longhi-fortune-teller.jpg" width="639" height="800" alt="In a Venetian arcade, an old fortune teller reads the palm of a masked woman in a black cape." loading="lazy" decoding="async"></div><figcaption><a href="https://commons.wikimedia.org/wiki/File:Longhi_-_A_Fortune_Teller_at_Venice,_about_1756,_NG1334.jpg" rel="noopener"><span class="p-title">A Fortune Teller at Venice</span></a><br><span class="p-artist">Pietro Longhi, 1756</span></figcaption></figure>
 
 <p>For a general one-way function, we don't know of a hardcore bit for \(f\) itself. Goldreich and Levin found one for a slightly modified function, which adds a public random string \(r\). The bit is the inner product mod 2, the parity of a random subset of \(x\)'s bits:</p>
 $$\langle x,r\rangle = x_1r_1\oplus x_2r_2\oplus\cdots\oplus x_nr_n .$$
@@ -331,6 +339,7 @@ $$\Pr_x\big[f(I(f(x)))=f(x)\big]\ \ge\ \frac\varepsilon2\cdot\frac12=\frac{\vare
 
 <!-- ============================================================ -->
 <h2 id="t5">5. Warm-up: one-way permutation ⇒ PRG</h2>
+<figure class="painting"><div class="frame"><img src="../assets/paintings/watteau-fetes-venitiennes.jpg" width="960" height="1186" alt="A dancing couple at an outdoor party, with musicians and guests under a statue in a park." loading="lazy" decoding="async"></div><figcaption><a href="https://commons.wikimedia.org/wiki/File:Jean-Antoine_Watteau_-_F%C3%AAtes_Venitiennes_-_Google_Art_Project.jpg" rel="noopener"><span class="p-title">Fêtes vénitiennes</span></a><br><span class="p-artist">Jean-Antoine Watteau, 1718–19</span></figcaption></figure>
 
 <div class="box"><div class="label">Theorem 5.1</div>
 Let \(f\) be a one-way <strong>permutation</strong> (a bijection on \(\bits^n\)). Then \(G(x,r)=(f(x),\,r,\,\langle x,r\rangle)\), from \(2n\) bits to \(2n+1\) bits, is a PRG.
@@ -360,6 +369,7 @@ Let \(f\) be a one-way <strong>permutation</strong> (a bijection on \(\bits^n\))
 
 <!-- ============================================================ -->
 <h2 id="t6">6. Tools: collision probability, hashing, and the leftover hash lemma</h2>
+<figure class="painting"><div class="frame"><img src="../assets/paintings/watteau-gersaint.jpg" width="960" height="537" alt="Inside a Paris art shop, porters pack a portrait into a crate while customers inspect paintings." loading="lazy" decoding="async"></div><figcaption><a href="https://commons.wikimedia.org/wiki/File:L%27enseigne_de_Gersaint.jpg" rel="noopener"><span class="p-title">The Shop Sign of Gersaint</span></a><br><span class="p-artist">Jean-Antoine Watteau, 1720</span></figcaption></figure>
 
 <h3>6.1 Collision probability: measuring how “spread out” a distribution is</h3>
 <div class="box"><div class="label">Definition 6.1</div>
@@ -402,6 +412,7 @@ $$\Delta\le\tfrac12\cdot 2^j\cdot 2^{-(K+j)/2}=\tfrac12\cdot2^{-(K-j)/2}=\tfrac1
 
 <!-- ============================================================ -->
 <h2 id="t7">7. Main construction: one-to-one one-way function ⇒ PRG</h2>
+<figure class="painting"><div class="frame"><img src="../assets/paintings/tiepolo-cleopatra.jpg" width="960" height="671" alt="Cleopatra, at a feast in a marble hall, prepares to dissolve a pearl in vinegar before Mark Antony." loading="lazy" decoding="async"></div><figcaption><a href="https://commons.wikimedia.org/wiki/File:Giambattista_Tiepolo_-_The_Banquet_of_Cleopatra_-_Google_Art_Project.jpg" rel="noopener"><span class="p-title">The Banquet of Cleopatra</span></a><br><span class="p-artist">Giovanni Battista Tiepolo, 1743–44</span></figcaption></figure>
 
 <h3>7.1 Pseudoentropy: the 1-bit gap</h3>
 <p>Let \(f:\bits^n\to\bits^\ell\) be a one-to-one one-way function (\(\ell\ge n\)). Let \(X,R\) be uniform on \(\bits^n\) and \(\beta\) a uniform bit. Define</p>
@@ -474,6 +485,7 @@ $$\mathrm{PRGadv}[A,G]\ \le\ 4n\cdot\mathrm{Distadv}[B',D,E]\ +\ 2^{-(n+1)}.$$</
 
 <!-- ============================================================ -->
 <h2 id="t8">8. The theorem assembled, and the link back to derandomization</h2>
+<figure class="painting"><div class="frame"><img src="../assets/paintings/fragonard-lover-crowned.jpg" width="960" height="1269" alt="In a garden, a young woman places a wreath of flowers on her kneeling suitor while an artist sketches." loading="lazy" decoding="async"></div><figcaption><a href="https://commons.wikimedia.org/wiki/File:The_Progress_of_Love_-_The_Lover_Crowned_-_Fragonard_1771-72.jpg" rel="noopener"><span class="p-title">The Progress of Love: The Lover Crowned</span></a><br><span class="p-artist">Jean-Honoré Fragonard, 1771–72</span></figcaption></figure>
 <div class="box"><div class="label">Theorem 8.1 (HILL; the part proved on these pages)</div>
 <ol style="margin:.3rem 0">
 <li>If a PRG exists, then a one-way function exists (Theorem 2.1).</li>
@@ -494,6 +506,7 @@ So Theorem 7.2 gives a PRG secure against polynomial-size circuits, and S1 Theor
 
 <!-- ============================================================ -->
 <h2 id="t9">9. Beyond one-to-one (stated, not proved)</h2>
+<figure class="painting"><div class="frame"><img src="../assets/paintings/watteau-embarkation-berlin.jpg" width="960" height="638" alt="Couples board a gilded boat under flying cupids, departing for the island of love." loading="lazy" decoding="async"></div><figcaption><a href="https://commons.wikimedia.org/wiki/File:Antoine_Watteau_-_Einschiffung_nach_Kythera,_1720.jpg" rel="noopener"><span class="p-title">The Embarkation for Cythera</span></a><br><span class="p-artist">Jean-Antoine Watteau, 1718–20</span></figcaption></figure>
 <p><strong>What goes wrong for a general \(f\).</strong> If an output of \(f\) has many preimages, then \(f(X)\) loses information about \(X\). HILL's example is a function where every output has \(2^{n/4}\) preimages <span class="src">HILL §5.1, p.1383</span>.</p>
 <ul>
 <li>\(D=(f(X),R,\langle X,R\rangle)\) then has only about \(\frac{7n}4+1\) bits of randomness instead of \(2n\).</li>

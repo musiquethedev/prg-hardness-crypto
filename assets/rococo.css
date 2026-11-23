@@ -1,0 +1,89 @@
+/* Rococo theme for the whole site: pastel salon palette, gilt ornament, display type for titles.
+   Body prose keeps the original Georgia 17px / 1.65 for readability. Loaded after each page's own styles. */
+:root{
+  --bg:#fbf5ec; --fg:#2b2320; --muted:#6f6258; --rule:#e6d8c3; --card:#f6ece0;
+  --accent:#3f6587; --warn-bg:#fbf0d6; --warn-fg:#6b4e00; --warn-rule:#d9b86a;
+  --src-bg:#e5edf3; --src-fg:#2f5372; --me-bg:#f6e1e3; --me-fg:#8c3a48;
+  --dr:#3d7660; --dr-bg:#e7f0eb;
+  --heading:#7e3f4c; --gold:#b38b3f; --gold-soft:#dcc48c; --gold-ink:#7f5d22;
+  --blush:rgba(214,150,160,.10); --sky:rgba(140,175,210,.12);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#191c25; --fg:#ece4d6; --muted:#a89e90; --rule:#383a45; --card:#22252f;
+    --accent:#9ec0de; --warn-bg:#352c16; --warn-fg:#f0d78f; --warn-rule:#7c6526;
+    --src-bg:#24364a; --src-fg:#c3d8ec; --me-bg:#452a30; --me-fg:#f0bcc4;
+    --dr:#8fcdb2; --dr-bg:#1d312a;
+    --heading:#e8b4bd; --gold:#d4b36a; --gold-soft:#7d6939; --gold-ink:#e2c587;
+    --blush:rgba(232,180,189,.06); --sky:rgba(158,192,222,.07);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#191c25; --fg:#ece4d6; --muted:#a89e90; --rule:#383a45; --card:#22252f;
+  --accent:#9ec0de; --warn-bg:#352c16; --warn-fg:#f0d78f; --warn-rule:#7c6526;
+  --src-bg:#24364a; --src-fg:#c3d8ec; --me-bg:#452a30; --me-fg:#f0bcc4;
+  --dr:#8fcdb2; --dr-bg:#1d312a;
+  --heading:#e8b4bd; --gold:#d4b36a; --gold-soft:#7d6939; --gold-ink:#e2c587;
+  --blush:rgba(232,180,189,.06); --sky:rgba(158,192,222,.07);
+}
+
+/* Soft pastel wash, like a salon ceiling */
+body,.deck{background:
+  radial-gradient(ellipse at 0% 0%,var(--blush),transparent 45%),
+  radial-gradient(ellipse at 100% 100%,var(--sky),transparent 50%),
+  var(--bg)}
+body{background-attachment:fixed}
+
+/* ---------- Display type ---------- */
+h1,h2,h3,.deck-title,.box > .label,th,.toc-title{font-family:"Cormorant Garamond","Cormorant",Garamond,Georgia,serif}
+h1{font-weight:600;font-size:2.55rem;line-height:1.12;text-align:center;color:var(--heading);letter-spacing:.01em;margin:.6rem 0 .2rem}
+h1::after,h2::after{content:"";display:block;width:min(300px,78%);height:30px;margin:.45rem auto 0;background:var(--gold);
+  -webkit-mask:url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 -5 300 35%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%221.6%22 stroke-linecap=%22round%22><path d=%22M150 24L150 7M150 24L143 9M150 24L157 9M150 24L138 14M150 24L162 14%22/><path d=%22M135 17Q150-3 165 17%22/><path d=%22M139 24Q150 29 161 24%22/><path d=%22M134 18C120 26 108 6 92 14C82 19 74 12 80 8C84 6 88 10 85 13%22/><path d=%22M92 14C70 24 50 8 30 15C24 17 18 16 14 14%22/><path d=%22M118 13q5-8 11-6q-4 6-11 6z%22 fill=%22%23000%22/><path d=%22M64 12q4-7 10-5q-4 5-10 5z%22 fill=%22%23000%22/><circle cx=%2210%22 cy=%2214%22 r=%222.2%22 fill=%22%23000%22/><g transform=%22translate%28300 0%29 scale%28-1 1%29%22><path d=%22M134 18C120 26 108 6 92 14C82 19 74 12 80 8C84 6 88 10 85 13%22/><path d=%22M92 14C70 24 50 8 30 15C24 17 18 16 14 14%22/><path d=%22M118 13q5-8 11-6q-4 6-11 6z%22 fill=%22%23000%22/><path d=%22M64 12q4-7 10-5q-4 5-10 5z%22 fill=%22%23000%22/><circle cx=%2210%22 cy=%2214%22 r=%222.2%22 fill=%22%23000%22/></g></svg>") center/contain no-repeat;mask:url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 300 30%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%221.6%22 stroke-linecap=%22round%22><path d=%22M150 24L150 7M150 24L143 9M150 24L157 9M150 24L138 14M150 24L162 14%22/><path d=%22M135 17Q150-3 165 17%22/><path d=%22M139 24Q150 29 161 24%22/><path d=%22M134 18C120 26 108 6 92 14C82 19 74 12 80 8C84 6 88 10 85 13%22/><path d=%22M92 14C70 24 50 8 30 15C24 17 18 16 14 14%22/><path d=%22M118 13q5-8 11-6q-4 6-11 6z%22 fill=%22%23000%22/><path d=%22M64 12q4-7 10-5q-4 5-10 5z%22 fill=%22%23000%22/><circle cx=%2210%22 cy=%2214%22 r=%222.2%22 fill=%22%23000%22/><g transform=%22translate%28300 0%29 scale%28-1 1%29%22><path d=%22M134 18C120 26 108 6 92 14C82 19 74 12 80 8C84 6 88 10 85 13%22/><path d=%22M92 14C70 24 50 8 30 15C24 17 18 16 14 14%22/><path d=%22M118 13q5-8 11-6q-4 6-11 6z%22 fill=%22%23000%22/><path d=%22M64 12q4-7 10-5q-4 5-10 5z%22 fill=%22%23000%22/><circle cx=%2210%22 cy=%2214%22 r=%222.2%22 fill=%22%23000%22/></g></svg>") center/contain no-repeat}
+h2{font-weight:600;font-style:italic;font-size:2.05rem;line-height:1.15;text-align:center;color:var(--heading);
+  border-top:none;padding-top:0;margin:3rem 0 1rem}
+h3{font-weight:700;font-size:1.42rem;line-height:1.25;color:var(--gold-ink);margin:2rem 0 .45rem;display:flex;align-items:center;gap:.5rem}
+h3::before{content:"";flex:0 0 auto;width:28px;height:17px;background:var(--gold);
+  -webkit-mask:url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 24%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%221.6%22 stroke-linecap=%22round%22><path d=%22M20 20C12 22 6 14 10 9C13 5 19 8 16 12%22/><path d=%22M20 20C28 22 34 14 30 9C27 5 21 8 24 12%22/><path d=%22M20 20L20 6%22/><circle cx=%2220%22 cy=%224%22 r=%222%22 fill=%22%23000%22/></svg>") center/contain no-repeat;mask:url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 24%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%221.6%22 stroke-linecap=%22round%22><path d=%22M20 20C12 22 6 14 10 9C13 5 19 8 16 12%22/><path d=%22M20 20C28 22 34 14 30 9C27 5 21 8 24 12%22/><path d=%22M20 20L20 6%22/><circle cx=%2220%22 cy=%224%22 r=%222%22 fill=%22%23000%22/></svg>") center/contain no-repeat}
+h1 + .author,.author{text-align:center;font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;font-size:1.15rem;color:var(--muted)}
+
+/* ---------- Cartouche boxes ---------- */
+.box{background:var(--card);border:1px solid var(--gold);border-left:1px solid var(--gold);border-radius:3px;
+  box-shadow:inset 0 0 0 3px var(--card),inset 0 0 0 4px var(--gold-soft);padding:.85rem 1.15rem}
+.box > .label{font-size:1.12rem;font-weight:700;text-transform:none;letter-spacing:.03em;font-variant:small-caps;color:var(--gold-ink)}
+.box.derand{border-color:var(--dr);border-left-color:var(--dr);box-shadow:inset 0 0 0 3px var(--dr-bg),inset 0 0 0 4px color-mix(in srgb,var(--dr) 45%,transparent)}
+.box.derand > .label{color:var(--dr)}
+.banner{border:1px solid var(--warn-rule);box-shadow:inset 0 0 0 3px var(--warn-bg),inset 0 0 0 4px var(--warn-rule);border-radius:3px}
+.derand-banner{border-radius:3px;box-shadow:inset 0 0 0 3px var(--dr-bg),inset 0 0 0 4px color-mix(in srgb,var(--dr) 45%,transparent)}
+.proof{border-left:2px dotted var(--gold)}
+.plan{background:color-mix(in srgb,var(--card) 70%,transparent);border-left:2px solid var(--heading);border-radius:2px}
+.toc{background:var(--card);border:1px solid var(--gold-soft);border-radius:3px}
+th{font-size:1.02rem;font-weight:700;font-variant:small-caps;letter-spacing:.02em;color:var(--gold-ink)}
+th,td{border-color:var(--gold-soft)}
+.caption{font-family:Georgia,serif;font-style:italic}
+a{text-decoration-color:color-mix(in srgb,var(--accent) 45%,transparent);text-underline-offset:.15em}
+a:hover{text-decoration-color:var(--accent)}
+
+/* ---------- Paintings in gilt frames ---------- */
+figure.painting{margin:.4rem auto 1.8rem;text-align:center}
+figure.painting .frame{display:inline-block;max-width:100%;padding:11px;border-radius:2px;
+  background:linear-gradient(135deg,#f5e3a8 0%,#b8903f 22%,#f7e7b4 45%,#9b7431 68%,#e9cf8a 85%,#b38b3f 100%);
+  box-shadow:0 0 0 1px #6f5120,0 8px 22px rgba(60,40,10,.28),inset 0 0 0 1px rgba(255,248,225,.55)}
+figure.painting img{display:block;max-width:100%;width:auto;height:auto;max-height:min(46vh,400px);
+  border:2px solid #5d431a;box-shadow:0 0 0 2px #f1e2bd}
+figure.painting figcaption{margin-top:.75rem;font-family:"Cormorant Garamond",Georgia,serif;font-size:1.12rem;line-height:1.35;color:var(--muted)}
+figure.painting figcaption .p-title{font-style:italic;font-weight:600;color:var(--fg)}
+figure.painting figcaption a{color:inherit;text-decoration:none}
+figure.painting figcaption a:hover .p-title{text-decoration:underline}
+@media (max-width:640px){figure.painting .frame{padding:7px}h1{font-size:2.05rem}h2{font-size:1.7rem}}
+
+/* ---------- Slideshow chrome ---------- */
+.slide-inner > h2:first-child{margin-top:0}
+.deck-bar{background:color-mix(in srgb,var(--bg) 92%,transparent);border-bottom:3px double var(--gold-soft);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.deck-title{font-style:italic;font-weight:600;font-size:1.08rem;color:var(--heading)}
+.deck-count{font-family:"Cormorant Garamond",Georgia,serif;font-size:1rem;font-variant:small-caps}
+.deck-toggle{font-family:"Cormorant Garamond",Georgia,serif;font-size:.98rem;font-weight:600;font-variant:small-caps;color:var(--gold-ink);border-color:var(--gold)}
+.deck-nav{font-family:"Cormorant Garamond",Georgia,serif;font-size:30px;color:var(--gold-ink);border:1px solid var(--gold);
+  background:radial-gradient(circle at 35% 30%,var(--bg),var(--card));box-shadow:0 0 0 3px var(--bg),0 0 0 4px var(--gold-soft),0 3px 10px rgba(60,40,10,.18)}
+.deck-nav:hover{border-color:var(--gold);color:var(--heading)}
+.deck-progress{background:linear-gradient(90deg,var(--gold-soft),var(--gold),var(--heading))}
+@media print{figure.painting img{max-height:none}}
