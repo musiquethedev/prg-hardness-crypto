@@ -114,13 +114,13 @@ svg.diag .b-derand{fill:var(--dr-bg);stroke:var(--dr);stroke-width:2}
 One-way functions exist if and only if pseudorandom generators exist.
 <span class="src">HILL Thm. 6.3, p.1385</span> <span class="src">V Thm. 7.11, p.146</span></div>
 <p>We prove (⇐) in full (§2). We prove (⇒) in full for <strong>one-to-one</strong> one-way functions (§3–§7), and outline the general case (§9). Everything on this page is about <em>cryptographic</em> PRGs: every efficient adversary, negligible advantage.</p>
-<p><strong>Conventions</strong> (from S1 §2.4):</p>
+<p><strong>Conventions</strong> (from S1 §3.1):</p>
 <ul>
 <li>Distinguishing games use \(\Pr[W_0]-\Pr[W_1]\).</li>
 <li>Prediction games have success probability \(\frac12+\varepsilon\), and \(\varepsilon\) is the prediction advantage.</li>
 <li>Every proof computes the advantage explicitly and then argues why it is or isn't negligible.</li>
 </ul>
-<p><strong>Which adversaries?</strong> As on the Section 1 page (S1 §2.3), an efficient adversary is a family of polynomial-size circuits, possibly randomized. Every reduction on this page builds a circuit from a circuit. So “secure against circuits” in gives “secure against circuits” out, which is what S1 Theorem 7.6 needs.</p>
+<p><strong>Which computational model?</strong> As on the Section 1 page (S1 §2.2): adversaries are polynomial-size circuit families, possibly randomized, and constructions (\(f\), \(G\), hash functions) are uniform polynomial-time algorithms. Every reduction on this page builds a circuit from a circuit. So “secure against circuits” in gives “secure against circuits” out, which is what S1 Theorem 7.6 needs.</p>
 
 <!-- ============================================================ -->
 <h2 id="t1">1. One-way functions</h2>
@@ -129,10 +129,10 @@ One-way functions exist if and only if pseudorandom generators exist.
 <div class="box"><div class="label">Definition 1.1 (one-way function, OWF)</div>
 \(f:\bits^*\to\bits^*\) is one-way if
 <ol style="margin:.3rem 0">
-<li>\(f\) is computable in polynomial time, and</li>
-<li>for every efficient \(A\), \(\displaystyle\Pr_{x\leftarrow\bits^n}\big[f(A(f(x)))=f(x)\big]\) is negligible in \(n\).</li>
+<li>\(f\) is computable by a polynomial-time algorithm (constructions are uniform, S1 §2.2), and</li>
+<li>for every efficient adversary \(A\) (a polynomial-size circuit family, S1 §2.2), \(\displaystyle\Pr_{x\leftarrow\bits^n}\big[f(A(f(x)))=f(x)\big]\) is negligible in \(n\).</li>
 </ol>
-<span class="src">MIT p.16-4</span> <span class="src">HILL Def. 3.2, p.1372</span> <span class="src">V Def. 7.10, p.145</span> (Vadhan's version is against nonuniform \(A\))</div>
+<span class="src">MIT p.16-4</span> <span class="src">HILL Def. 3.2, p.1372</span> <span class="src">V Def. 7.10, p.145</span></div>
 
 <ul>
 <li><strong>“Find <em>some</em> preimage,” not “find \(x\)”.</strong> \(A\) succeeds if it outputs any \(x'\) with \(f(x')=f(x)\). If success meant recovering \(x\) itself, a constant function \(f(x)=1\) would count as “one-way”: you can never tell which \(x\) was used, even though inverting it is trivial <span class="src">MIT p.16-4</span>.</li>
@@ -215,7 +215,7 @@ $$\Pr_{x\leftarrow\bits^n}\big[P(f(x))=b(x)\big]\le \tfrac12+\varepsilon(n)\quad
 \(\varepsilon\) is \(P\)'s prediction advantage.
 <span class="src">Pandey p.6-1</span> <span class="src">HILL Def. 3.10 (“hidden bit”), p.1374</span></div>
 
-<p>This is our first <strong>prediction game</strong> (S1 §2.4): one experiment, and the adversary guesses a bit. It is equivalent to a two-experiment game, with exactly the same advantage, so after this lemma we can work in the familiar two-experiment form:</p>
+<p>This is our first <strong>prediction game</strong> (S1 §3.1): one experiment, and the adversary guesses a bit. It is equivalent to a two-experiment game, with exactly the same advantage, so after this lemma we can work in the familiar two-experiment form:</p>
 
 <div class="box"><div class="label">Lemma 3.2 (predicting ⇔ distinguishing)</div>
 Let \(X\) be uniform on \(\bits^n\), and let \(\beta\) be a uniform bit independent of \(X\). Compare
@@ -256,7 +256,7 @@ $$\Pr_{x,r}\big[P(f(x),r)=\langle x,r\rangle\big]\le\tfrac12+\mathrm{negl}(n).$$
 <strong>Two-experiment form</strong> (by Lemma 3.2): \((f(X),R,\langle X,R\rangle)\) and \((f(X),R,\beta)\) are computationally indistinguishable.
 <span class="src">HILL Props. 4.1–4.3, p.1376</span> (stated, credited to [GL89], not proved there) <span class="src">Pandey §2.4</span> <span class="src">Trevisan Thm. 1–2</span> <span class="src">Barak Thm. 3</span></div>
 
-<p>Note that \(r\) is a public input: it's part of \(f'\)'s output. The security parameter is \(n=|x|\) (S1 §2.2). Two facts about \(\langle\cdot,\cdot\rangle\) drive the whole proof:</p>
+<p>Note that \(r\) is a public input: it's part of \(f'\)'s output. The security parameter is \(n=|x|\) (S1 §2.1). Two facts about \(\langle\cdot,\cdot\rangle\) drive the whole proof:</p>
 <ul>
 <li><strong>Linearity:</strong> \(\langle x,r\oplus r'\rangle=\langle x,r\rangle\oplus\langle x,r'\rangle\).</li>
 <li><strong>Reading off a bit:</strong> \(\langle x,e_i\rangle=x_i\), where \(e_i\) is the \(i\)-th unit vector.</li>
@@ -466,7 +466,7 @@ $$\mathrm{PRGadv}[A,G]\ \le\ 4n\cdot\mathrm{Distadv}[B',D,E]\ +\ 2^{-(n+1)}.$$</
 <li>\(2^{-(n+1)}\) is negligible.</li>
 <li>A sum of two negligible functions is negligible <span class="src">BS Fact 2.6</span>.</li>
 </ul>
-<p>The security parameter of \(G\) is its seed length \(2nk+p\), a polynomial in \(n\). Polynomially related parameters give the same notion of negligible (S1 §2.2). So \(G\) is a secure PRG. ∎</p></div>
+<p>The security parameter of \(G\) is its seed length \(2nk+p\), a polynomial in \(n\). Polynomially related parameters give the same notion of negligible (S1 §2.1). So \(G\) is a secure PRG. ∎</p></div>
 
 <p><strong>Note on parameters</strong> <span class="me">Claude</span>. HILL's general Construction 4.13 takes \(k=\lceil(2m+1)/s\rceil^3\) copies and shaves off \(2mk^{2/3}\) bits. That's because a general pseudoentropy generator only promises Shannon entropy, and converting Shannon entropy to collision probability needs many copies <span class="src">HILL Prop. 4.9 &amp; Cor. 4.10, p.1379</span>. In the one-to-one case, \(E\) is uniform on its support, so its collision probability is known exactly. That lets us use the simpler \(k=4n\), \(e=n\). Please double-check this simplification when you review.</p>
 
@@ -516,6 +516,7 @@ So Theorem 7.2 gives a PRG secure against polynomial-size circuits, and S1 Theor
 <li>The background needed beyond these pages is Shannon entropy and how it concentrates over many copies <span class="src">HILL Prop. 4.9, p.1379</span>.</li>
 </ul>
 <p>A 9-page treatment of the general case, for circuit adversaries, is in <span class="src">Scribe §2–3</span>. HILL themselves call §6 “the most technically challenging” part of the paper <span class="src">HILL p.1367</span>.</p>
+<p><strong>A note on uniformity.</strong> HILL prove their theorem for <em>uniform</em> adversaries, which makes the proof harder: Scribe says the uniform case needs a uniform version of Impagliazzo's hardcore lemma <span class="src">Scribe, p.1</span>. The general construction is also only “mildly nonuniform”, because it needs a short advice string (the guessed preimage count). HILL §4.8 removes that advice so the PRG is a genuine uniform algorithm, as our convention requires of constructions <span class="src">HILL §4.8, Prop. 4.17, p.1381</span>.</p>
 
 <p class="muted" style="margin-top:3rem;font-size:.9rem">Self-check questions, written by Claude (not from a source):
 (1) In Goldreich–Levin, why does querying \(P\) at \(e_i\) directly fail, and how does guessing \(\langle x,s_j\rangle\) fix the 3/4 barrier?

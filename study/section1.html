@@ -98,7 +98,7 @@ svg.diag .b-derand{fill:var(--dr-bg);stroke:var(--dr);stroke-width:2}
 <div class="toc"><strong>Contents</strong>
 <ol>
 <li><a href="#s1">Where the course left off</a></li>
-<li><a href="#s2">Formal setup: negligible functions, adversaries, uniformity</a></li>
+<li><a href="#s2">Negligible advantage and the computational model</a></li>
 <li><a href="#s3">Indistinguishability and the attack-game style</a></li>
 <li><a href="#s4">Pseudorandom generators</a></li>
 <li><a href="#s5">Proof strategy 1: reductions (PRG ⇒ P ≠ NP)</a></li>
@@ -129,10 +129,10 @@ svg.diag .b-derand{fill:var(--dr-bg);stroke:var(--dr);stroke-width:2}
 </ol>
 
 <!-- ============================================================ -->
-<h2 id="s2">2. Formal setup</h2>
+<h2 id="s2">2. Negligible advantage and the computational model</h2>
 
 <h3>2.1 How small is “effectively zero”? Negligible functions</h3>
-<p>Every security statement on this site says that some adversary's <em>advantage</em> (its edge over blind guessing, made precise in Section 3) is tiny. Advantages are functions of a size parameter \(n\) (Section 2.2), so we need a precise meaning for “tiny as a function of \(n\)”. Two requirements pin it down <span class="me">Claude: this framing</span>:</p>
+<p>Every security statement on this site says that some adversary's <em>advantage</em> (its edge over blind guessing, made precise in Section 3) is tiny. Advantages are functions of a size parameter \(n\) (Section 2.1), so we need a precise meaning for “tiny as a function of \(n\)”. Two requirements pin it down <span class="me">Claude: this framing</span>:</p>
 <ol>
 <li><strong>Repetition shouldn't help.</strong> An efficient adversary can rerun its attack \(\poly(n)\) times. If one run has advantage \(\varepsilon(n)\), many runs together have advantage roughly up to \(p(n)\cdot\varepsilon(n)\). “Tiny” must survive that.</li>
 <li><strong>Reductions lose polynomial factors.</strong> The hybrid argument (Section 6) gives equations like \(\mathrm{Adv}[A] = n\cdot\mathrm{Adv}[B]\). If \(\mathrm{Adv}[B]\) is tiny, we need \(n\cdot\mathrm{Adv}[B]\) to be tiny too.</li>
@@ -159,22 +159,29 @@ If \(\varepsilon,\varepsilon'\) are negligible and \(p\) is polynomially bounded
 
 <p><strong>The negation.</strong> “Not negligible” means: there is a constant \(c\) with \(\varepsilon(n)\ge 1/n^c\) for <em>infinitely many</em> \(n\). It does not have to hold for all \(n\) <span class="src">BS p.63</span>. When we say an adversary “breaks” a scheme, we mean its advantage is not negligible.</p>
 
-<h3>2.2 The security parameter</h3>
-<p>On this site the security parameter \(n\) is simply <strong>the length of the secret input</strong>, the part the adversary never sees. For a PRG it's the seed length (and for the one-way functions of the Section 2 page, it will be the input length \(|x|\)) <span class="src">HILL §3.1, p.1371</span>. When a construction also has <em>public</em> random inputs, \(n\) counts only the secret part. For example, in Goldreich–Levin (Section 2 of the site) the string \(r\) is public <span class="src">HILL p.1371</span>.</p>
+<p><strong>Negligible in what? The security parameter.</strong> On this site the security parameter \(n\) is simply <strong>the length of the secret input</strong>, the part the adversary never sees. For a PRG it's the seed length (and for the one-way functions of the Section 2 page, it will be the input length \(|x|\)) <span class="src">HILL §3.1, p.1371</span>. When a construction also has <em>public</em> random inputs, \(n\) counts only the secret part. For example, in Goldreich–Levin (Section 2 of the site) the string \(r\) is public <span class="src">HILL p.1371</span>.</p>
 <p>Why the exact choice doesn't matter: if two candidate parameters are polynomially related (say \(n\) and \(n^2\)), then a function is negligible in one exactly when it is negligible in the other <span class="me">Claude</span>.</p>
 
-<h3>2.3 Who are the adversaries? Circuits</h3>
-<p>There are two standard choices. Boneh–Shoup, HILL and the MIT notes use <em>uniform</em> adversaries: probabilistic polynomial-time algorithms <span class="src">BS §2.3, p.28</span>. Vadhan uses <em>nonuniform</em> ones: families of polynomial-size circuits <span class="src">V §7.1.1, p.141</span>. <strong>On this site, “efficient adversary” always means a family of polynomial-size circuits, possibly randomized.</strong> We know these from class: \(\Ppoly=\bigcup_k\mathsf{SIZE}(n^k)\), \(\Pclass\subseteq\Ppoly\), and circuits can hard-code advice <span class="src">455-BC1</span> <span class="src">455-BC2</span>. Why circuits:</p>
+<h3>2.2 The computational model: circuit adversaries, uniform constructions</h3>
+<p>Every security statement involves two kinds of objects, and we model them differently.</p>
+<div class="box"><div class="label">Convention (used on every page of this site)</div>
+<ul style="margin:.2rem 0">
+<li><strong>Adversaries are circuit families.</strong> Anything that tries to break a construction is a family of polynomial-size circuits, possibly randomized, one circuit per input length. That includes the adversaries our reductions <em>build</em>. “Efficient adversary” always means this. This is Vadhan's convention <span class="src">V §7.1.1, p.141</span>; Boneh–Shoup, HILL and the MIT notes use probabilistic polynomial-time algorithms instead <span class="src">BS §2.3, p.28</span>.</li>
+<li><strong>Constructions are uniform algorithms.</strong> Everything we build and claim is secure or useful is computed by <em>one</em> polynomial-time algorithm that works for every input length. That covers PRGs \(G\), one-way functions \(f\), hash functions, and the deterministic simulation of Section 7. Vadhan: pseudorandomness is defined against nonuniform tests, but “the efficiency requirement refers to uniform algorithms” <span class="src">V Def. 7.4 and p.143</span>.</li>
+</ul></div>
+<p>We know circuits from class: \(\Ppoly=\bigcup_k\mathsf{SIZE}(n^k)\), \(\Pclass\subseteq\Ppoly\), and circuits can hard-code advice <span class="src">455-BC1</span> <span class="src">455-BC2</span>.</p>
+<p><strong>Why circuits for adversaries.</strong></p>
 <ul>
-<li><strong>Derandomization needs them.</strong> The proof in Section 7 hard-codes the BPP input \(x\) into a distinguisher, and that's only allowed if the PRG fools circuits <span class="src">V Claim 7.6, p.143</span>.</li>
-<li><strong>Proofs get simpler.</strong> A security proof builds an adversary \(B\) out of an adversary \(A\). If \(B\) may be a circuit, it can hard-code any useful value, like the best hybrid index (Section 6). We only have to show a good value <em>exists</em>, not how to find it <span class="me">Claude</span>, illustrated by <span class="src">V p.149</span> <span class="src">BS p.63</span>.</li>
-<li><strong>Randomness is free.</strong> A randomized circuit can be made deterministic by fixing its coins to the best choice, without losing advantage <span class="src">V p.141–142</span>. So our reductions may flip coins whenever convenient. This is the same trick as \(\BPP\subseteq\Ppoly\) <span class="src">455-BC2</span>.</li>
+<li><em>Derandomization needs it.</em> Theorem 7.3 turns “the BPP machine with its input \(x\) hard-coded” into a distinguisher. That's only allowed if the PRG fools circuits <span class="src">V Claim 7.6, p.143</span>.</li>
+<li><em>Reductions may hard-code.</em> When a proof builds an adversary \(B\) from \(A\), \(B\) may hard-code any useful value, such as the best hybrid index in Section 6. So we only have to show that a good value <em>exists</em>, not how to find it <span class="me">Claude</span>, illustrated by <span class="src">V p.149</span>.</li>
+<li><em>Randomness is free.</em> A randomized circuit can be made deterministic by fixing its coins to the best choice, without losing advantage <span class="src">V p.141–142</span>, the same trick as \(\BPP\subseteq\Ppoly\) <span class="src">455-BC2</span>. So our reductions may flip coins whenever convenient.</li>
 </ul>
-<p>Circuits are more powerful than uniform algorithms. So “secure against all poly-size circuits” is a stronger assumption than “secure against all PPTs”, and also a stronger conclusion. Uniform versions of most results here exist but need extra care. We'll point this out where it matters.</p>
-
-<h3>2.4 Conventions used on this page</h3>
-<p>We use Boneh–Shoup's convention throughout. Advantage is a difference of probabilities, written \(\mathrm{PRGadv}[A,G]\), \(\mathrm{Distadv}[A,P_0,P_1]\), and so on. “Secure” means the advantage is negligible for every efficient adversary. When a reduction gives an exact relation, such as \(\mathrm{PRGadv}[A,G']=n\cdot\mathrm{PRGadv}[B,G]\), we record it, because it shows how much security is lost <span class="src">BS Thm. 3.2, p.55</span>. Section 7 introduces one restricted variant of the PRG game when derandomization needs it.</p>
-<p><strong>One formula for distinguishing.</strong> Every distinguishing game on this site, in this section and the next ones, uses the two-experiment formula \(\Pr[W_0]-\Pr[W_1]\). (Boneh–Shoup also define an equivalent “bit-guessing” formulation <span class="src">BS §2.2.5</span>. We don't use it.) The only other kind of game is a <strong>prediction game</strong> (Goldreich–Levin, on the Section 2 page). There the adversary predicts a bit of data, and we always write its success probability as \(\frac12+\varepsilon\) and call \(\varepsilon\) its <em>prediction advantage</em>. In both kinds of game, “secure” means the advantage is negligible. In a prediction game it is the success probability, not the advantage, that sits near \(\frac12\).</p>
+<p><strong>Why uniform algorithms for constructions.</strong></p>
+<ul>
+<li><em>Someone has to run them.</em> An honest user needs one program, not a different circuit for every input length.</li>
+<li><em>Our conclusions are about uniform classes.</em> Theorem 5.1 needs \(\mathrm{Im}(G)\in\NP\), which requires checking \(G(s)=y\) with an algorithm. Theorems 7.3 and 7.6 conclude \(\BPP=\Pclass\) and \(\BPP\subseteq\SUBEXP\), which only works if the simulation, and hence \(G\), is an algorithm. With circuit constructions we would only get \(\BPP\subseteq\Ppoly\), which we already know from class <span class="src">455-BC2</span> <span class="me">Claude</span>.</li>
+</ul>
+<p>Inside a security proof, the uniformity of the construction never matters. The constructions are only <em>run by</em> adversaries, and a circuit can contain a circuit for \(G\) or \(f\).</p>
 
 <!-- ============================================================ -->
 <h2 id="s3">3. Indistinguishability and the attack-game style</h2>
@@ -226,6 +233,9 @@ $$\mathrm{Distadv}[A,P_0,P_1] := \big|\Pr[W_0]-\Pr[W_1]\big|.$$
 
 
 <p><strong>Dropping the absolute value.</strong> In proofs we usually assume \(\Pr[W_0]-\Pr[W_1] \gt \varepsilon\) without the absolute value. If the difference is negative, flip \(A\)'s output bit, which costs nothing <span class="src">V proof of Prop. 7.14, p.149</span>.</p>
+
+<p><strong>Conventions for advantages, used on every page.</strong> We use Boneh–Shoup's convention throughout. Advantage is a difference of probabilities, written \(\mathrm{PRGadv}[A,G]\), \(\mathrm{Distadv}[A,P_0,P_1]\), and so on. “Secure” means the advantage is negligible for every efficient adversary. When a reduction gives an exact relation, such as \(\mathrm{PRGadv}[A,G']=n\cdot\mathrm{PRGadv}[B,G]\), we record it, because it shows how much security is lost <span class="src">BS Thm. 3.2, p.55</span>. Section 7 introduces one restricted variant of the PRG game when derandomization needs it.</p>
+<p><strong>One formula for distinguishing.</strong> Every distinguishing game on this site, in this section and the next ones, uses the two-experiment formula \(\Pr[W_0]-\Pr[W_1]\). (Boneh–Shoup also define an equivalent “bit-guessing” formulation <span class="src">BS §2.2.5</span>. We don't use it.) The only other kind of game is a <strong>prediction game</strong> (Goldreich–Levin, on the Section 2 page). There the adversary predicts a bit of data, and we always write its success probability as \(\frac12+\varepsilon\) and call \(\varepsilon\) its <em>prediction advantage</em>. In both kinds of game, “secure” means the advantage is negligible. In a prediction game it is the success probability, not the advantage, that sits near \(\frac12\).</p>
 
 <h3>3.2 The best any adversary could ever do: statistical distance</h3>
 <p>Before restricting to efficient adversaries, ask: if the adversary had <em>unlimited</em> computing power, what is the largest advantage it could get in Figure 1? The answer is a single number depending only on \(P_0\) and \(P_1\). It measures how distinguishable the two distributions are in the ideal case, where computation is free.</p>
@@ -361,16 +371,16 @@ For every adversary \(A\), \(\mathrm{Distadv}[A,P_0,P_1]\le\Delta[P_0,P_1]\). So
 </ol>
 <p>A short, complete example follows; it uses only the definitions. (A second example, PRG ⇒ one-way function, is on the <a href="section2.html">Section 2 page</a>.)</p>
 
-<div class="box"><div class="label">Theorem 5.1 (PRGs ⇒ P ≠ NP)</div>
-If a secure PRG exists (against uniform adversaries), then \(\Pclass\ne\NP\). If one exists against nonuniform adversaries, then \(\NP\not\subseteq\Ppoly\).
+<div class="box"><div class="label">Theorem 5.1 (PRGs ⇒ \(\NP\not\subseteq\Ppoly\), so \(\Pclass\ne\NP\))</div>
+If a secure PRG exists, then \(\NP\not\subseteq\Ppoly\). Since \(\Pclass\subseteq\Ppoly\), this also gives \(\Pclass\ne\NP\).
 <br><span class="src">V p.145 &amp; Problem 7.3(2), p.178</span> (stated as an exercise). Proof: <span class="me">Claude</span></div>
-<div class="proof"><span class="label">Proof (an adversary in the game of Figure 2).</span><div class="plan"><p><strong>Approach.</strong> Contrapositive. Assuming \(\Pclass=\NP\), we build one efficient adversary (the image test) that breaks <em>any</em> candidate PRG.</p><p><strong>Assume.</strong> (Contrapositive) \(\Pclass=\NP\); for the circuit version, \(\NP\subseteq\Ppoly\). Let \(G:\bits^n\to\bits^\ell\) with \(\ell\gt n\) be any poly-time candidate PRG.</p><p><strong>Recall.</strong> A PRG is secure iff every efficient adversary has negligible advantage (Section 4.1). \(\NP\) is the class of languages with certificates checkable in polynomial time. \(G\) has at most \(2^n\) outputs.</p><p><strong>WTS:</strong> an efficient adversary \(B\) with non-negligible \(\mathrm{PRGadv}[B,G]\). Then no secure PRG exists, which is the contrapositive of the theorem.</p></div> Let \(G:\bits^n\to\bits^{\ell}\) with \(\ell\gt n\). Let \(L=\{y:\ y=G(s)\text{ for some } s\}\), the set of strings \(G\) can output. \(L\in\NP\): the seed \(s\) is a certificate, checked by computing \(G(s)\). Suppose \(\Pclass=\NP\), and let \(D\) be a poly-time decider for \(L\).
-<p><strong>Adversary \(B(r)\):</strong> output 1 iff \(D(r)\) accepts. In words, “say <em>pseudorandom</em> iff \(r\) is something \(G\) could have produced.”</p>
+<div class="proof"><span class="label">Proof (an adversary in the game of Figure 2).</span><div class="plan"><p><strong>Approach.</strong> Contrapositive. Assuming \(\NP\subseteq\Ppoly\), we build one efficient adversary (the image test) that breaks <em>any</em> candidate PRG.</p><p><strong>Assume.</strong> (Contrapositive) \(\NP\subseteq\Ppoly\). Let \(G:\bits^n\to\bits^\ell\) with \(\ell\gt n\) be any candidate PRG; as a construction, it is computed by a polynomial-time algorithm (Section 2.2).</p><p><strong>Recall.</strong> A PRG is secure iff every efficient adversary has negligible advantage (Section 4.1). \(\NP\) is the class of languages with certificates checkable by a polynomial-time algorithm. \(G\) has at most \(2^n\) outputs.</p><p><strong>WTS:</strong> an efficient adversary \(B\) with non-negligible \(\mathrm{PRGadv}[B,G]\). Then no secure PRG exists, which is the contrapositive of the theorem.</p></div> Let \(L=\{y:\ y=G(s)\text{ for some } s\}\), the set of strings \(G\) can output. \(L\in\NP\): the seed \(s\) is a certificate, checked by running the algorithm for \(G\). (This is where we use that \(G\) is uniform.) Since \(\NP\subseteq\Ppoly\), there is a family of polynomial-size circuits \(D\) deciding \(L\).
+<p><strong>Adversary \(B(r)\):</strong> output 1 iff \(D(r)\) accepts. In words, “say <em>pseudorandom</em> iff \(r\) is something \(G\) could have produced.” \(B\) is a polynomial-size circuit family, so it is an efficient adversary.</p>
 <ul>
 <li><em>Experiment 0</em> (\(r=G(s)\), uniform seed \(s\)): \(r\in L\) always, so \(\Pr[W_0]=1\).</li>
 <li><em>Experiment 1</em> (\(r\) uniform in \(\bits^\ell\)): \(B\) outputs 1 only if \(r\in L\). Since \(G\) has only \(2^n\) seeds, \(\Pr[W_1]\le 2^n/2^\ell\le 1/2\).</li>
 </ul>
-<p><strong>Advantage:</strong> \(\mathrm{PRGadv}[B,G]=\Pr[W_0]-\Pr[W_1]=1-\frac{|\mathrm{Im}(G)|}{2^\ell}\ge 1-2^{n-\ell}\ge\frac12\) for every \(n\), and \(B\) is efficient because \(D\) is.</p><p><strong>Why this is not negligible:</strong> take \(c=1\) in the definition. A negligible function would be \(\lt 1/n\) for all large \(n\), but \(\mathrm{PRGadv}[B,G]\ge 1/2\ge 1/n\) for every \(n\ge 2\). So \(G\) is not secure. The value \(1/2\) is not a threshold in the definition; any non-negligible advantage breaks \(G\), and this one happens to be a constant. Contrapositive: a secure PRG implies \(\Pclass\ne\NP\). Replacing \(D\) by a polynomial-size circuit family deciding \(L\) gives the \(\Ppoly\) version. This is the same image test as Fact 7.1 in Section 7.2; here \(\Pclass=\NP\) makes it efficient instead of a short seed. ∎</p></div>
+<p><strong>Advantage:</strong> \(\mathrm{PRGadv}[B,G]=\Pr[W_0]-\Pr[W_1]=1-\frac{|\mathrm{Im}(G)|}{2^\ell}\ge 1-2^{n-\ell}\ge\frac12\) for every \(n\).</p><p><strong>Why this is not negligible:</strong> take \(c=1\) in the definition. A negligible function would be \(\lt 1/n\) for all large \(n\), but \(\mathrm{PRGadv}[B,G]\ge 1/2\ge 1/n\) for every \(n\ge 2\). So \(G\) is not secure. Contrapositive: a secure PRG implies \(\NP\not\subseteq\Ppoly\), and hence \(\Pclass\ne\NP\). This is the same image test as Fact 7.1 in Section 7.2; here \(\NP\subseteq\Ppoly\) makes it efficient instead of a short seed. ∎</p></div>
 <p>This explains why nobody can prove that PRGs exist outright (or the one-way functions of the Section 2 page): doing so would separate \(\Pclass\) from \(\NP\). Everything in this area is conditional. The best hope is to reduce one assumption to another, and HILL does exactly that <span class="src">V p.145</span>.</p>
 
 <!-- ============================================================ -->
@@ -401,7 +411,7 @@ Then for every efficient adversary \(A\) there is an efficient adversary \(B\) w
 $$\big|\Pr[A(H_0)=1]-\Pr[A(H_k)=1]\big|\ \le\ k\cdot\big|\Pr[B(X)=1]-\Pr[B(Y)=1]\big|.$$
 <span class="src">V proof of Prop. 7.14, p.149</span> <span class="src">BS proof of Thm. 3.2, p.56–59</span> <span class="src">HILL Prop. 4.11, p.1380</span> (one efficient step preserves indistinguishability). The single-lemma packaging is <span class="me">Claude</span>'s.</div>
 
-<div class="proof"><span class="label">Proof.</span><div class="plan"><p><strong>Approach.</strong> Direct: telescoping sum (the triangle inequality along the chain), then take \(B\) to be \(A\) composed with the procedure for the largest step.</p><p><strong>Assume.</strong> \(A\) is an efficient adversary, and the procedures \(T_1,\dots,T_k\) are as in the statement.</p><p><strong>Recall.</strong> Adversaries are polynomial-size circuits, possibly randomized (Section 2.3), so composing two of them, or hard-coding a number, gives another one. We may drop the absolute value by flipping \(A\)'s output (Section 3.1).</p><p><strong>WTS:</strong> an efficient \(B\) whose advantage on \(X\) vs. \(Y\) is at least \(\frac1k\) of \(A\)'s advantage on \(H_0\) vs. \(H_k\).</p></div>
+<div class="proof"><span class="label">Proof.</span><div class="plan"><p><strong>Approach.</strong> Direct: telescoping sum (the triangle inequality along the chain), then take \(B\) to be \(A\) composed with the procedure for the largest step.</p><p><strong>Assume.</strong> \(A\) is an efficient adversary, and the procedures \(T_1,\dots,T_k\) are as in the statement.</p><p><strong>Recall.</strong> Adversaries are polynomial-size circuits, possibly randomized (Section 2.2), so composing two of them, or hard-coding a number, gives another one. We may drop the absolute value by flipping \(A\)'s output (Section 3.1).</p><p><strong>WTS:</strong> an efficient \(B\) whose advantage on \(X\) vs. \(Y\) is at least \(\frac1k\) of \(A\)'s advantage on \(H_0\) vs. \(H_k\).</p></div>
 <p>Let \(p_i=\Pr[A(H_i)=1]\), and assume \(p_0\ge p_k\) (otherwise flip \(A\)'s output). The sum telescopes:
 $$p_0-p_k=\sum_{i=1}^{k}\big(p_{i-1}-p_i\big).$$
 A sum of \(k\) terms is at most \(k\) times its largest term, so some step \(i^*\) has \(p_{i^*-1}-p_{i^*}\ge\frac1k(p_0-p_k)\).</p>
@@ -418,7 +428,7 @@ A sum of \(k\) terms is at most \(k\) times its largest term, so some step \(i^*
 <li>for each step, describe the procedure \(T_i\) that builds \(H_{i-1}\) from a sample of \(X\) and \(H_i\) from a sample of \(Y\);</li>
 <li>apply the lemma, and use the closure facts (Section 2.1) to see that \(k\) times a negligible advantage is still negligible.</li>
 </ol>
-<p><span class="muted">(Aside: Boneh–Shoup prove the same results for uniform adversaries. There the reduction can't hard-code \(i^*\), so it picks \(i\) at random instead, which loses the same factor \(k\) <span class="src">BS p.56–59, p.63</span>. We use circuit adversaries throughout (Section 2.3), so we never need this.)</span></p>
+
 
 <h3>6.3 Application: many copies (parallel composition)</h3>
 <div class="box"><div class="label">Theorem 6.1</div>
@@ -538,8 +548,8 @@ Suppose there is a derandomization PRG \(G_m:\bits^{d(m)}\to\bits^m\) with seed 
 <li>\(\Pr[W_1]=\Pr_{r\text{ uniform}}[A(x;r)\text{ correct}]\ge 2/3\), since \(A\) is a \(\BPP\) machine.</li>
 <li>\(\Pr[W_0]=\Pr_{s}[A(x;G(s))\text{ correct}]\), the fraction of good seeds.</li>
 </ul>
-<p>\(G\) is an \((m,1/8)\) PRG, so \(|\Pr[W_0]-\Pr[W_1]|\le 1/8\). Hence the fraction of good seeds is \(\Pr[W_0]\ge 2/3-1/8=13/24\gt 1/2\). <em>Note:</em> \(x\) is used as nonuniform advice inside \(T\). This is exactly why Definition 7.2 talks about <em>circuits</em> <span class="src">V p.143</span>.</p>
-<p><strong>Deterministic algorithm.</strong> On input \(x\), for every seed \(s\in\bits^{d(m)}\), compute \(G(s)\) and run \(A(x;G(s))\). Output the majority answer. By the claim, the majority is always correct.</p>
+<p>\(G\) is an \((m,1/8)\) PRG, so \(|\Pr[W_0]-\Pr[W_1]|\le 1/8\). Hence the fraction of good seeds is \(\Pr[W_0]\ge 2/3-1/8=13/24\gt 1/2\). <em>Note:</em> \(x\) is hard-coded as advice inside \(T\). This is exactly why adversaries are circuits (Section 2.2) <span class="src">V p.143</span>.</p>
+<p><strong>Deterministic algorithm.</strong> (This is a construction, so it must be one uniform algorithm. It can be, because \(G\) is computable by an algorithm; see Section 2.2.) On input \(x\), for every seed \(s\in\bits^{d(m)}\), compute \(G(s)\) and run \(A(x;G(s))\). Output the majority answer. By the claim, the majority is always correct.</p>
 <p><strong>Running time.</strong></p>
 <ul>
 <li>There are \(2^{d(m)}=2^{O(\log m)}=m^{O(1)}=n^{O(c)}\) seeds, which is polynomial.</li>
