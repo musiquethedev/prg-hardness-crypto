@@ -57,10 +57,14 @@
     function show(i, opts) {
       opts = opts || {};
       if (i < 0 || i >= slides.length) return;
-      slides[current].classList.remove('active');
+      var dir = i > current ? 'enter-next' : (i < current ? 'enter-prev' : '');
+      slides[current].classList.remove('active', 'enter-next', 'enter-prev');
       current = i;
       var s = slides[i];
+      s.classList.remove('enter-next', 'enter-prev');
+      void s.offsetWidth; // restart the animation
       s.classList.add('active');
+      if (dir && !document.body.classList.contains('deck-off')) s.classList.add(dir);
       titleEl.textContent = s.dataset.title;
       countEl.textContent = (i + 1) + ' / ' + slides.length;
       prev.disabled = i === 0;

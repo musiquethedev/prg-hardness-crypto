@@ -4,7 +4,13 @@ body.deck-on main{max-width:none;margin:0;padding:0}
 .deck{position:fixed;inset:0;background:var(--bg)}
 .slide{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;display:none;-webkit-overflow-scrolling:touch}
 .slide.active{display:block}
-.slide-inner{max-width:780px;margin:0 auto;padding:3.2rem 64px 5rem}
+.slide-inner{max-width:780px;margin:0 auto;padding:3.4rem 16px 5rem}
+@media (min-width:641px) and (max-width:920px){.slide-inner{padding-left:64px;padding-right:64px}}
+.slide.enter-next{animation:deckInNext .28s ease-out}
+.slide.enter-prev{animation:deckInPrev .28s ease-out}
+@keyframes deckInNext{from{transform:translateX(48px);opacity:0}to{transform:none;opacity:1}}
+@keyframes deckInPrev{from{transform:translateX(-48px);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.slide.enter-next,.slide.enter-prev{animation:none}}
 .slide-inner > h2:first-child{margin-top:0;border-top:none;padding-top:0}
 
 .deck-nav{position:fixed;top:50%;transform:translateY(-50%);z-index:20;width:44px;height:44px;border-radius:50%;
