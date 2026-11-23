@@ -402,12 +402,13 @@ If \(G:\bits^n\to\bits^{\ell(n)}\) is a secure PRG with \(\ell(n)\ge 2n\), then 
 <div class="box"><div class="label">Theorem 6.2 (PRGs ⇒ P ≠ NP)</div>
 If a secure PRG exists (against uniform adversaries), then \(\Pclass\ne\NP\). If one exists against nonuniform adversaries, then \(\NP\not\subseteq\Ppoly\).
 <br><span class="src">V p.145 &amp; Problem 7.3(2), p.178</span> (stated as an exercise). Proof: <span class="me">Claude</span></div>
-<div class="proof"><span class="label">Proof.</span> Let \(G:\bits^n\to\bits^{\ell}\), \(\ell\gt n\). The language \(L=\{y:\exists s,\ G(s)=y\}\) is in \(\NP\), with witness \(s\) checked by computing \(G(s)\). If \(\Pclass=\NP\), let \(B\) be a poly-time decider for \(L\).
+<div class="proof"><span class="label">Proof (an adversary in the game of Figure 2).</span> Let \(G:\bits^n\to\bits^{\ell}\) with \(\ell\gt n\). Let \(L=\{y:\ y=G(s)\text{ for some } s\}\), the set of strings \(G\) can output. \(L\in\NP\): the seed \(s\) is a certificate, checked by computing \(G(s)\). Suppose \(\Pclass=\NP\), and let \(D\) be a poly-time decider for \(L\).
+<p><strong>Adversary \(B(r)\):</strong> output 1 iff \(D(r)\) accepts. In words, “say <em>pseudorandom</em> iff \(r\) is something \(G\) could have produced.”</p>
 <ul>
-<li>On \(G(U_n)\), \(B\) outputs 1 with probability 1.</li>
-<li>On \(U_\ell\), it outputs 1 with probability \(|\mathrm{Im}\,G|/2^\ell\le 2^{n-\ell}\le 1/2\).</li>
+<li><em>Experiment 0</em> (\(r=G(s)\), uniform seed \(s\)): \(r\in L\) always, so \(\Pr[W_0]=1\).</li>
+<li><em>Experiment 1</em> (\(r\) uniform in \(\bits^\ell\)): \(B\) outputs 1 only if \(r\in L\). Since \(G\) has only \(2^n\) seeds, \(\Pr[W_1]\le 2^n/2^\ell\le 1/2\).</li>
 </ul>
-That's advantage at least \(1/2\), contradicting security. The same argument with a polynomial-size circuit family deciding \(L\) gives the \(\Ppoly\) version. ∎</div>
+<p>So \(\mathrm{PRGadv}[B,G]\ge 1/2\) for every \(n\). \(B\) is efficient because \(D\) is. A function that stays at least \(1/2\) is not negligible (it is never below \(1/n\)), so \(G\) is not secure. The value \(1/2\) is not a threshold in the definition; any non-negligible advantage breaks \(G\), and this one happens to be a constant. Contrapositive: a secure PRG implies \(\Pclass\ne\NP\). Replacing \(D\) by a polynomial-size circuit family deciding \(L\) gives the \(\Ppoly\) version. This is the same image test as the Fact in Section 9.4; here \(\Pclass=\NP\) makes it efficient instead of a short seed. ∎</p></div>
 <p>This explains why nobody can prove that PRGs or OWFs exist outright: doing so would separate \(\Pclass\) from \(\NP\). Everything in this area is conditional. The best hope is to reduce one assumption to another, and HILL does exactly that <span class="src">V p.145</span>.</p>
 
 <!-- ============================================================ -->
