@@ -109,7 +109,7 @@ svg.diag .b-derand{fill:var(--dr-bg);stroke:var(--dr);stroke-width:2}
 </ol></div>
 
 <h3>What this page proves</h3>
-<p>Section 1 showed that a cryptographic PRG secure against circuits gives \(\BPP\subseteq\SUBEXP\) (S1 Theorem 8.6). It left open where cryptographic PRGs come from. This page introduces <strong>one-way functions</strong>, the precise version of the lecture's “hard functions”, and proves that they give PRGs. This is the HILL theorem:</p>
+<p>Section 1 showed that a cryptographic PRG secure against circuits gives \(\BPP\subseteq\SUBEXP\) (S1 Theorem 7.6). It left open where cryptographic PRGs come from. This page introduces <strong>one-way functions</strong>, the precise version of the lecture's “hard functions”, and proves that they give PRGs. This is the HILL theorem:</p>
 <div class="box"><div class="label">Theorem (HILL)</div>
 One-way functions exist if and only if pseudorandom generators exist.
 <span class="src">HILL Thm. 6.3, p.1385</span> <span class="src">V Thm. 7.11, p.146</span></div>
@@ -120,7 +120,7 @@ One-way functions exist if and only if pseudorandom generators exist.
 <li>Prediction games have success probability \(\frac12+\varepsilon\), and \(\varepsilon\) is the prediction advantage.</li>
 <li>Every proof computes the advantage explicitly and then argues why it is or isn't negligible.</li>
 </ul>
-<p><strong>Which adversaries?</strong> Every reduction on this page works for both uniform PPT adversaries and circuit adversaries. If the adversary we start from is a circuit, the adversary we build is a circuit too. So “secure against circuits” in gives “secure against circuits” out, which is what S1 Theorem 8.6 needs <span class="me">Claude</span>.</p>
+<p><strong>Which adversaries?</strong> As on the Section 1 page (S1 §2.3), an efficient adversary is a family of polynomial-size circuits, possibly randomized. Every reduction on this page builds a circuit from a circuit. So “secure against circuits” in gives “secure against circuits” out, which is what S1 Theorem 7.6 needs.</p>
 
 <!-- ============================================================ -->
 <h2 id="t1">1. One-way functions</h2>
@@ -215,7 +215,7 @@ $$\Pr_{x\leftarrow\bits^n}\big[P(f(x))=b(x)\big]\le \tfrac12+\varepsilon(n)\quad
 \(\varepsilon\) is \(P\)'s prediction advantage.
 <span class="src">Pandey p.6-1</span> <span class="src">HILL Def. 3.10 (“hidden bit”), p.1374</span></div>
 
-<p>As with next-bit unpredictability (S1 §7), this prediction game is equivalent to a two-experiment game, with exactly the same advantage:</p>
+<p>This is our first <strong>prediction game</strong> (S1 §2.4): one experiment, and the adversary guesses a bit. It is equivalent to a two-experiment game, with exactly the same advantage, so after this lemma we can work in the familiar two-experiment form:</p>
 
 <div class="box"><div class="label">Lemma 3.2 (predicting ⇔ distinguishing)</div>
 Let \(X\) be uniform on \(\bits^n\), and let \(\beta\) be a uniform bit independent of \(X\). Compare
@@ -226,14 +226,22 @@ $$\text{Experiment 0: }(f(X),\,b(X))\qquad\text{vs.}\qquad\text{Experiment 1: }(
 </ul>
 So \(b\) is hardcore for \(f\) iff the two experiments are computationally indistinguishable.
 <span class="src">BS Lemma 3.5, p.66</span> (part b) <span class="src">BS Thm. 3.4, p.64</span> (same argument as part a) <span class="src">HILL Prop. 4.3, p.1376</span></div>
-<div class="proof"><span class="label">Proof.</span><div class="plan"><p><strong>Approach.</strong> Two direct security reductions, one for each direction.</p><p><strong>Assume.</strong> (a) A predictor \(P\) with success probability \(\frac12+\varepsilon\). (b) A distinguisher \(D\) with \(\Pr[W_0]-\Pr[W_1]=\varepsilon\).</p><p><strong>Recall.</strong> \(\beta\) is independent of \(f(X)\). The distinguisher/predictor lemma <span class=\"src\">BS Lemma 3.5</span>.</p><p><strong>WTS:</strong> (a) a distinguisher with advantage exactly \(\varepsilon\); (b) a predictor with success probability exactly \(\frac12+\varepsilon\).</p></div>
+<div class="proof"><span class="label">Proof.</span><div class="plan"><p><strong>Approach.</strong> Two direct security reductions, one for each direction.</p><p><strong>Assume.</strong> (a) A predictor \(P\) with success probability \(\frac12+\varepsilon\). (b) A distinguisher \(D\) with \(\Pr[W_0]-\Pr[W_1]=\varepsilon\).</p><p><strong>Recall.</strong> \(\beta\) (and the predictor's coin \(c\)) is a uniform bit independent of \(X\). Conditioning on an event that is independent of \((V,B)\) doesn't change the distribution of \((V,B)\).</p><p><strong>WTS:</strong> (a) a distinguisher with advantage exactly \(\varepsilon\); (b) a predictor with success probability exactly \(\frac12+\varepsilon\).</p></div>
 <p><strong>(a)</strong> Given predictor \(P\), let \(D(y,c)=1\) iff \(P(y)=c\).</p>
 <ul>
 <li>Experiment 0: \(\Pr[W_0]=\Pr[P(f(X))=b(X)]=\frac12+\varepsilon\).</li>
 <li>Experiment 1: \(\beta\) is independent of \(P\)'s input, so \(\Pr[W_1]=\Pr[P(f(X))=\beta]=\frac12\).</li>
 </ul>
 <p><strong>Advantage:</strong> \(\Pr[W_0]-\Pr[W_1]=\varepsilon\).</p>
-<p><strong>(b)</strong> Given distinguisher \(D\), let \(P(y)\): pick a random bit \(c\); if \(D(y,c)=1\) output \(c\), otherwise output \(1-c\). This is the distinguisher/predictor lemma <span class="src">BS Lemma 3.5, p.66</span>, used in the proof of S1 Theorem 7.1(b), with side information \(f(X)\), hidden bit \(b(X)\), and random bit \(c\). It gives success probability exactly \(\frac12+\varepsilon\) (full calculation in BS). ∎</p></div>
+<p><strong>(b)</strong> Given distinguisher \(D\), define the predictor \(P(y)\): pick a uniform bit \(c\); if \(D(y,c)=1\) output \(c\), otherwise output \(1-c\). (“If \(D\) says the pair looks real, trust \(c\); otherwise flip it.”) This is the distinguisher/predictor lemma <span class="src">BS Lemma 3.5, p.66</span>. Write \(V=f(X)\) and \(B=b(X)\). Let
+$$\alpha=\Pr[D(V,B)=1]\quad(\text{Experiment 0}),\qquad \beta'=\Pr[D(V,1-B)=1]\quad(\text{the wrong bit}).$$</p>
+<ul>
+<li><em>Experiment 1 in terms of \(\alpha,\beta'\).</em> In Experiment 1 the bit is a uniform \(c\) independent of \((V,B)\). It equals \(B\) half the time and \(1-B\) half the time, so \(\Pr[W_1]=\frac12\alpha+\frac12\beta'\). Hence
+$$\varepsilon=\Pr[W_0]-\Pr[W_1]=\alpha-\tfrac12(\alpha+\beta')=\tfrac12(\alpha-\beta').$$</li>
+<li><em>\(P\)'s success.</em> Condition on whether \(c=B\); each case has probability \(\frac12\), and conditioning doesn't change the distribution of \((V,B)\) because \(c\) is independent of it. If \(c=B\), \(P\) is right iff \(D(V,B)=1\), which has probability \(\alpha\). If \(c=1-B\), \(P\) outputs \(1-c=B\), so it is right iff \(D(V,1-B)=0\), which has probability \(1-\beta'\). So
+$$\Pr[P(V)=B]=\tfrac12\alpha+\tfrac12(1-\beta')=\tfrac12+\tfrac12(\alpha-\beta')=\tfrac12+\varepsilon.$$</li>
+</ul>
+<p><strong>Advantage:</strong> \(P\)'s prediction advantage is exactly \(\varepsilon\). \(P\) is efficient: it runs \(D\) once, plus one coin flip. ∎</p></div>
 
 <!-- ============================================================ -->
 <h2 id="t4">4. The Goldreich–Levin theorem</h2>
@@ -447,7 +455,7 @@ If \(f\) is a one-to-one one-way function, then \(G\) of Construction 7.1 is a P
 <li>On \(k\) copies of \(E\), \(B\) outputs 1 with probability \(q_{\text{mid}}\).</li>
 </ul>
 <p>So \(B\) distinguishes \(D^k\) from \(E^k\) with advantage \(|q_0-q_{\text{mid}}|\). By the multiple-samples hybrid argument (S1 Theorem 6.1, Figure 4), there is an efficient \(B'\) distinguishing a <em>single</em> \(D\) from \(E\) with
-\(|q_0-q_{\text{mid}}|\le k\cdot\mathrm{Distadv}[B',D,E]\). (For uniform adversaries this needs \(D\) and \(E\) to be efficiently samplable <span class="src">HILL Prop. 4.12, p.1380</span> <span class="src">V p.149</span>. They are: sample \(x,r,\beta\) and compute \(f\).)</p>
+\(|q_0-q_{\text{mid}}|\le k\cdot\mathrm{Distadv}[B',D,E]\). (Theorem 6.1 asks for \(D\) and \(E\) to be efficiently samplable <span class="src">HILL Prop. 4.12, p.1380</span>. They are: sample \(x,r,\beta\) and compute \(f\).)</p>
 
 <p><strong>Advantage:</strong>
 $$\mathrm{PRGadv}[A,G]\ \le\ 4n\cdot\mathrm{Distadv}[B',D,E]\ +\ 2^{-(n+1)}.$$</p>
@@ -475,14 +483,14 @@ $$\mathrm{PRGadv}[A,G]\ \le\ 4n\cdot\mathrm{Distadv}[B',D,E]\ +\ 2^{-(n+1)}.$$</
 
 <div class="box"><div class="label">Corollary 8.2</div>
 If a one-to-one one-way function secure against polynomial-size circuits exists, then \(\BPP\subseteq\SUBEXP\).</div>
-<div class="proof"><span class="label">Proof.</span><div class="plan"><p><strong>Approach.</strong> Direct: check that every reduction keeps circuit adversaries as circuits, then chain the theorems.</p><p><strong>Assume.</strong> \(f\) is a one-to-one one-way function secure against polynomial-size circuits.</p><p><strong>Recall.</strong> Theorem 7.2, and S1 Theorem 8.6.</p><p><strong>WTS:</strong> \(\BPP\subseteq\SUBEXP\).</p></div> Every reduction on this page turns a circuit adversary into a circuit adversary:
+<div class="proof"><span class="label">Proof.</span><div class="plan"><p><strong>Approach.</strong> Direct: check that every reduction keeps circuit adversaries as circuits, then chain the theorems.</p><p><strong>Assume.</strong> \(f\) is a one-to-one one-way function secure against polynomial-size circuits.</p><p><strong>Recall.</strong> Theorem 7.2, and S1 Theorem 7.6.</p><p><strong>WTS:</strong> \(\BPP\subseteq\SUBEXP\).</p></div> Every reduction on this page turns a circuit adversary into a circuit adversary:
 <ul>
 <li>the Goldreich–Levin inverter (§4.6);</li>
-<li>the hybrid over copies (S1 Theorem 6.1, nonuniform version);</li>
+<li>the hybrid over copies (S1 Theorem 6.1);</li>
 <li>the hashing step, which is statistical.</li>
 </ul>
-So Theorem 7.2 gives a PRG secure against polynomial-size circuits, and S1 Theorem 8.6 finishes. ∎</div>
-<p>This completes the cryptographic route of S1 §8.7: one-to-one one-way function ⇒ cryptographic PRG ⇒ derandomization PRG ⇒ \(\BPP\subseteq\SUBEXP\).</p>
+So Theorem 7.2 gives a PRG secure against polynomial-size circuits, and S1 Theorem 7.6 finishes. ∎</div>
+<p>This completes the cryptographic route of S1 §7.7: one-to-one one-way function ⇒ cryptographic PRG ⇒ derandomization PRG ⇒ \(\BPP\subseteq\SUBEXP\).</p>
 
 <!-- ============================================================ -->
 <h2 id="t9">9. Beyond one-to-one (stated, not proved)</h2>
