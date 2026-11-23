@@ -147,6 +147,7 @@ If \(\varepsilon,\varepsilon'\) are negligible and \(p\) is polynomially bounded
 <h3>Adversaries and their Computational Models</h3>
 <p>In lecture, we just talk about poly-time TMs. However, we're actually going to expand that definition a little bit: our adversaries will instead be (potentially nonuniform) polynomial-sized circuit families, corresponding to the class \(\Ppoly\).</p>
 <p>By fooling these nonuniform machines, we'll actually be proving a stronger result than if we fooled \(\Pclass\)-time machines or \(\BPP\)-time machines or something similar. However, there's a really good reason we want to make this change: pretty much all of our proofs will be by contrapositive, meaning the extra power afforded by nonuniformity will be a huge boon to making our proofs cleaner and more natural.</p>
+<p>If we go the other route, we consider adversaries that have poly-time TM powers. This may come up briefly in later proofs; I'll refer to this as the “uniform” route (corresponding to uniform \(\Ppoly=\Pclass\)).</p>
 
 
 <!-- ============================================================ -->
@@ -181,9 +182,7 @@ $$\sum_{r:\,P_0(r)\gt P_1(r)}\big(P_0(r)-P_1(r)\big) \;=\; \tfrac12\sum_{r\in R}
 $$\Delta(P_0,P_1) := \tfrac12\sum_{r\in R}|P_0(r)-P_1(r)| \;=\; \max_{R'\subseteq R}\big|P_0[R']-P_1[R']\big|.$$
 By the argument above, this is exactly <strong>the best advantage any adversary, efficient or not, can achieve</strong> in the distinguishing game.</div>
 
-<p>As a lemma, we can see that applying any (reasonable) function \(f\) to the sample can't increase \(\Delta\), since any adversary could just compute \(f\) themselves too. This gives us the following lemma:</p>
-<div class="box"><div class="label">Lemma (applying a function can't increase \(\Delta\))</div>
-$$\Delta(f(X),f(Y))\le\Delta(X,Y).$$</div>
+
 
 <h3>Seeds and Secrets</h3>
 <p>So far, we've been considering the challenger as simply drawing \(x\) from probability distributions \(P_0\) and \(P_1\). How does this relate to the PRGs the lecture mentioned, which use the log-sized random bits as a seed? How does this relate to cryptographic algorithms that use shared secrets?</p>
@@ -254,7 +253,7 @@ For every adversary \(A\), \(\mathrm{Distadv}[A,P_0,P_1]\le\Delta(P_0,P_1)\). So
 <line x1="250" y1="150" x2="172" y2="150" class="ln" marker-end="url(#ah3)"/>
 <text x="211" y="168" text-anchor="middle">output</text>
 </svg>
-<p class="caption">Figure 1. A reduction. \(B\) attacks primitive \(P\) by running \(A\) (which attacks construction \(C\)) on a game built from \(P\)'s challenge \(z\). If \(b=0\) makes \(A\) see the real \(C\)-game and \(b=1\) makes it see an “easy” game, then \(B\)'s advantage equals the difference between the two.</p>
+<p class="caption">Figure 1. A reduction. \(B\) attacks primitive \(P\) by running \(A\) (which attacks construction \(C\)) on a challenge built from \(P\)'s challenge \(z\). As long as what \(A\) sees in each of \(B\)'s experiments is a correctly distributed \(C\)-challenge, \(B\)'s advantage can be computed from \(A\)'s.</p>
 
 <p>Here is the general template for a security reduction:</p>
 <ol>
@@ -267,7 +266,7 @@ For every adversary \(A\), \(\mathrm{Distadv}[A,P_0,P_1]\le\Delta(P_0,P_1)\). So
 
 <h3>Example: PRGs exist ⟹ \(\Pclass\ne\NP\)</h3>
 <p>While this proof won't exactly use another adversary as a subroutine, and so doesn't exactly follow the steps outlined above, the general structure is the same.</p>
-<p>Additionally, I know that when defining our terms, we said that adversaries are poly-bounded circuits. For this proof, pretend they also could be poly-time TMs (as in lecture). That allows us to achieve the much more auraful result of \(\NP\subsetneq\Pclass\) rather than the mundane \(\NP\not\subseteq\Ppoly\).</p>
+<p>Additionally, I know that when defining our terms, we said that adversaries are poly-bounded circuits. For this proof, pretend they also could be poly-time TMs (as in lecture). That allows us to achieve the much more auraful result of \(\Pclass\subsetneq\NP\) rather than the mundane \(\NP\not\subseteq\Ppoly\).</p>
 
 <div class="box"><div class="label">Theorem 5.1 (PRGs ⇒ \(\Pclass\ne\NP\))</div>
 If a PRG exists that is secure against poly-time adversaries, then \(\Pclass\ne\NP\).</div>
@@ -275,7 +274,7 @@ If a PRG exists that is secure against poly-time adversaries, then \(\Pclass\ne\
 <p><strong>Adversary \(B(r)\):</strong> output 1 iff \(D(r)\) accepts. In words, “say <em>pseudorandom</em> iff \(r\) is something \(G\) could have produced.” \(B\) is a poly-time TM, so it is an efficient adversary.</p>
 <ul>
 <li><em>Experiment 0</em> (\(r=G(s)\), uniform seed \(s\)): \(r\in L\) always, so \(\Pr[W_0]=1\).</li>
-<li><em>Experiment 1</em> (\(r\) uniform in \(\bits^\ell\)): \(B\) outputs 1 only if \(r\in L\), which only occurs if \(r\) happens to appear in \(G\)'s postimage by chance. Since \(G\) has only \(2^n\) seeds, \(\Pr[W_1]\le 2^n/2^\ell\le 1/2\).</li>
+<li><em>Experiment 1</em> (\(r\) uniform in \(\bits^\ell\)): \(B\) outputs 1 only if \(r\in L\), which only occurs if \(r\) happens to appear in \(G\)'s image by chance. Since \(G\) has only \(2^n\) seeds, \(\Pr[W_1]\le 2^n/2^\ell\le 1/2\).</li>
 </ul>
 <p><strong>Advantage:</strong> \(\mathrm{PRGadv}[B,G]=\Pr[W_0]-\Pr[W_1]=1-\frac{|\mathrm{Im}(G)|}{2^\ell}\ge 1-2^{n-\ell}\ge\frac12\) for every \(n\), which is clearly non-negligible with respect to \(n\). ∎</p></div>
 
@@ -457,7 +456,7 @@ Suppose there is a derandomization PRG \(G_m:\bits^{d(m)}\to\bits^m\) with seed 
 
 <h3>Why did I explain it this way.</h3>
 <p>At this point you, the reader, might be shaking and crying in anguish, agony, despair, etc. Why did I go through all the work of defining cryptographic PRGs if this theorem doesn't even use them?</p>
-<p>First off, we can adapt this proof to use cryptographic PRGs; if we do, the result will be showing \(\NP\subseteq\SUBEXP\), which is the intersection of all \(O(2^{n^\varepsilon})\)-time solvable problems.</p>
+<p>First off, we can adapt this proof to use cryptographic PRGs; if we do, the result will be showing \(\BPP\subseteq\SUBEXP\), which is the intersection of all \(O(2^{n^\varepsilon})\)-time solvable problems.</p>
 <p>Secondly, cryptographic PRGs are the tool used for all the theorems left in the course. Stay tuned!</p>
 
 </main>
