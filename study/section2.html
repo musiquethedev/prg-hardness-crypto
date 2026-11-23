@@ -471,8 +471,9 @@ If \(f\) is a one-to-one one-way function, then \(G\) of Construction 7.1 is a P
 <li>On \(k\) copies of \(D\), \(B\) outputs 1 with probability \(q_0\).</li>
 <li>On \(k\) copies of \(E\), \(B\) outputs 1 with probability \(q_{\text{mid}}\).</li>
 </ul>
-<p>So \(B\) distinguishes \(D^k\) from \(E^k\) with advantage \(|q_0-q_{\text{mid}}|\). The hash costs \(B\) nothing: \(h\) is public and efficient to compute, so \(B\) can apply it itself. That is why a distinguisher for the <em>hashed</em> copies gives one for the <em>raw</em> copies with the same advantage <span class="me">Claude</span>. By the multiple-samples hybrid argument (S1 Theorem 6.1, Figure 4), there is an efficient \(B'\) distinguishing a <em>single</em> \(D\) from \(E\) with
-\(|q_0-q_{\text{mid}}|\le k\cdot\mathrm{Distadv}[B',D,E]\). (Swap the copies from \(D\) to \(E\) one at a time: \((D,\dots,D),(E,D,\dots,D),\dots,(E,\dots,E)\). Some step carries at least \(\frac1k\) of \(B\)'s advantage. \(B'\) puts its single sample in that position, samples the other copies itself, and runs \(B\) <span class="me">Claude</span>.) (Theorem 6.1 asks for \(D\) and \(E\) to be efficiently samplable <span class="src">HILL Prop. 4.12, p.1380</span>. They are: sample \(x,r,\beta\) and compute \(f\).)</p>
+<p><em>Move 1: strip off the hash.</em> So \(B\) distinguishes \(D^k\) from \(E^k\) with advantage \(|q_0-q_{\text{mid}}|\). The hash costs \(B\) nothing: \(h\) is public and efficient to compute, so \(B\) can apply it itself. That is why a distinguisher for the <em>hashed</em> copies gives one for the <em>raw</em> copies with the same advantage <span class="me">Claude</span>.</p>
+<p><em>Move 2: from \(k\) copies down to one.</em> Distinguishing \(D^k\) from \(E^k\) is exactly the setting of the multiple-copies theorem (S1 Theorem 6.1), which is proved with the Hybrid Lemma. Applied with \(X=D\) and \(Y=E\), it turns \(B\) into an efficient \(B'\) that distinguishes a <em>single</em> \(D\) from \(E\), losing a factor of \(k\):
+\(|q_0-q_{\text{mid}}|\le k\cdot\mathrm{Distadv}[B',D,E]\). The theorem asks for \(D\) and \(E\) to be efficiently samplable <span class="src">HILL Prop. 4.12, p.1380</span>. They are: sample \(x,r,\beta\) and compute \(f\).</p>
 
 <p><strong>Advantage:</strong>
 $$\mathrm{PRGadv}[A,G]\ \le\ 4n\cdot\mathrm{Distadv}[B',D,E]\ +\ 2^{-(n+1)}.$$</p>
