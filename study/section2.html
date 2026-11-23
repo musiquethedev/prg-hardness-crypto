@@ -532,6 +532,18 @@ So Theorem 7.2 gives a PRG secure against polynomial-size circuits, and S1 Theor
 <p>A 9-page treatment of the general case, for circuit adversaries, is in <span class="src">Scribe §2–3</span>. HILL themselves call §6 “the most technically challenging” part of the paper <span class="src">HILL p.1367</span>.</p>
 <p><strong>A note on uniformity.</strong> HILL prove their theorem for <em>uniform</em> adversaries, which makes the proof harder: Scribe says the uniform case needs a uniform version of Impagliazzo's hardcore lemma <span class="src">Scribe, p.1</span>. The general construction is also only “mildly nonuniform”, because it needs a short advice string (the guessed preimage count). HILL §4.8 removes that advice so the PRG is a genuine uniform algorithm, as our convention requires of constructions <span class="src">HILL §4.8, Prop. 4.17, p.1381</span>.</p>
 
+<h3>Next steps: tools for the full theorem</h3>
+<p>Proving HILL for <em>every</em> one-way function, not just one-to-one ones, needs a few tools beyond these pages. At a high level <span class="me">Claude</span> (summary of the sources cited):</p>
+<ol>
+<li><strong>A finer way to measure randomness.</strong> For a general \(f\), \(f(X)\) isn't uniform on its image, so “uniform on \(2^K\) strings” no longer describes it. HILL measure randomness with Shannon entropy and related notions <span class="src">HILL §2–3, Defs. 3.7–3.9, p.1373–1374</span>.</li>
+<li><strong>Concentration over many copies.</strong> The leftover hash lemma needs a collision-probability bound. Over many independent copies, Shannon entropy turns into such a bound, which is why the general construction uses far more copies than our \(k=4n\) <span class="src">HILL Prop. 4.9 &amp; Cor. 4.10, p.1379</span>.</li>
+<li><strong>Recovering lost randomness.</strong> When outputs have many preimages, append a hash of \(x\) to restore the missing bits. This needs the number of preimages, which a general \(f\) doesn't reveal, so the construction guesses it <span class="src">HILL §5–6, p.1383–1385</span>.</li>
+<li><strong>A chain of weaker generators.</strong> The guess only yields a false-entropy generator. More copies and hashing upgrade it to a pseudoentropy generator, and then to a PRG; our §7 is the last link of this chain, in the one-to-one case <span class="src">HILL §4.6–4.7, Def. 3.9</span>.</li>
+<li><strong>Removing the guess.</strong> The guessed preimage count is advice. HILL remove it so the PRG is one uniform algorithm <span class="src">HILL §4.8, Prop. 4.17, p.1381</span>.</li>
+<li><strong>Only for uniform adversaries:</strong> a uniform version of Impagliazzo's hardcore lemma <span class="src">Scribe, p.1</span>. Under our convention that adversaries are circuits, this isn't needed.</li>
+</ol>
+<p>A complete treatment for circuit adversaries, about 9 pages, is in <span class="src">Scribe §2–3</span>.</p>
+
 <p class="muted" style="margin-top:3rem;font-size:.9rem">Self-check questions, written by Claude (not from a source):
 (1) In Goldreich–Levin, why does querying \(P\) at \(e_i\) directly fail, and how does guessing \(\langle x,s_j\rangle\) fix the 3/4 barrier?
 (2) Where exactly does the proof use only <em>pairwise</em> independence, and why is that enough?
