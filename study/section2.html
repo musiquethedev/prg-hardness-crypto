@@ -342,7 +342,13 @@ Let \(f\) be a one-way <strong>permutation</strong> (a bijection on \(\bits^n\))
 <li>\(f(X)\) is uniform, so it already looks random;</li>
 <li>\(f(x)\) determines \(x\), so no randomness is lost.</li>
 </ol>
-<p>For a one-to-one but length-increasing \(f\), fact 2 still holds but fact 1 fails. HILL's example: if \(f(x)=(0,f'(x))\) for a one-way permutation \(f'\), then \(f\) is a one-to-one one-way function. But \(G\)'s output always starts with 0, and an adversary that checks the first bit has advantage \(1/2\) <span class="src">HILL p.1377</span>. Sections 6–7 repair fact 1 by hashing.</p>
+<p><strong>Counterexample: the same construction fails for a one-to-one \(f\).</strong> <span class="src">HILL p.1377</span> For a one-to-one but length-increasing \(f\), fact 2 still holds but fact 1 fails. HILL's example: let \(f'\) be a one-way permutation on \(n\) bits, and let \(f(x)=(0,f'(x))\). This \(f\) is one-to-one and one-way, but <em>not</em> a permutation, because its outputs have \(n+1\) bits and always start with 0. Apply Theorem 5.1's construction to this \(f\):</p>
+<ul>
+<li>\(G(x,r)=(f(x),r,\langle x,r\rangle)=(0,\,f'(x),\,r,\,\langle x,r\rangle)\), so every output of \(G\) starts with 0.</li>
+<li>Adversary \(A\): output 1 iff the first bit is 0. Then \(\Pr[W_0]=1\) and \(\Pr[W_1]=\frac12\).</li>
+<li><strong>Advantage:</strong> \(\mathrm{PRGadv}[A,G]=1-\frac12=\frac12\). This is not negligible (it's \(\ge 1/n\) for all \(n\ge2\)), so this \(G\) is not a PRG.</li>
+</ul>
+<p>The proof of Theorem 5.1 broke at the key observation: \(f(X)\) is no longer uniform. Sections 6–7 repair that by hashing.</p>
 
 <!-- ============================================================ -->
 <h2 id="t6">6. Tools: collision probability, hashing, and the leftover hash lemma</h2>
