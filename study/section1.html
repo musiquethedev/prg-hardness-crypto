@@ -68,12 +68,14 @@ svg.diag .c-chg{stroke:var(--me-fg);stroke-width:3}
 .derand-banner{border:1px solid var(--dr);background:var(--dr-bg);border-radius:6px;padding:.7rem 1rem;margin:1rem 0;font-family:system-ui,sans-serif;font-size:.92rem;line-height:1.5}
 svg.diag .b-derand{fill:var(--dr-bg);stroke:var(--dr);stroke-width:2}
 </style>
+<link rel="stylesheet" href="slides.css">
+<script src="slides.js" defer></script>
 </head>
 <body>
 <main>
 
 <p class="muted" style="font-family:system-ui,sans-serif;font-size:.85rem;margin:0"><a href="../index.html">← site home</a></p>
-<h1>Section 1 study notes: one-way functions, PRGs, and derandomization</h1>
+<h1>Section 1 study notes: PRGs and derandomization</h1>
 
 <div class="banner">
 <strong>AI-generated study material, not part of the project submission.</strong> Claude (an AI assistant) wrote this page to summarize the sources below for my own learning. Under the course rules, the explanatory text on the real site must be my own writing, so I will rewrite everything here in my own words before submitting, and this page will be removed.
@@ -157,7 +159,7 @@ If \(\varepsilon,\varepsilon'\) are negligible and \(p\) is polynomially bounded
 <p><strong>The negation.</strong> “Not negligible” means: there is a constant \(c\) with \(\varepsilon(n)\ge 1/n^c\) for <em>infinitely many</em> \(n\). It does not have to hold for all \(n\) <span class="src">BS p.63</span>. When we say an adversary “breaks” a scheme, we mean its advantage is not negligible.</p>
 
 <h3>2.2 The security parameter</h3>
-<p>On this site the security parameter \(n\) is simply <strong>the length of the secret input</strong>, the part the adversary never sees. For a one-way function it's \(|x|\); for a PRG it's the seed length <span class="src">HILL §3.1, p.1371</span>. When a construction also has <em>public</em> random inputs, \(n\) counts only the secret part. For example, in Goldreich–Levin (Section 2 of the site) the string \(r\) is public <span class="src">HILL p.1371</span>.</p>
+<p>On this site the security parameter \(n\) is simply <strong>the length of the secret input</strong>, the part the adversary never sees. For a PRG it's the seed length (and for the one-way functions of the Section 2 page, it will be the input length \(|x|\)) <span class="src">HILL §3.1, p.1371</span>. When a construction also has <em>public</em> random inputs, \(n\) counts only the secret part. For example, in Goldreich–Levin (Section 2 of the site) the string \(r\) is public <span class="src">HILL p.1371</span>.</p>
 <p>Why the exact choice doesn't matter: if two candidate parameters are polynomially related (say \(n\) and \(n^2\)), then a function is negligible in one exactly when it is negligible in the other <span class="me">Claude</span>.</p>
 
 <h3>2.3 Who are the adversaries? Uniform vs. nonuniform</h3>
@@ -377,7 +379,7 @@ If a secure PRG exists (against uniform adversaries), then \(\Pclass\ne\NP\). If
 <li><em>Experiment 1</em> (\(r\) uniform in \(\bits^\ell\)): \(B\) outputs 1 only if \(r\in L\). Since \(G\) has only \(2^n\) seeds, \(\Pr[W_1]\le 2^n/2^\ell\le 1/2\).</li>
 </ul>
 <p><strong>Advantage:</strong> \(\mathrm{PRGadv}[B,G]=\Pr[W_0]-\Pr[W_1]=1-\frac{|\mathrm{Im}(G)|}{2^\ell}\ge 1-2^{n-\ell}\ge\frac12\) for every \(n\), and \(B\) is efficient because \(D\) is.</p><p><strong>Why this is not negligible:</strong> take \(c=1\) in the definition. A negligible function would be \(\lt 1/n\) for all large \(n\), but \(\mathrm{PRGadv}[B,G]\ge 1/2\ge 1/n\) for every \(n\ge 2\). So \(G\) is not secure. The value \(1/2\) is not a threshold in the definition; any non-negligible advantage breaks \(G\), and this one happens to be a constant. Contrapositive: a secure PRG implies \(\Pclass\ne\NP\). Replacing \(D\) by a polynomial-size circuit family deciding \(L\) gives the \(\Ppoly\) version. This is the same image test as the Fact in Section 8.4; here \(\Pclass=\NP\) makes it efficient instead of a short seed. ∎</p></div>
-<p>This explains why nobody can prove that PRGs or OWFs exist outright: doing so would separate \(\Pclass\) from \(\NP\). Everything in this area is conditional. The best hope is to reduce one assumption to another, and HILL does exactly that <span class="src">V p.145</span>.</p>
+<p>This explains why nobody can prove that PRGs exist outright (or the one-way functions of the Section 2 page): doing so would separate \(\Pclass\) from \(\NP\). Everything in this area is conditional. The best hope is to reduce one assumption to another, and HILL does exactly that <span class="src">V p.145</span>.</p>
 
 <!-- ============================================================ -->
 <h2 id="s6">6. Proof strategy 2: the hybrid argument</h2>
@@ -581,7 +583,7 @@ If there is a cryptographic PRG secure against polynomial-size circuits, then \(
 <h3>8.7 Summary and what comes next</h3>
 <table>
 <tr><th>Route</th><th>Assumption (“hardness”)</th><th>PRG obtained</th><th>Conclusion</th></tr>
-<tr><td>Cryptographic (Section 2 of the site + Theorem 8.6)</td><td>a one-way function secure against circuits</td><td>cryptographic PRG, so seed \(m^\varepsilon\)</td><td>\(\BPP\subseteq\SUBEXP\)</td></tr>
+<tr><td>Cryptographic (Section 2 of the site + Theorem 8.6)</td><td>a one-way function secure against circuits (defined on the Section 2 page)</td><td>cryptographic PRG, so seed \(m^\varepsilon\)</td><td>\(\BPP\subseteq\SUBEXP\)</td></tr>
 <tr><td>Nisan–Wigderson (Theorem 8.4, stated only)</td><td>a function in \(\mathsf E\) needing circuits of size \(2^{\Omega(\ell)}\)</td><td>derandomization PRG with seed \(O(\log m)\)</td><td>\(\BPP=\Pclass\) (Theorem 8.3)</td></tr>
 </table>
 <p><a href="section2.html">Section 2 of the site</a> proves the first link of the cryptographic route: from a one-way function to a cryptographic PRG (HILL), in full for one-to-one one-way functions.</p>

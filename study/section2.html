@@ -68,6 +68,8 @@ svg.diag .c-chg{stroke:var(--me-fg);stroke-width:3}
 .derand-banner{border:1px solid var(--dr);background:var(--dr-bg);border-radius:6px;padding:.7rem 1rem;margin:1rem 0;font-family:system-ui,sans-serif;font-size:.92rem;line-height:1.5}
 svg.diag .b-derand{fill:var(--dr-bg);stroke:var(--dr);stroke-width:2}
 </style>
+<link rel="stylesheet" href="slides.css">
+<script src="slides.js" defer></script>
 </head>
 <body>
 <main>
@@ -105,7 +107,7 @@ svg.diag .b-derand{fill:var(--dr-bg);stroke:var(--dr);stroke-width:2}
 </ol></div>
 
 <h3>What this page proves</h3>
-<p>Section 1 ended with the chain one-way function ⇒ cryptographic PRG ⇒ derandomization PRG ⇒ \(\BPP\subseteq\SUBEXP\) (S1 §8.7). The Section 1 page proved the last two links. This page proves the first one, which is the HILL theorem:</p>
+<p>Section 1 showed that a cryptographic PRG secure against circuits gives \(\BPP\subseteq\SUBEXP\) (S1 Theorem 8.6). It left open where cryptographic PRGs come from. This page introduces <strong>one-way functions</strong>, the precise version of the lecture's “hard functions”, and proves that they give PRGs. This is the HILL theorem:</p>
 <div class="box"><div class="label">Theorem (HILL)</div>
 One-way functions exist if and only if pseudorandom generators exist.
 <span class="src">HILL Thm. 6.3, p.1385</span> <span class="src">V Thm. 7.11, p.146</span></div>
