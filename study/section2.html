@@ -466,25 +466,13 @@ If \(f\) is a one-to-one one-way function, then \(G\) of Construction 7.1 is a P
 <p><strong>Second term (statistical).</strong> \(Z=(E_1,\dots,E_k)\) has \(\mathrm{Col}(Z)=\mathrm{Col}(E)^k=2^{-k(2n+1)}\). Apply the leftover hash lemma with \(K=k(2n+1)\) and \(j=K-2e\):
 \(\Delta(Q_{\text{mid}},Q_1)\le 2^{-(e+1)}=2^{-(n+1)}\). By S1's statistical ⇒ computational theorem (§3.3), \(|q_{\text{mid}}-q_1|\le 2^{-(n+1)}\).</p>
 
-<p><strong>First term (computational).</strong> Goldreich–Levin only talks about <em>one</em> \(D\) vs. <em>one</em> \(E\), but \(A\) sees <em>many</em> copies, <em>hashed</em>. We close that gap in two moves, reading backwards from \(A\) <span class="me">Claude</span>:</p>
-<p style="text-align:center">\(A\) on hashed \(D^k\) vs. hashed \(E^k\) \(\ \xrightarrow{\text{move 1: strip the hash}}\ \) \(B\) on raw \(D^k\) vs. \(E^k\) \(\ \xrightarrow{\text{move 2: hybrid over copies}}\ \) \(B'\) on one \(D\) vs. one \(E\).</p>
-<p><em>Move 1: the hash is something anyone can apply.</em> \(h\) is public and efficient, so hashing can't make the two cases harder to tell apart. Build \(B(z_1,\dots,z_k)\): sample a random \(h\) itself, and output \(A(h,h(z_1,\dots,z_k))\).</p>
+<p><strong>First term (computational).</strong> Build \(B(z_1,\dots,z_k)\): sample a random \(h\) itself, and output \(A(h,h(z_1,\dots,z_k))\).</p>
 <ul>
-<li>On \(k\) copies of \(D\), \(A\) sees exactly \(Q_0\), so \(B\) outputs 1 with probability \(q_0\).</li>
-<li>On \(k\) copies of \(E\), \(A\) sees exactly \(Q_{\text{mid}}\), so \(B\) outputs 1 with probability \(q_{\text{mid}}\).</li>
+<li>On \(k\) copies of \(D\), \(B\) outputs 1 with probability \(q_0\).</li>
+<li>On \(k\) copies of \(E\), \(B\) outputs 1 with probability \(q_{\text{mid}}\).</li>
 </ul>
-<p>So \(B\) distinguishes raw \(D^k\) from \(E^k\) with advantage exactly \(|q_0-q_{\text{mid}}|\).</p>
-<p><em>Move 2: from \(k\) copies down to one</em> (the multiple-samples hybrid argument, S1 Theorem 6.1 and Figure 4). Swap the copies from \(D\) to \(E\) one at a time. For \(k=3\):</p>
-<table>
-<tr><th>\(H_0\)</th><th>\(H_1\)</th><th>\(H_2\)</th><th>\(H_3\)</th></tr>
-<tr><td>\((D,D,D)\)</td><td>\((E,D,D)\)</td><td>\((E,E,D)\)</td><td>\((E,E,E)\)</td></tr>
-</table>
-<ul>
-<li>\(B\)'s advantage is the \(H_0\)-vs-\(H_k\) gap, a sum of \(k\) step gaps. So some step \(i^*\) carries at least \(\frac1k\) of it (the Hybrid Lemma's telescoping).</li>
-<li>\(B'\) gets <em>one</em> sample \(z\). It puts \(z\) in position \(i^*\), fills the earlier positions with fresh \(E\)'s and the later ones with fresh \(D\)'s, and runs \(B\). If \(z\sim D\), \(B\) sees \(H_{i^*-1}\); if \(z\sim E\), it sees \(H_{i^*}\). So \(B'\)'s advantage is that step's gap.</li>
-<li>\(B'\) can make its own copies because \(D\) and \(E\) are <strong>efficiently samplable</strong> without any secret: sample \(x,r\) (and \(\beta\)) and compute \(f\) <span class="src">HILL Prop. 4.12, p.1380</span>.</li>
-</ul>
-<p>Together: \(|q_0-q_{\text{mid}}|\ =\ \text{adv of }B\ \le\ k\cdot\mathrm{Distadv}[B',D,E]\).</p>
+<p>So \(B\) distinguishes \(D^k\) from \(E^k\) with advantage \(|q_0-q_{\text{mid}}|\). The hash costs \(B\) nothing: \(h\) is public and efficient to compute, so \(B\) can apply it itself. That is why a distinguisher for the <em>hashed</em> copies gives one for the <em>raw</em> copies with the same advantage <span class="me">Claude</span>. By the multiple-samples hybrid argument (S1 Theorem 6.1, Figure 4), there is an efficient \(B'\) distinguishing a <em>single</em> \(D\) from \(E\) with
+\(|q_0-q_{\text{mid}}|\le k\cdot\mathrm{Distadv}[B',D,E]\). (Swap the copies from \(D\) to \(E\) one at a time: \((D,\dots,D),(E,D,\dots,D),\dots,(E,\dots,E)\). Some step carries at least \(\frac1k\) of \(B\)'s advantage. \(B'\) puts its single sample in that position, samples the other copies itself, and runs \(B\) <span class="me">Claude</span>.) (Theorem 6.1 asks for \(D\) and \(E\) to be efficiently samplable <span class="src">HILL Prop. 4.12, p.1380</span>. They are: sample \(x,r,\beta\) and compute \(f\).)</p>
 
 <p><strong>Advantage:</strong>
 $$\mathrm{PRGadv}[A,G]\ \le\ 4n\cdot\mathrm{Distadv}[B',D,E]\ +\ 2^{-(n+1)}.$$</p>
