@@ -605,7 +605,7 @@ If there is a cryptographic PRG secure against polynomial-size circuits, then \(
 <table>
 <tr><th>Route</th><th>Assumption (“hardness”)</th><th>PRG obtained</th><th>Conclusion</th></tr>
 <tr><td>Cryptographic (Section 2 of the site + Theorem 7.6)</td><td>a one-way function secure against circuits (defined on the Section 2 page)</td><td>cryptographic PRG, so seed \(m^\varepsilon\)</td><td>\(\BPP\subseteq\SUBEXP\)</td></tr>
-<tr><td>Nisan–Wigderson (Theorem 7.4, stated only)</td><td>a function in \(\mathsf E\) needing circuits of size \(2^{\Omega(\ell)}\)</td><td>derandomization PRG with seed \(O(\log m)\)</td><td>\(\BPP=\Pclass\) (Theorem 7.3)</td></tr>
+<tr><td>Nisan–Wigderson (stated only)</td><td>a function in \(\mathsf E\) needing circuits of size \(2^{\Omega(\ell)}\)</td><td>derandomization PRG with seed \(O(\log m)\)</td><td>\(\BPP=\Pclass\) (Theorem 7.3)</td></tr>
 </table>
 <p><a href="section2.html">Section 2 of the site</a> proves the first link of the cryptographic route: from a one-way function to a cryptographic PRG (HILL), in full for one-to-one one-way functions.</p>
 

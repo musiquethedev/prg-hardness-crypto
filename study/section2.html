@@ -351,14 +351,14 @@ $$\Pr_x\big[f(I(f(x)))=f(x)\big]\ \ge\ \frac\varepsilon2\cdot\frac12=\frac{\vare
 <div class="box"><div class="label">Theorem 5.1</div>
 Let \(f\) be a one-way <strong>permutation</strong> (a bijection on \(\bits^n\)). Then \(G(x,r)=(f(x),\,r,\,\langle x,r\rangle)\), from \(2n\) bits to \(2n+1\) bits, is a PRG.
 <span class="src">HILL Prop. 4.4, p.1376</span> <span class="src">Barak Thm. 1</span> <span class="src">V p.147</span></div>
-<div class="proof"><span class="label">Proof.</span><div class="plan"><p><strong>Approach.</strong> Direct: show the PRG game is literally the two-experiment Goldreich–Levin game, then apply Lemma 3.2 and Theorem 4.1.</p><p><strong>Assume.</strong> \(f\) is a one-way permutation, and \(A\) is any efficient adversary.</p><p><strong>Recall.</strong> Theorem 4.1 (Goldreich–Levin). Lemma 3.2(b). A bijection maps a uniform input to a uniform output.</p><p><strong>WTS:</strong> \(\mathrm{PRGadv}[A,G]\) is negligible for every efficient \(A\).</p></div> Let \(A\) be any efficient adversary in the PRG game (S1 Figure 2).
+<div class="proof"><span class="label">Proof.</span><div class="plan"><p><strong>Approach.</strong> Direct: show the PRG game is literally the two-experiment Goldreich–Levin game, then apply Lemma 3.2 and Goldreich–Levin.</p><p><strong>Assume.</strong> \(f\) is a one-way permutation, and \(A\) is any efficient adversary.</p><p><strong>Recall.</strong> Goldreich–Levin. Lemma 3.2(b). A bijection maps a uniform input to a uniform output.</p><p><strong>WTS:</strong> \(\mathrm{PRGadv}[A,G]\) is negligible for every efficient \(A\).</p></div> Let \(A\) be any efficient adversary in the PRG game (S1 Figure 2).
 <ul>
 <li>Experiment 0 gives \(A\) the string \(G(X,R)=(f(X),R,\langle X,R\rangle)\).</li>
 <li>Experiment 1 gives \(A\) a uniform \((2n+1)\)-bit string. <strong>Key observation:</strong> since \(f\) is a bijection, \(f(X)\) is uniform on \(\bits^n\). So \((f(X),R,\beta)\) is <em>exactly</em> uniform on \(\bits^{2n+1}\), and Experiment 1 can equivalently give \(A\) the string \((f(X),R,\beta)\).</li>
 </ul>
 <p>So \(\mathrm{PRGadv}[A,G]=\Pr[A(f(X),R,\langle X,R\rangle)=1]-\Pr[A(f(X),R,\beta)=1]\). This is precisely \(A\)'s advantage in the two-experiment form of Goldreich–Levin.</p>
 <p><strong>Advantage:</strong> by Lemma 3.2(b), \(A\) gives a predictor for \(\langle x,r\rangle\) with prediction advantage exactly \(\mathrm{PRGadv}[A,G]\).</p>
-<p><strong>Why this is negligible:</strong> by Theorem 4.1, every efficient predictor's prediction advantage is negligible. So \(\mathrm{PRGadv}[A,G]\) is negligible for every efficient \(A\). ∎</p></div>
+<p><strong>Why this is negligible:</strong> by Goldreich–Levin, every efficient predictor's prediction advantage is negligible. So \(\mathrm{PRGadv}[A,G]\) is negligible for every efficient \(A\). ∎</p></div>
 <p>Then S1 Theorem 6.2 stretches \(G\) from 1 extra bit to any polynomial number. (If RSA is a one-way permutation, as is widely believed, this gives a concrete PRG <span class="src">BS §10.3</span>.)</p>
 
 <p><strong>Why the proof needs a permutation.</strong> It used two facts <span class="src">HILL p.1377</span>:</p>
@@ -425,7 +425,7 @@ $$\Delta\le\tfrac12\cdot 2^j\cdot 2^{-(K+j)/2}=\tfrac12\cdot2^{-(K-j)/2}=\tfrac1
 $$D=(f(X),\,R,\,\langle X,R\rangle)\qquad\text{and}\qquad E=(f(X),\,R,\,\beta),$$
 <p>both on \(\bits^{\ell+n+1}\). Three facts:</p>
 <ol>
-<li><strong>\(D\) and \(E\) are computationally indistinguishable.</strong> This is the two-experiment form of Theorem 4.1.</li>
+<li><strong>\(D\) and \(E\) are computationally indistinguishable.</strong> This is the two-experiment form of Goldreich–Levin.</li>
 <li><strong>\(E\) has \(2n+1\) bits of randomness.</strong> \(f\) is one-to-one, so the triple \((f(x),r,\beta)\) determines \((x,r,\beta)\). So \(E\) is uniform on a set of exactly \(2^{2n+1}\) strings, and \(\mathrm{Col}(E)=2^{-(2n+1)}\).</li>
 <li><strong>\(D\) has only \(2n\) bits of randomness.</strong> It's a function of the \(2n\) input bits.</li>
 </ol>
@@ -454,7 +454,7 @@ $$G(x_1,r_1,\dots,x_k,r_k,\,h)=\Big(h,\ h\big(g(x_1,r_1),\dots,g(x_k,r_k)\big)\B
 If \(f\) is a one-to-one one-way function, then \(G\) of Construction 7.1 is a PRG (with stretch \(2n\)).
 <span class="src">HILL Prop. 4.5 + Thm. 4.14, p.1377–1380</span></div>
 
-<div class="proof"><span class="label">Proof.</span><div class="plan"><p><strong>Approach.</strong> Hybrid through one intermediate distribution: one computational step (a reduction to Goldreich–Levin over \(k\) copies) and one statistical step (the leftover hash lemma).</p><p><strong>Assume.</strong> \(f\) is a one-to-one one-way function, and \(A\) is any efficient adversary against \(G\).</p><p><strong>Recall.</strong> Theorem 4.1 (two-experiment form). S1 Theorem 6.1 (\(k\) copies). Lemma 6.3. Statistical ⇒ computational (S1 §3.3). The closure facts. \(\mathrm{Col}(E)=2^{-(2n+1)}\) (§7.1).</p><p><strong>WTS:</strong> \(\mathrm{PRGadv}[A,G]\) is negligible for every efficient \(A\). (Stretch was checked in Construction 7.1.)</p></div> Let \(A\) be any efficient adversary. Let \(D_1,\dots,D_k\) be independent copies of \(D\), and \(E_1,\dots,E_k\) independent copies of \(E\). Consider three distributions on the output space \(\bits^{p+j}\):
+<div class="proof"><span class="label">Proof.</span><div class="plan"><p><strong>Approach.</strong> Hybrid through one intermediate distribution: one computational step (a reduction to Goldreich–Levin over \(k\) copies) and one statistical step (the leftover hash lemma).</p><p><strong>Assume.</strong> \(f\) is a one-to-one one-way function, and \(A\) is any efficient adversary against \(G\).</p><p><strong>Recall.</strong> Goldreich–Levin (two-experiment form). S1 Theorem 6.1 (\(k\) copies). The leftover hash lemma. Statistical ⇒ computational (S1 §3.3). The closure facts. \(\mathrm{Col}(E)=2^{-(2n+1)}\) (§7.1).</p><p><strong>WTS:</strong> \(\mathrm{PRGadv}[A,G]\) is negligible for every efficient \(A\). (Stretch was checked in Construction 7.1.)</p></div> Let \(A\) be any efficient adversary. Let \(D_1,\dots,D_k\) be independent copies of \(D\), and \(E_1,\dots,E_k\) independent copies of \(E\). Consider three distributions on the output space \(\bits^{p+j}\):
 <table>
 <tr><th></th><th>distribution</th><th>what it is</th></tr>
 <tr><td>\(Q_0\)</td><td>\((h,\ h(D_1,\dots,D_k))\)</td><td>\(G\) on a uniform seed (Experiment 0)</td></tr>
@@ -463,7 +463,7 @@ If \(f\) is a one-to-one one-way function, then \(G\) of Construction 7.1 is a P
 </table>
 <p>Write \(q_\bullet=\Pr[A(Q_\bullet)=1]\). Then \(\mathrm{PRGadv}[A,G]=|q_0-q_1|\le|q_0-q_{\text{mid}}|+|q_{\text{mid}}-q_1|\).</p>
 
-<p><strong>Second term (statistical).</strong> \(Z=(E_1,\dots,E_k)\) has \(\mathrm{Col}(Z)=\mathrm{Col}(E)^k=2^{-k(2n+1)}\). Apply Lemma 6.3 with \(K=k(2n+1)\) and \(j=K-2e\):
+<p><strong>Second term (statistical).</strong> \(Z=(E_1,\dots,E_k)\) has \(\mathrm{Col}(Z)=\mathrm{Col}(E)^k=2^{-k(2n+1)}\). Apply the leftover hash lemma with \(K=k(2n+1)\) and \(j=K-2e\):
 \(\Delta(Q_{\text{mid}},Q_1)\le 2^{-(e+1)}=2^{-(n+1)}\). By S1's statistical ⇒ computational theorem (§3.3), \(|q_{\text{mid}}-q_1|\le 2^{-(n+1)}\).</p>
 
 <p><strong>First term (computational).</strong> Build \(B(z_1,\dots,z_k)\): sample a random \(h\) itself, and output \(A(h,h(z_1,\dots,z_k))\).</p>
@@ -478,7 +478,7 @@ If \(f\) is a one-to-one one-way function, then \(G\) of Construction 7.1 is a P
 $$\mathrm{PRGadv}[A,G]\ \le\ 4n\cdot\mathrm{Distadv}[B',D,E]\ +\ 2^{-(n+1)}.$$</p>
 <p><strong>Why this is negligible:</strong></p>
 <ul>
-<li>\(\mathrm{Distadv}[B',D,E]\) is negligible in \(n\) by Theorem 4.1 (two-experiment form).</li>
+<li>\(\mathrm{Distadv}[B',D,E]\) is negligible in \(n\) by Goldreich–Levin (two-experiment form).</li>
 <li>\(4n\) times a negligible function is negligible (closure, S1 §2.1).</li>
 <li>\(2^{-(n+1)}\) is negligible.</li>
 <li>A sum of two negligible functions is negligible <span class="src">BS Fact 2.6</span>.</li>
