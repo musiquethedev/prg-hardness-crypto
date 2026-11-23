@@ -67,6 +67,8 @@ svg.diag .c-chg{stroke:var(--me-fg);stroke-width:3}
 .box.derand > .label{color:var(--dr)}
 .derand-banner{border:1px solid var(--dr);background:var(--dr-bg);border-radius:6px;padding:.7rem 1rem;margin:1rem 0;font-family:system-ui,sans-serif;font-size:.92rem;line-height:1.5}
 svg.diag .b-derand{fill:var(--dr-bg);stroke:var(--dr);stroke-width:2}
+.plan{background:var(--card);border-radius:4px;padding:.45rem .8rem;margin:.4rem 0 .8rem;font-size:.95rem}
+.plan p{margin:.25rem 0}
 </style>
 <link rel="stylesheet" href="slides.css">
 <script src="slides.js" defer></script>
@@ -152,7 +154,7 @@ One-way functions exist if and only if pseudorandom generators exist.
 <div class="box"><div class="label">Theorem 2.1 (PRG ⇒ OWF)</div>
 If \(G:\bits^n\to\bits^{\ell(n)}\) is a secure PRG with \(\ell(n)\ge 2n\), then \(G\) is a one-way function. (Any PRG can first be stretched to \(\ell\ge 2n\) using S1 Theorem 6.2.)
 <br>Idea: <span class="src">MIT p.16-4</span> (one-sentence argument). HILL credit this direction to Levin '87 <span class="src">HILL Thm. 6.3, p.1385</span>. Written-out proof: <span class="me">Claude</span></div>
-<div class="proof"><span class="label">Proof.</span> Contrapositive. Suppose an efficient \(A\) inverts \(G\) with non-negligible probability
+<div class="proof"><span class="label">Proof.</span><div class="plan"><p><strong>Approach.</strong> Contrapositive, via a security reduction that turns an inverter into a distinguisher.</p><p><strong>Assume.</strong> (Contrapositive) \(G\) is <em>not</em> one-way: some efficient \(A\) inverts it with non-negligible probability \(p(n)\). Also \(\ell(n)\ge 2n\).</p><p><strong>Recall.</strong> The PRG game and definition (S1 §4.1). \(G\) has at most \(2^n\) outputs. “Not negligible” means: for some \(c\), at least \(1/n^c\) for infinitely many \(n\).</p><p><strong>WTS:</strong> an efficient \(B\) with non-negligible \(\mathrm{PRGadv}[B,G]\), i.e. \(G\) is not a secure PRG.</p></div> Contrapositive. Suppose an efficient \(A\) inverts \(G\) with non-negligible probability
 \(p(n)=\Pr_{s}[G(A(G(s)))=G(s)]\). Define the distinguisher \(B(y)\): compute \(s'=A(y)\), and output 1 iff \(G(s')=y\). \(B\) is efficient because \(A\) and \(G\) are.
 <ul>
 <li><em>Experiment 0</em> (\(y=G(s)\)): \(B\) outputs 1 exactly when \(A\) inverts successfully, so \(\Pr[W_0]=p(n)\).</li>
@@ -184,7 +186,7 @@ $$\text{Experiment 0: }(f(X),\,b(X))\qquad\text{vs.}\qquad\text{Experiment 1: }(
 </ul>
 So \(b\) is hardcore for \(f\) iff the two experiments are computationally indistinguishable.
 <span class="src">BS Lemma 3.5, p.66</span> (part b) <span class="src">BS Thm. 3.4, p.64</span> (same argument as part a) <span class="src">HILL Prop. 4.3, p.1376</span></div>
-<div class="proof"><span class="label">Proof.</span>
+<div class="proof"><span class="label">Proof.</span><div class="plan"><p><strong>Approach.</strong> Two direct security reductions, one for each direction.</p><p><strong>Assume.</strong> (a) A predictor \(P\) with success probability \(\frac12+\varepsilon\). (b) A distinguisher \(D\) with \(\Pr[W_0]-\Pr[W_1]=\varepsilon\).</p><p><strong>Recall.</strong> \(\beta\) is independent of \(f(X)\). The distinguisher/predictor lemma <span class=\"src\">BS Lemma 3.5</span>.</p><p><strong>WTS:</strong> (a) a distinguisher with advantage exactly \(\varepsilon\); (b) a predictor with success probability exactly \(\frac12+\varepsilon\).</p></div>
 <p><strong>(a)</strong> Given predictor \(P\), let \(D(y,c)=1\) iff \(P(y)=c\).</p>
 <ul>
 <li>Experiment 0: \(\Pr[W_0]=\Pr[P(f(X))=b(X)]=\frac12+\varepsilon\).</li>
@@ -213,6 +215,7 @@ $$\Pr_{x,r}\big[P(f(x),r)=\langle x,r\rangle\big]\le\tfrac12+\mathrm{negl}(n).$$
 </ul>
 
 <h3>4.1 Proof overview</h3>
+<div class="plan"><p><strong>Approach.</strong> Contrapositive, via a security reduction: from a good predictor for \(\langle x,r\rangle\) we build an inverter for \(f\), in four steps (Claims 4.2–4.4).</p><p><strong>Assume.</strong> (Contrapositive) Some efficient \(P\) has \(\Pr_{x,r}[P(f(x),r)=\langle x,r\rangle]=\frac12+\varepsilon(n)\), with \(\varepsilon\) not negligible: \(\varepsilon(n)\ge1/n^c\) for some constant \(c\) and infinitely many \(n\).</p><p><strong>Recall.</strong> The definition of a one-way function (§1). Linearity of \(\langle\cdot,\cdot\rangle\). Pairwise independence and Chebyshev (from the course). What “not negligible” means.</p><p><strong>WTS:</strong> an efficient inverter \(I\) with \(\Pr_x[f(I(f(x)))=f(x)]\) not negligible. This contradicts \(f\) being one-way.</p></div>
 <p>Contrapositive. Suppose an efficient \(P\) has
 $$\Pr_{x,r}[P(f(x),r)=\langle x,r\rangle]=\tfrac12+\varepsilon(n)$$
 with \(\varepsilon\) not negligible. So there is a constant \(c\) with \(\varepsilon(n)\ge 1/n^c\) for infinitely many \(n\). We build an efficient inverter \(I\) for \(f\) that succeeds with non-negligible probability. \(I\) hard-codes \(c\) and uses \(\varepsilon:=1/n^c\) as its estimate. The analysis below is for the infinitely many \(n\) where \(P\)'s advantage really is at least \(1/n^c\).</p>
@@ -221,7 +224,7 @@ with \(\varepsilon\) not negligible. So there is a constant \(c\) with \(\vareps
 <h3>4.2 Step 1: many \(x\)'s are good</h3>
 <p>For each \(x\), let \(s_x=\Pr_r[P(f(x),r)=\langle x,r\rangle]\), \(P\)'s success rate on that particular \(x\). Call \(x\) <em>good</em> if \(s_x\ge\frac12+\frac\varepsilon2\).</p>
 <div class="box"><div class="label">Claim 4.2</div>\(\Pr_x[x\text{ good}]\ge\varepsilon/2\). <span class="src">Pandey eq. (3), p.6-4</span></div>
-<div class="proof"><span class="label">Proof.</span> Let \(q=\Pr_x[x\text{ good}]\). A good \(x\) has \(s_x\le 1\). A bad \(x\) has \(s_x\lt\frac12+\frac\varepsilon2\). So
+<div class="proof"><span class="label">Proof.</span><div class="plan"><p><strong>Approach.</strong> Direct averaging argument.</p><p><strong>Assume.</strong> \(P\)'s overall success is \(\frac12+\varepsilon\), and each \(s_x\le1\).</p><p><strong>Recall.</strong> Overall success is the average of the per-\(x\) success rates: \(\mathbb{E}_x[s_x]=\frac12+\varepsilon\).</p><p><strong>WTS:</strong> \(q=\Pr_x[x\text{ good}]\ge\varepsilon/2\).</p></div> Let \(q=\Pr_x[x\text{ good}]\). A good \(x\) has \(s_x\le 1\). A bad \(x\) has \(s_x\lt\frac12+\frac\varepsilon2\). So
 \(\frac12+\varepsilon=\mathbb{E}_x[s_x]\le q\cdot1+(1-q)(\frac12+\frac\varepsilon2)\le q+\frac12+\frac\varepsilon2\).
 Hence \(q\ge\varepsilon/2\). ∎</div>
 <p>From now on, fix a good \(x\) and write \(y=f(x)\). The inverter is given \(y\) and doesn't know \(x\); the analysis is what knows \(x\).</p>
@@ -253,12 +256,12 @@ Parameters: \(t=\lceil\log_2(2n/\varepsilon^2+1)\rceil\), and \(m=2^t-1\ge 2n/\v
 <div class="box"><div class="label">Claim 4.3 (pairwise independence)</div>
 Each \(r_T\) is uniform on \(\bits^n\), and for \(T\ne T'\), \(r_T\) and \(r_{T'}\) are independent. The same holds for the shifted points \(r_T\oplus e_i\).
 <span class="src">Pandey §2.3, p.6-3</span> <span class="src">Barak</span></div>
-<div class="proof"><span class="label">Proof.</span> <span class="me">Claude</span> Since \(T\ne T'\), some \(j\) is in exactly one of them; say \(j\in T'\setminus T\) (the other case is symmetric). Condition on every \(s_{j'}\) with \(j'\ne j\). Then \(r_T\) is fixed, while \(r_{T'}=s_j\oplus(\text{fixed})\) is uniform. So given any value of \(r_T\), \(r_{T'}\) is uniform: they are independent, and \(r_{T'}\) is uniform. Uniformity of each single \(r_T\) is the same argument with any \(j\in T\). XOR-ing every point with the fixed string \(e_i\) preserves all of this. ∎</div>
+<div class="proof"><span class="label">Proof.</span><div class="plan"><p><strong>Approach.</strong> Direct: condition on all but one of the seeds.</p><p><strong>Assume.</strong> \(s_1,\dots,s_t\) are independent and uniform, and \(T\ne T'\) are nonempty subsets.</p><p><strong>Recall.</strong> The definition of pairwise independence. XOR-ing an independent uniform string onto any string gives a uniform string.</p><p><strong>WTS:</strong> each \(r_T\) is uniform, and \(r_T,r_{T'}\) are independent for \(T\ne T'\); the same holds after XOR-ing with \(e_i\).</p></div> <span class="me">Claude</span> Since \(T\ne T'\), some \(j\) is in exactly one of them; say \(j\in T'\setminus T\) (the other case is symmetric). Condition on every \(s_{j'}\) with \(j'\ne j\). Then \(r_T\) is fixed, while \(r_{T'}=s_j\oplus(\text{fixed})\) is uniform. So given any value of \(r_T\), \(r_{T'}\) is uniform: they are independent, and \(r_{T'}\) is uniform. Uniformity of each single \(r_T\) is the same argument with any \(j\in T\). XOR-ing every point with the fixed string \(e_i\) preserves all of this. ∎</div>
 
 <div class="box"><div class="label">Claim 4.4</div>
 Fix a good \(x\) and consider the iteration with the <strong>correct guess</strong> \(b_j=\langle x,s_j\rangle\) for all \(j\). With probability at least \(\frac12\) over the choice of \(s_1,\dots,s_t\), that iteration produces \(z=x\).
 <span class="src">Pandey eq. (4), p.6-5</span></div>
-<div class="proof"><span class="label">Proof.</span>
+<div class="proof"><span class="label">Proof.</span><div class="plan"><p><strong>Approach.</strong> Direct: view the votes as pairwise-independent indicator variables, then use Chebyshev and a union bound.</p><p><strong>Assume.</strong> \(x\) is good (\(s_x\ge\frac12+\frac\varepsilon2\)), the guess is correct (\(b_j=\langle x,s_j\rangle\)), and \(m\ge 2n/\varepsilon^2\).</p><p><strong>Recall.</strong> Linearity of \(\langle\cdot,\cdot\rangle\) and \(\langle x,e_i\rangle=x_i\). Claim 4.3. Chebyshev's inequality, and the fact that variances of pairwise-independent variables add (each indicator has variance \(\le\frac14\)).</p><p><strong>WTS:</strong> \(\Pr[z\ne x]\le\frac12\) over the choice of \(s_1,\dots,s_t\).</p></div>
 <p>With the correct guess, linearity gives \(b_T=\langle x,r_T\rangle\) for every \(T\). Also \(\langle x,r_T\oplus e_i\rangle=\langle x,r_T\rangle\oplus x_i\). So the vote \(b_T\oplus P(y,r_T\oplus e_i)\) equals \(x_i\) exactly when \(P\) answers correctly on the point \(r_T\oplus e_i\).</p>
 <p>Fix \(i\). Let \(Z_T=1\) if \(P\) is correct on \(r_T\oplus e_i\), and \(Z=\sum_T Z_T\). By Claim 4.3 each point is uniform, so \(\mathbb{E}[Z_T]=s_x\ge\frac12+\frac\varepsilon2\) and \(\mathbb{E}[Z]\ge m(\frac12+\frac\varepsilon2)\). (If \(P\) is randomized, give it fresh coins on every call; nothing changes.) The \(Z_T\) are pairwise independent, so variances add: \(\mathrm{Var}[Z]\le m/4\).</p>
 <p>The majority is wrong only if \(Z\le m/2\), which forces \(Z\le\mathbb{E}[Z]-m\varepsilon/2\). By Chebyshev,
@@ -284,7 +287,7 @@ $$\Pr_x\big[f(I(f(x)))=f(x)\big]\ \ge\ \frac\varepsilon2\cdot\frac12=\frac{\vare
 <div class="box"><div class="label">Theorem 5.1</div>
 Let \(f\) be a one-way <strong>permutation</strong> (a bijection on \(\bits^n\)). Then \(G(x,r)=(f(x),\,r,\,\langle x,r\rangle)\), from \(2n\) bits to \(2n+1\) bits, is a PRG.
 <span class="src">HILL Prop. 4.4, p.1376</span> <span class="src">Barak Thm. 1</span> <span class="src">V p.147</span></div>
-<div class="proof"><span class="label">Proof.</span> Let \(A\) be any efficient adversary in the PRG game (S1 Figure 2).
+<div class="proof"><span class="label">Proof.</span><div class="plan"><p><strong>Approach.</strong> Direct: show the PRG game is literally the two-experiment Goldreich–Levin game, then apply Lemma 3.2 and Theorem 4.1.</p><p><strong>Assume.</strong> \(f\) is a one-way permutation, and \(A\) is any efficient adversary.</p><p><strong>Recall.</strong> Theorem 4.1 (Goldreich–Levin). Lemma 3.2(b). A bijection maps a uniform input to a uniform output.</p><p><strong>WTS:</strong> \(\mathrm{PRGadv}[A,G]\) is negligible for every efficient \(A\).</p></div> Let \(A\) be any efficient adversary in the PRG game (S1 Figure 2).
 <ul>
 <li>Experiment 0 gives \(A\) the string \(G(X,R)=(f(X),R,\langle X,R\rangle)\).</li>
 <li>Experiment 1 gives \(A\) a uniform \((2n+1)\)-bit string. <strong>Key observation:</strong> since \(f\) is a bijection, \(f(X)\) is uniform on \(\bits^n\). So \((f(X),R,\beta)\) is <em>exactly</em> uniform on \(\bits^{2n+1}\), and Experiment 1 can equivalently give \(A\) the string \((f(X),R,\beta)\).</li>
@@ -319,7 +322,7 @@ For a random variable \(Z\) and an independent copy \(Z'\), the <strong>collisio
 A family \(\mathcal H\) of functions \(\bits^N\to\bits^j\) is <strong>pairwise independent</strong> if, for a random \(h\in\mathcal H\) and every pair \(z\ne z'\), the pair \((h(z),h(z'))\) is uniform on \(\bits^{2j}\).
 <span class="src">HILL Def. 4.6, p.1377</span></div>
 <p><strong>Construction</strong> <span class="src">HILL Def. 4.7, p.1378</span>: \(h_{M,v}(z)=Mz\oplus v\), where \(M\) is a uniform \(j\times N\) matrix over GF(2) and \(v\) is a uniform vector in \(\bits^j\). Describing \(h\) takes \(p=jN+j\) bits. (HILL append a 1 to \(z\) instead of adding \(v\); it's the same thing.)</p>
-<div class="proof"><span class="label">Why it is pairwise independent.</span> <span class="me">Claude</span> Fix \(z\ne z'\). Then \(h(z)\oplus h(z')=M(z\oplus z')\). Since \(z\oplus z'\ne0\), some coordinate \(k\) of \(z\oplus z'\) is 1. Then \(M(z\oplus z')\) equals column \(k\) of \(M\) XOR-ed with the other columns used, so it is uniform. It is also independent of \(v\). And \(h(z)=Mz\oplus v\) is uniform given \(M\), because of \(v\). So \((h(z),\,h(z)\oplus h(z'))\) is uniform on \(\bits^{2j}\), and therefore so is \((h(z),h(z'))\). ∎</div>
+<div class="proof"><span class="label">Why it is pairwise independent.</span><div class="plan"><p><strong>Approach.</strong> Direct computation.</p><p><strong>Assume.</strong> \(M\) is a uniform \(j\times N\) matrix and \(v\) a uniform vector, chosen independently, and \(z\ne z'\).</p><p><strong>Recall.</strong> XOR-ing a uniform string onto an independent string gives a uniform string. A nonzero coordinate of \(z\oplus z'\) picks out a uniform column of \(M\).</p><p><strong>WTS:</strong> \((h(z),h(z'))\) is uniform on \(\bits^{2j}\).</p></div> <span class="me">Claude</span> Fix \(z\ne z'\). Then \(h(z)\oplus h(z')=M(z\oplus z')\). Since \(z\oplus z'\ne0\), some coordinate \(k\) of \(z\oplus z'\) is 1. Then \(M(z\oplus z')\) equals column \(k\) of \(M\) XOR-ed with the other columns used, so it is uniform. It is also independent of \(v\). And \(h(z)=Mz\oplus v\) is uniform given \(M\), because of \(v\). So \((h(z),\,h(z)\oplus h(z'))\) is uniform on \(\bits^{2j}\), and therefore so is \((h(z),h(z'))\). ∎</div>
 <p>In our constructions, \(h\) is chosen at random as part of the seed and output in the clear. It's a public input, like \(r\) in Goldreich–Levin <span class="src">HILL p.1377–1378</span>.</p>
 
 <h3>6.3 The leftover hash lemma</h3>
@@ -329,7 +332,7 @@ $$\Delta\big((h,\,h(Z)),\ (h,\,U_j)\big)\ \le\ 2^{-(e+1)}.$$
 <span class="src">HILL Lemma 4.8, p.1378</span> (with proof) <span class="src">V Thm. 6.18, p.118</span> <span class="src">Wichs Thm. 1</span></div>
 <p>In words: hashing \(K\) bits of randomness down to \(K-2e\) bits gives an output that is nearly uniform, even to an all-powerful adversary that also sees \(h\). Shaving off \(2e\) bits buys error \(2^{-(e+1)}\).</p>
 
-<div class="proof"><span class="label">Proof.</span> Following <span class="src">HILL p.1378–1379</span>, with steps expanded.
+<div class="proof"><span class="label">Proof.</span><div class="plan"><p><strong>Approach.</strong> Direct: write \(\Delta\) as an average over \(h\), bound each term's second moment using pairwise independence (where the collision probability appears), then return to first moments.</p><p><strong>Assume.</strong> \(\mathrm{Col}(Z)\le2^{-K}\), and \(h\) is uniform from a pairwise-independent family \(\bits^N\to\bits^j\) with \(j=K-2e\).</p><p><strong>Recall.</strong> The sum formula for \(\Delta\) (S1 §3.2). Pairwise independence (Definition 6.2). \((\mathbb{E}|W|)^2\le\mathbb{E}[W^2]\).</p><p><strong>WTS:</strong> \(\Delta\big((h,h(Z)),(h,U_j)\big)\le2^{-(e+1)}\).</p></div> Following <span class="src">HILL p.1378–1379</span>, with steps expanded.
 <p><strong>Reduce to one \(h\) at a time.</strong> For a fixed \(h\) and \(a\in\bits^j\), let \(p_h(a)=\Pr_Z[h(Z)=a]\). Both distributions pick \(h\) the same way, so (by the sum formula for \(\Delta\), S1 §3.2)
 $$\Delta=\mathbb{E}_h\Big[\tfrac12\sum_a\big|p_h(a)-2^{-j}\big|\Big]=\tfrac12\sum_a \mathbb{E}_h\big|p_h(a)-2^{-j}\big|.$$</p>
 <div><strong>Bound the second moment.</strong> Fix \(a\). Write \(p_h(a)-2^{-j}=\mathbb{E}_Z[\,\mathbf 1\{h(Z)=a\}-2^{-j}\,]\). Squaring and using an independent copy \(Z'\):
@@ -380,7 +383,7 @@ $$G(x_1,r_1,\dots,x_k,r_k,\,h)=\Big(h,\ h\big(g(x_1,r_1),\dots,g(x_k,r_k)\big)\B
 If \(f\) is a one-to-one one-way function, then \(G\) of Construction 7.1 is a PRG (with stretch \(2n\)).
 <span class="src">HILL Prop. 4.5 + Thm. 4.14, p.1377–1380</span></div>
 
-<div class="proof"><span class="label">Proof.</span> Let \(A\) be any efficient adversary. Let \(D_1,\dots,D_k\) be independent copies of \(D\), and \(E_1,\dots,E_k\) independent copies of \(E\). Consider three distributions on the output space \(\bits^{p+j}\):
+<div class="proof"><span class="label">Proof.</span><div class="plan"><p><strong>Approach.</strong> Hybrid through one intermediate distribution: one computational step (a reduction to Goldreich–Levin over \(k\) copies) and one statistical step (the leftover hash lemma).</p><p><strong>Assume.</strong> \(f\) is a one-to-one one-way function, and \(A\) is any efficient adversary against \(G\).</p><p><strong>Recall.</strong> Theorem 4.1 (two-experiment form). S1 Theorem 6.1 (\(k\) copies). Lemma 6.3. Statistical ⇒ computational (S1 §3.3). The closure facts. \(\mathrm{Col}(E)=2^{-(2n+1)}\) (§7.1).</p><p><strong>WTS:</strong> \(\mathrm{PRGadv}[A,G]\) is negligible for every efficient \(A\). (Stretch was checked in Construction 7.1.)</p></div> Let \(A\) be any efficient adversary. Let \(D_1,\dots,D_k\) be independent copies of \(D\), and \(E_1,\dots,E_k\) independent copies of \(E\). Consider three distributions on the output space \(\bits^{p+j}\):
 <table>
 <tr><th></th><th>distribution</th><th>what it is</th></tr>
 <tr><td>\(Q_0\)</td><td>\((h,\ h(D_1,\dots,D_k))\)</td><td>\(G\) on a uniform seed (Experiment 0)</td></tr>
@@ -426,7 +429,7 @@ $$\mathrm{PRGadv}[A,G]\ \le\ 4n\cdot\mathrm{Distadv}[B',D,E]\ +\ 2^{-(n+1)}.$$</
 
 <div class="box"><div class="label">Corollary 8.2</div>
 If a one-to-one one-way function secure against polynomial-size circuits exists, then \(\BPP\subseteq\SUBEXP\).</div>
-<div class="proof"><span class="label">Proof.</span> Every reduction on this page turns a circuit adversary into a circuit adversary:
+<div class="proof"><span class="label">Proof.</span><div class="plan"><p><strong>Approach.</strong> Direct: check that every reduction keeps circuit adversaries as circuits, then chain the theorems.</p><p><strong>Assume.</strong> \(f\) is a one-to-one one-way function secure against polynomial-size circuits.</p><p><strong>Recall.</strong> Theorem 7.2, and S1 Theorem 8.6.</p><p><strong>WTS:</strong> \(\BPP\subseteq\SUBEXP\).</p></div> Every reduction on this page turns a circuit adversary into a circuit adversary:
 <ul>
 <li>the Goldreich–Levin inverter (§4.6);</li>
 <li>the hybrid over copies (S1 Theorem 6.1, nonuniform version);</li>
