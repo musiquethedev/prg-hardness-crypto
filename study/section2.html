@@ -139,14 +139,54 @@ One-way functions exist if and only if pseudorandom generators exist.
 <li><strong>Average case, not worst case.</strong> \(f\) must be hard to invert on a <em>random</em> input. NP-hardness is a worst-case notion (“some instance is hard”), which is useless for cryptography, where we need almost every key to be secure. This is why we assume OWFs instead of just \(\Pclass\ne\NP\) <span class="src">MIT §4, p.16-3–16-4</span> <span class="src">V p.145</span>.</li>
 <li><strong>The limits on how hard \(f\) can be.</strong> Inverting can't be easier than evaluating \(f\), and brute force over all \(2^n\) inputs always works. So the possible security levels lie between those two extremes <span class="src">HILL p.1372</span>.</li>
 <li><strong>Candidates, in one sentence.</strong> Multiplying two random \(n/2\)-bit numbers is believed one-way, because inverting it is factoring <span class="src">V p.145</span>. The RSA function \(x\mapsto x^e \bmod N\) is the familiar related example <span class="src">BS §10.3</span>.</li>
-<li><strong>Special cases used on this page.</strong>
-  <ul>
-  <li><em>One-way permutation:</em> \(f\) is a bijection on \(\bits^n\).</li>
-  <li><em>One-to-one OWF:</em> \(f\) is injective but may be length-increasing.</li>
-  <li><em>Regular OWF:</em> every image has the same number of preimages.</li>
-  </ul>
-  <span class="src">HILL Def. 2.11–2.12, p.1370</span> <span class="src">V p.147</span></li>
 </ul>
+
+<h3>1.1 Special kinds of one-way functions</h3>
+<p>The proofs on this page get harder as \(f\) gets less structured. Everything depends on one question: <strong>how much of the randomness of \(x\) survives in \(f(x)\)?</strong> When \(X\) is uniform on \(\bits^n\), the input has \(n\) bits of randomness. The four kinds below differ in how much of that \(f(X)\) keeps, and in whether \(f(X)\) is uniform. Each kind is a special case of the next.</p>
+
+<div class="box"><div class="label">One-way permutation</div>
+A one-way function \(f:\bits^n\to\bits^n\) that is a <strong>bijection</strong> for every \(n\): every \(n\)-bit string is the output of exactly one input.
+<span class="src">HILL p.1376–1377</span> <span class="src">Barak Thm. 1</span> <span class="src">V p.147</span></div>
+<ul>
+<li><strong>What it keeps:</strong> everything. \(f(x)\) determines \(x\), and when \(X\) is uniform, \(f(X)\) is <em>exactly uniform</em> on \(\bits^n\). It just shuffles the strings around.</li>
+<li><strong>Example:</strong> the RSA function \(x\mapsto x^e\bmod N\) is a permutation of the numbers mod \(N\) that are coprime to \(N\), and is believed to be one-way <span class="src">BS §10.3</span>. (Its domain isn't literally \(\bits^n\), but that's a detail of encoding <span class="me">Claude</span>.)</li>
+<li><strong>Used in:</strong> §5, the easiest PRG construction.</li>
+</ul>
+
+<div class="box"><div class="label">One-to-one (injective) one-way function</div>
+A one-way function \(f:\bits^n\to\bits^{\ell(n)}\) with \(\ell(n)\ge n\) such that \(f(x)\ne f(x')\) whenever \(x\ne x'\). The output may be longer than the input.
+<span class="src">HILL §4.3, p.1377</span></div>
+<ul>
+<li><strong>What it keeps:</strong> all \(n\) bits of randomness, since \(f(x)\) still determines \(x\). But \(f(X)\) is uniform only on the <em>image</em> of \(f\), a set of \(2^n\) strings inside \(\bits^\ell\). If \(\ell\gt n\), most \(\ell\)-bit strings are never outputs, so \(f(X)\) is far from uniform on \(\bits^\ell\).</li>
+<li><strong>Example:</strong> \(f(x)=(0,f'(x))\) for a one-way permutation \(f'\). It's one-to-one and one-way, but its output always starts with 0 <span class="src">HILL p.1377</span>.</li>
+<li><strong>Used in:</strong> §7, the main construction. The leftover hash lemma repairs the “not uniform” problem.</li>
+</ul>
+
+<div class="box"><div class="label">Regular one-way function</div>
+A one-way function where <strong>every output has the same number of preimages</strong>: there is a \(\sigma(n)\) such that \(|f^{-1}(y)|=\sigma(n)\) for every \(y\) in the image of \(f\).
+<span class="src">HILL Def. 2.12, p.1370; Thm. 5.5, p.1384</span></div>
+<ul>
+<li><strong>What it keeps:</strong> \(f(X)\) is uniform on an image of \(2^n/\sigma\) strings, so it keeps \(n-\log_2\sigma\) bits of randomness. The other \(\log_2\sigma\) bits are lost: given \(f(x)\), there are still \(\sigma\) equally likely candidates for \(x\). Every input loses the <em>same, known</em> amount. One-to-one functions are exactly the case \(\sigma=1\).</li>
+<li><strong>Example</strong> <span class="me">Claude</span>: \(f(x_1,x_2)=f'(x_1)\), which ignores the second half of the input, where \(f'\) is a one-way permutation on \(n/2\) bits. Every output has exactly \(2^{n/2}\) preimages. \(f\) is still one-way, because inverting \(f\) means finding some \(x_1'\) with \(f'(x_1')=f'(x_1)\), which inverts \(f'\).</li>
+<li><strong>Used in:</strong> §9, stated only. A hash of \(x\) is appended to recover the lost \(\log_2\sigma\) bits.</li>
+</ul>
+
+<div class="box"><div class="label">General one-way function</div>
+No structure beyond Definition 1.1. Different outputs can have <strong>different numbers of preimages</strong>, and computing how many a given output has may be infeasible.
+<span class="src">HILL §6, p.1384</span></div>
+<ul>
+<li><strong>What it keeps:</strong> it depends on \(x\). Some outputs reveal almost everything about \(x\), others very little, and we can't tell which case we're in. This is what makes the general HILL proof hard.</li>
+<li><strong>Used in:</strong> §9, stated only (the full HILL theorem).</li>
+</ul>
+
+<table>
+<tr><th>Kind</th><th>Does \(f(x)\) determine \(x\)?</th><th>Is \(f(X)\) uniform on its output space?</th><th>Randomness kept by \(f(X)\)</th></tr>
+<tr><td>Permutation</td><td>yes</td><td>yes</td><td>all \(n\) bits</td></tr>
+<tr><td>One-to-one</td><td>yes</td><td>no (only on its image)</td><td>all \(n\) bits</td></tr>
+<tr><td>Regular (\(\sigma\) preimages)</td><td>no</td><td>no</td><td>exactly \(n-\log_2\sigma\) bits, same for every \(x\)</td></tr>
+<tr><td>General</td><td>no</td><td>no</td><td>varies with \(x\), unknown</td></tr>
+</table>
+<p>The first two columns are exactly the two facts the permutation proof (§5) relies on <span class="src">HILL p.1377</span>. Each step down the table breaks one more of them.</p>
 
 <!-- ============================================================ -->
 <h2 id="t2">2. The easy direction: PRG ⇒ one-way function</h2>
