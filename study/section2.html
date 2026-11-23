@@ -147,7 +147,7 @@ One-way functions exist if and only if pseudorandom generators exist.
 </ul>
 
 <h3>1.1 Special kinds of one-way functions</h3>
-<p>The proofs on this page get harder as \(f\) gets less structured. Everything depends on one question: <strong>how much of the randomness of \(x\) survives in \(f(x)\)?</strong> When \(X\) is uniform on \(\bits^n\), the input has \(n\) bits of randomness. The four kinds below differ in how much of that \(f(X)\) keeps, and in whether \(f(X)\) is uniform. Each kind is a special case of the next.</p>
+<p>The proofs on this page get harder as \(f\) gets less structured. Everything depends on one question: <strong>how much of the randomness of \(x\) survives in \(f(x)\)?</strong> When \(X\) is uniform on \(\bits^n\), the input has \(n\) bits of randomness. The two special kinds below keep all of it; they differ only in whether \(f(X)\) is uniform. A permutation is a special case of a one-to-one function, which is a special case of Definition 1.1.</p>
 
 <div class="box"><div class="label">One-way permutation</div>
 A one-way function \(f:\bits^n\to\bits^n\) that is a <strong>bijection</strong> for every \(n\): every \(n\)-bit string is the output of exactly one input.
@@ -167,31 +167,16 @@ A one-way function \(f:\bits^n\to\bits^{\ell(n)}\) with \(\ell(n)\ge n\) such th
 <li><strong>Used in:</strong> §7, the main construction. The leftover hash lemma repairs the “not uniform” problem.</li>
 </ul>
 
-<div class="box"><div class="label">Regular one-way function</div>
-A one-way function where <strong>every output has the same number of preimages</strong>: there is a \(\sigma(n)\) such that \(|f^{-1}(y)|=\sigma(n)\) for every \(y\) in the image of \(f\).
-<span class="src">HILL Def. 2.12, p.1370; Thm. 5.5, p.1384</span></div>
-<ul>
-<li><strong>What it keeps:</strong> \(f(X)\) is uniform on an image of \(2^n/\sigma\) strings, so it keeps \(n-\log_2\sigma\) bits of randomness. The other \(\log_2\sigma\) bits are lost: given \(f(x)\), there are still \(\sigma\) equally likely candidates for \(x\). Every input loses the <em>same, known</em> amount. One-to-one functions are exactly the case \(\sigma=1\).</li>
-<li><strong>Example</strong> <span class="me">Claude</span>: \(f(x_1,x_2)=f'(x_1)\), which ignores the second half of the input, where \(f'\) is a one-way permutation on \(n/2\) bits. Every output has exactly \(2^{n/2}\) preimages. \(f\) is still one-way, because inverting \(f\) means finding some \(x_1'\) with \(f'(x_1')=f'(x_1)\), which inverts \(f'\).</li>
-<li><strong>Used in:</strong> §9, stated only. A hash of \(x\) is appended to recover the lost \(\log_2\sigma\) bits.</li>
-</ul>
 
-<div class="box"><div class="label">General one-way function</div>
-No structure beyond Definition 1.1. Different outputs can have <strong>different numbers of preimages</strong>, and computing how many a given output has may be infeasible.
-<span class="src">HILL §6, p.1384</span></div>
-<ul>
-<li><strong>What it keeps:</strong> it depends on \(x\). Some outputs reveal almost everything about \(x\), others very little, and we can't tell which case we're in. This is what makes the general HILL proof hard.</li>
-<li><strong>Used in:</strong> §9, stated only (the full HILL theorem).</li>
-</ul>
+<p>A <strong>general</strong> one-way function is just Definition 1.1, with no extra structure: \(f(X)\) may lose some of the randomness of \(X\). That is the case the full HILL theorem handles; §9 says what goes wrong there.</p>
 
 <table>
 <tr><th>Kind</th><th>Does \(f(x)\) determine \(x\)?</th><th>Is \(f(X)\) uniform on its output space?</th><th>Randomness kept by \(f(X)\)</th></tr>
 <tr><td>Permutation</td><td>yes</td><td>yes</td><td>all \(n\) bits</td></tr>
 <tr><td>One-to-one</td><td>yes</td><td>no (only on its image)</td><td>all \(n\) bits</td></tr>
-<tr><td>Regular (\(\sigma\) preimages)</td><td>no</td><td>no</td><td>exactly \(n-\log_2\sigma\) bits, same for every \(x\)</td></tr>
-<tr><td>General</td><td>no</td><td>no</td><td>varies with \(x\), unknown</td></tr>
+<tr><td>General (Definition 1.1)</td><td>not necessarily</td><td>not necessarily</td><td>possibly less than \(n\) bits</td></tr>
 </table>
-<p>The first two columns are exactly the two facts the permutation proof (§5) relies on <span class="src">HILL p.1377</span>. Each step down the table breaks one more of them.</p>
+<p>The first two columns are exactly the two facts the permutation proof (§5) relies on <span class="src">HILL p.1377</span>. Each step down the table can break one more of them.</p>
 
 <!-- ============================================================ -->
 <h2 id="t2">2. The easy direction: PRG ⇒ one-way function</h2>
@@ -513,12 +498,6 @@ So Theorem 7.2 gives a PRG secure against polynomial-size circuits, and S1 Theor
 <li>Worse, \(\langle X,R\rangle\) is now <em>genuinely</em> close to random given \((f(X),R)\), since there are many possible \(x\)'s. So it is hidden for statistical reasons, and there is no gap between apparent and real randomness to exploit.</li>
 </ul>
 
-<p><strong>Regular one-way functions</strong> (every output has the same, known number \(2^{d}\) of preimages) <span class="src">HILL Construction 5.1, Lemma 5.2, Thm. 5.5, p.1383–1384</span>:</p>
-<ul>
-<li>Append about \(d\) bits of a hash of \(x\): \(f'(x,h)=(f(x),\ h(x)_{1..d+2},\ h)\).</li>
-<li>This “recaptures” the lost randomness, making \(f'\) almost one-to-one, and it stays one-way.</li>
-<li>Then the machinery of §7 applies, with extra care because the distributions are no longer exactly uniform on their supports.</li>
-</ul>
 
 <p><strong>General one-way functions</strong> <span class="src">HILL §6, Thms. 6.2–6.3, p.1384–1385</span>:</p>
 <ul>
