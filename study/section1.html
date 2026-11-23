@@ -13,18 +13,21 @@
   --bg:#fdfcf9; --fg:#1f1f1f; --muted:#666; --rule:#e2ded6; --card:#f4f1ea;
   --accent:#2b5c8a; --warn-bg:#fff4d6; --warn-fg:#6b4e00; --warn-rule:#e9c766;
   --src-bg:#e7eef6; --src-fg:#234a70; --me-bg:#fbe3e3; --me-fg:#8a2b2b;
+  --dr:#2e7d4f; --dr-bg:#e9f5ee;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --bg:#16181b; --fg:#e6e3dc; --muted:#a0a0a0; --rule:#33363b; --card:#1f2226;
     --accent:#8db8e0; --warn-bg:#3a3014; --warn-fg:#f2d78a; --warn-rule:#7a6420;
     --src-bg:#1f3247; --src-fg:#b5d2ee; --me-bg:#4a2222; --me-fg:#f2b8b8;
+    --dr:#7fd1a0; --dr-bg:#1c3326;
   }
 }
 :root[data-theme="dark"]{
   --bg:#16181b; --fg:#e6e3dc; --muted:#a0a0a0; --rule:#33363b; --card:#1f2226;
   --accent:#8db8e0; --warn-bg:#3a3014; --warn-fg:#f2d78a; --warn-rule:#7a6420;
   --src-bg:#1f3247; --src-fg:#b5d2ee; --me-bg:#4a2222; --me-fg:#f2b8b8;
+  --dr:#7fd1a0; --dr-bg:#1c3326;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:Georgia,"Times New Roman",serif;line-height:1.65;font-size:17px}
@@ -60,6 +63,10 @@ svg.diag .c-x{fill:var(--src-bg);stroke:currentColor}
 svg.diag .c-y{fill:var(--bg);stroke:currentColor}
 svg.diag .c-chg{stroke:var(--me-fg);stroke-width:3}
 .caption{font-family:system-ui,sans-serif;font-size:.85rem;color:var(--muted);text-align:center;margin:.2rem 0 1.2rem}
+.box.derand{border-left-color:var(--dr);background:var(--dr-bg)}
+.box.derand > .label{color:var(--dr)}
+.derand-banner{border:1px solid var(--dr);background:var(--dr-bg);border-radius:6px;padding:.7rem 1rem;margin:1rem 0;font-family:system-ui,sans-serif;font-size:.92rem;line-height:1.5}
+svg.diag .b-derand{fill:var(--dr-bg);stroke:var(--dr);stroke-width:2}
 </style>
 </head>
 <body>
@@ -90,11 +97,10 @@ svg.diag .c-chg{stroke:var(--me-fg);stroke-width:3}
 <li><a href="#s2">Formal setup: negligible functions, adversaries, uniformity</a></li>
 <li><a href="#s3">Indistinguishability and the attack-game style</a></li>
 <li><a href="#s4">Pseudorandom generators</a></li>
-<li><a href="#s5">One-way functions</a></li>
-<li><a href="#s6">Proof strategy 1: reductions (PRG ⇒ OWF, PRG ⇒ P ≠ NP)</a></li>
-<li><a href="#s7">Proof strategy 2: the hybrid argument</a></li>
-<li><a href="#s8">Next-bit unpredictability (Yao)</a></li>
-<li><a href="#s9">From PRGs to derandomization (BPP ⊆ SUBEXP)</a></li>
+<li><a href="#s5">Proof strategy 1: reductions (PRG ⇒ P ≠ NP)</a></li>
+<li><a href="#s6">Proof strategy 2: the hybrid argument</a></li>
+<li><a href="#s7">Next-bit unpredictability (Yao)</a></li>
+<li><a href="#s8">From PRGs to derandomization (P = BPP from derandomization PRGs; BPP ⊆ SUBEXP from cryptographic ones)</a></li>
 </ol></div>
 
 <!-- ============================================================ -->
@@ -107,14 +113,14 @@ svg.diag .c-chg{stroke:var(--me-fg);stroke-width:3}
 <li>Run \(M'(x,s)\) for <em>every</em> seed \(s\). There are only \(2^{O(\log n)} = \poly(n)\) of them.</li>
 <li>Output the <em>majority</em> answer.</li>
 </ul>
-<p>The answers need <em>not</em> agree across seeds. Even with truly random bits, \(M\) is wrong on up to \(1/3\) of random strings. What “fooling \(M\)” guarantees is that the <em>fraction</em> of seeds giving the right answer is close to the fraction of truly random strings giving the right answer (at least \(2/3\)). So more than half the seeds are right, and the majority vote is correct. If the fraction under \(G\) were far from what random bits give, then “run \(M(x,\cdot)\) and check the answer” would itself be a test that tells \(G\)'s output apart from random. Section 9 turns this into a proof <span class="src">V Thm. 7.5, p.143</span>.</p>
+<p>The answers need <em>not</em> agree across seeds. Even with truly random bits, \(M\) is wrong on up to \(1/3\) of random strings. What “fooling \(M\)” guarantees is that the <em>fraction</em> of seeds giving the right answer is close to the fraction of truly random strings giving the right answer (at least \(2/3\)). So more than half the seeds are right, and the majority vote is correct. If the fraction under \(G\) were far from what random bits give, then “run \(M(x,\cdot)\) and check the answer” would itself be a test that tells \(G\)'s output apart from random. Section 8 turns this into a proof <span class="src">V Thm. 7.5, p.143</span>.</p>
 
-<p>The course then says we <em>believe</em> such PRGs exist because hard functions can be turned into pseudorandomness (“Hardness ⟹ Derandomization”), but gives no definitions or proofs <span class="src">455-PTC2 p.3</span>. The slogan is “randomness is in the eye of the beholder” <span class="src">455-PTC2 p.3</span>. (The lecture also states a converse, “Derandomization ⟹ Hardness”: putting PIT in P would give circuit lower bounds <span class="src">455-PTC2 p.7</span>. We don't prove or use it; it's mentioned once more in Section 9 for completeness.)</p>
+<p>The course then says we <em>believe</em> such PRGs exist because hard functions can be turned into pseudorandomness (“Hardness ⟹ Derandomization”), but gives no definitions or proofs <span class="src">455-PTC2 p.3</span>. The slogan is “randomness is in the eye of the beholder” <span class="src">455-PTC2 p.3</span>. (The lecture also states a converse, “Derandomization ⟹ Hardness”: putting PIT in P would give circuit lower bounds <span class="src">455-PTC2 p.7</span>. We don't prove or use it; it's mentioned once more in Section 8 for completeness.)</p>
 
 <p>This page makes the sketch precise. It answers four questions:</p>
 <ol>
 <li>What exactly does “looks random to poly-time machines” mean?</li>
-<li>What exactly is a “hard function”? (One-way functions.)</li>
+<li>What exactly is a “hard function”? (One-way functions: on the <a href="section2.html">Section 2 page</a>.)</li>
 <li>What proof techniques let us use these definitions? (Reductions and hybrid arguments.)</li>
 <li>What is the exact derandomization theorem, with exact parameters?</li>
 </ol>
@@ -126,7 +132,7 @@ svg.diag .c-chg{stroke:var(--me-fg);stroke-width:3}
 <p>Every security statement on this site says that some adversary's <em>advantage</em> (its edge over blind guessing, made precise in Section 3) is tiny. Advantages are functions of a size parameter \(n\) (Section 2.2), so we need a precise meaning for “tiny as a function of \(n\)”. Two requirements pin it down <span class="me">Claude: this framing</span>:</p>
 <ol>
 <li><strong>Repetition shouldn't help.</strong> An efficient adversary can rerun its attack \(\poly(n)\) times. If one run has advantage \(\varepsilon(n)\), many runs together have advantage roughly up to \(p(n)\cdot\varepsilon(n)\). “Tiny” must survive that.</li>
-<li><strong>Reductions lose polynomial factors.</strong> The hybrid argument (Section 7) gives equations like \(\mathrm{Adv}[A] = n\cdot\mathrm{Adv}[B]\). If \(\mathrm{Adv}[B]\) is tiny, we need \(n\cdot\mathrm{Adv}[B]\) to be tiny too.</li>
+<li><strong>Reductions lose polynomial factors.</strong> The hybrid argument (Section 6) gives equations like \(\mathrm{Adv}[A] = n\cdot\mathrm{Adv}[B]\). If \(\mathrm{Adv}[B]\) is tiny, we need \(n\cdot\mathrm{Adv}[B]\) to be tiny too.</li>
 </ol>
 <p>So the class of “tiny” functions must be <strong>closed under multiplication by any polynomial</strong>.</p>
 
@@ -155,7 +161,7 @@ If \(\varepsilon,\varepsilon'\) are negligible and \(p\) is polynomially bounded
 <p>Why the exact choice doesn't matter: if two candidate parameters are polynomially related (say \(n\) and \(n^2\)), then a function is negligible in one exactly when it is negligible in the other <span class="me">Claude</span>.</p>
 
 <h3>2.3 Who are the adversaries? Uniform vs. nonuniform</h3>
-<p>There are two standard choices, and the difference matters in Section 9.</p>
+<p>There are two standard choices, and the difference matters in Section 8.</p>
 <ul>
 <li><strong>Uniform:</strong> “efficient adversary” = probabilistic polynomial-time algorithm (PPT). Boneh–Shoup use this <span class="src">BS §2.3, p.28</span>, and so do HILL and the MIT notes.</li>
 <li><strong>Nonuniform:</strong> “efficient adversary” = a family of polynomial-size circuits, i.e. a \(\Ppoly\) machine. Vadhan uses this throughout <span class="src">V §7.1.1, p.141</span>.</li>
@@ -163,18 +169,18 @@ If \(\varepsilon,\varepsilon'\) are negligible and \(p\) is polynomially bounded
 <p>We know the circuit side from class: \(\Ppoly = \bigcup_k \mathsf{SIZE}(n^k)\), \(\Pclass \subseteq \Ppoly\), circuits can hard-code advice, and \(\BPP\subseteq\Ppoly\) by fixing a good random string for each input length <span class="src">455-BC1</span> <span class="src">455-BC2</span>. Consequences:</p>
 <ul>
 <li><strong>Randomness doesn't help a circuit adversary.</strong> Fix its coins to the best choice and hard-code them; the advantage doesn't drop <span class="src">V p.141–142</span>. This is the same trick as \(\BPP\subseteq\Ppoly\).</li>
-<li><strong>Nonuniform adversaries are more powerful.</strong> So “secure against all poly-size circuits” is a <em>stronger assumption</em> than “secure against all PPTs”, and also a stronger conclusion. Section 9 needs the stronger kind, because its proof hard-codes the BPP input \(x\) into the distinguisher <span class="src">V Claim 7.6, p.143</span>.</li>
+<li><strong>Nonuniform adversaries are more powerful.</strong> So “secure against all poly-size circuits” is a <em>stronger assumption</em> than “secure against all PPTs”, and also a stronger conclusion. Section 8 needs the stronger kind, because its proof hard-codes the BPP input \(x\) into the distinguisher <span class="src">V Claim 7.6, p.143</span>.</li>
 <li><strong>Why proofs are often <em>easier</em> in the nonuniform setting.</strong> <span class="me">Claude</span>, illustrated by <span class="src">V p.149</span> <span class="src">BS p.63</span>. A security proof is a reduction: given an adversary \(A\) against the construction, we must <em>build</em> an adversary \(B\) against the assumption, in the <em>same</em> model.
   <ul>
   <li>If \(B\) may be a circuit, it can hard-code anything useful: the best hybrid index, the best coin flips, the best fixed values for the other inputs. We only need to show such good values <em>exist</em>, usually by averaging.</li>
-  <li>If \(B\) must be a uniform PPT, it has to <em>compute or sample</em> everything itself. That forces tricks like picking the hybrid index at random (Section 7) and requires the distributions to be efficiently samplable.</li>
+  <li>If \(B\) must be a uniform PPT, it has to <em>compute or sample</em> everything itself. That forces tricks like picking the hybrid index at random (Section 6) and requires the distributions to be efficiently samplable.</li>
   </ul>
   So the more powerful model makes the reduction's job easier. Neither statement (“circuit-secure ⇒ circuit-secure” or “PPT-secure ⇒ PPT-secure”) implies the other, because both the hypothesis and the conclusion change.</li>
 </ul>
 
 <h3>2.4 Conventions used on this page</h3>
-<p>We use Boneh–Shoup's convention throughout. Advantage is a difference of probabilities, written \(\mathrm{PRGadv}[A,G]\), \(\mathrm{Distadv}[A,P_0,P_1]\), and so on. “Secure” means the advantage is negligible for every efficient adversary. When a reduction gives an exact relation, such as \(\mathrm{PRGadv}[A,G']=n\cdot\mathrm{PRGadv}[B,G]\), we record it, because it shows how much security is lost <span class="src">BS Thm. 3.2, p.55</span>. Section 9 introduces one restricted variant of the PRG game when derandomization needs it.</p>
-<p><strong>One formula for distinguishing.</strong> Every distinguishing game on this site, in this section and the next ones, uses the two-experiment formula \(\Pr[W_0]-\Pr[W_1]\). (Boneh–Shoup also define an equivalent “bit-guessing” formulation <span class="src">BS §2.2.5</span>. We don't use it.) The only other kind of game is a <strong>prediction game</strong> (Section 8, and Goldreich–Levin later). There the adversary predicts a bit of data, and we always write its success probability as \(\frac12+\varepsilon\) and call \(\varepsilon\) its <em>prediction advantage</em>. In both kinds of game, “secure” means the advantage is negligible. In a prediction game it is the success probability, not the advantage, that sits near \(\frac12\).</p>
+<p>We use Boneh–Shoup's convention throughout. Advantage is a difference of probabilities, written \(\mathrm{PRGadv}[A,G]\), \(\mathrm{Distadv}[A,P_0,P_1]\), and so on. “Secure” means the advantage is negligible for every efficient adversary. When a reduction gives an exact relation, such as \(\mathrm{PRGadv}[A,G']=n\cdot\mathrm{PRGadv}[B,G]\), we record it, because it shows how much security is lost <span class="src">BS Thm. 3.2, p.55</span>. Section 8 introduces one restricted variant of the PRG game when derandomization needs it.</p>
+<p><strong>One formula for distinguishing.</strong> Every distinguishing game on this site, in this section and the next ones, uses the two-experiment formula \(\Pr[W_0]-\Pr[W_1]\). (Boneh–Shoup also define an equivalent “bit-guessing” formulation <span class="src">BS §2.2.5</span>. We don't use it.) The only other kind of game is a <strong>prediction game</strong> (Section 7, and Goldreich–Levin later). There the adversary predicts a bit of data, and we always write its success probability as \(\frac12+\varepsilon\) and call \(\varepsilon\) its <em>prediction advantage</em>. In both kinds of game, “secure” means the advantage is negligible. In a prediction game it is the success probability, not the advantage, that sits near \(\frac12\).</p>
 
 <!-- ============================================================ -->
 <h2 id="s3">3. Indistinguishability and the attack-game style</h2>
@@ -312,7 +318,7 @@ For every adversary \(A\), \(\mathrm{Distadv}[A,P_0,P_1]\le\Delta[P_0,P_1]\). So
 </table>
 <p>Notice what <em>breaking</em> required in each case: one efficient test whose acceptance probability differs noticeably between the two worlds. <em>Security</em> requires that no such test exists, among all efficient tests at once.</p>
 
-<p><strong>One bit of stretch suffices.</strong> The definition only asks for \(L\ge\ell+1\). Any PRG with 1 bit of stretch can be extended to any polynomial stretch <span class="src">HILL Prop. 3.6, p.1373</span> <span class="src">BS §3.4.2, p.59</span>. This is proved in Section 7.</p>
+<p><strong>One bit of stretch suffices.</strong> The definition only asks for \(L\ge\ell+1\). Any PRG with 1 bit of stretch can be extended to any polynomial stretch <span class="src">HILL Prop. 3.6, p.1373</span> <span class="src">BS §3.4.2, p.59</span>. This is proved in Section 6.</p>
 
 <h3>4.2 Why this definition, and not something simpler?</h3>
 <p>Two simpler-sounding definitions come to mind. Both fail.</p>
@@ -323,32 +329,7 @@ For every adversary \(A\), \(\mathrm{Distadv}[A,P_0,P_1]\le\Delta[P_0,P_1]\). So
 <p>Our definition sits between these two. It quantifies over <em>every</em> test, like (1), but only <em>efficient</em> ones, which makes it achievable.</p>
 
 <!-- ============================================================ -->
-<h2 id="s5">5. One-way functions</h2>
-
-<div class="box"><div class="label">Definition (one-way function, OWF)</div>
-\(f:\bits^*\to\bits^*\) is one-way if
-<ol style="margin:.3rem 0">
-<li>\(f\) is computable in polynomial time, and</li>
-<li>for every efficient \(A\), \(\displaystyle\Pr_{x\leftarrow\bits^n}\big[f(A(f(x)))=f(x)\big]\) is negligible in \(n\).</li>
-</ol>
-<span class="src">MIT p.16-4</span> <span class="src">HILL Def. 3.2, p.1372</span> <span class="src">V Def. 7.10, p.145</span> (Vadhan's version is against nonuniform \(A\))</div>
-
-<ul>
-<li><strong>“Find <em>some</em> preimage,” not “find \(x\)”.</strong> \(A\) succeeds if it outputs any \(x'\) with \(f(x')=f(x)\). If success meant recovering \(x\) itself, a constant function \(f(x)=1\) would count as “one-way”: you can never tell which \(x\) was used, even though inverting it is trivial <span class="src">MIT p.16-4</span>.</li>
-<li><strong>Average case, not worst case.</strong> \(f\) must be hard to invert on a <em>random</em> input. NP-hardness is a worst-case notion (“some instance is hard”), which is useless for cryptography, where we need almost every key to be secure. This is why we assume OWFs instead of just \(\Pclass\ne\NP\) <span class="src">MIT §4, p.16-3–16-4</span> <span class="src">V p.145</span>.</li>
-<li><strong>The limits on how hard \(f\) can be.</strong> Inverting can't be easier than evaluating \(f\), and brute force over all \(2^n\) inputs always works. So the possible security levels lie between those two extremes <span class="src">HILL p.1372</span>.</li>
-<li><strong>Candidates, in one sentence.</strong> Multiplying two random \(n/2\)-bit numbers is believed one-way, because inverting it is factoring <span class="src">V p.145</span>. The RSA function \(x\mapsto x^e \bmod N\) is the familiar related example <span class="src">BS §10.3</span>.</li>
-<li><strong>Special cases used in Section 2 of the site.</strong>
-  <ul>
-  <li><em>One-way permutation:</em> \(f\) is a bijection on \(\bits^n\).</li>
-  <li><em>One-to-one OWF:</em> \(f\) is injective but may be length-increasing.</li>
-  <li><em>Regular OWF:</em> every image has the same number of preimages.</li>
-  </ul>
-  <span class="src">HILL Def. 2.11–2.12, p.1370</span> <span class="src">V p.147</span></li>
-</ul>
-
-<!-- ============================================================ -->
-<h2 id="s6">6. Proof strategy 1: reductions</h2>
+<h2 id="s5">5. Proof strategy 1: reductions</h2>
 
 <p>Almost every theorem in this area has the form “if primitive \(P\) is secure, then construction \(C\) is secure.” It is proved by <strong>reduction</strong>, usually in the contrapositive: given any efficient adversary \(A\) that breaks \(C\), build an efficient adversary \(B\) that breaks \(P\). Usually \(B\) runs \(A\) as a subroutine and plays the challenger for \(A\) <span class="src">BS p.52</span>. Boneh–Shoup call such a \(B\) an <em>elementary wrapper</em> around \(A\). If \(A\) is efficient then so is \(B\), and wrappers compose <span class="src">BS p.20, p.34</span>. The idea is the same as NP-completeness reductions, except that we must also track <em>probabilities</em> and keep \(B\) efficient <span class="src">V p.148</span>.</p>
 
@@ -384,22 +365,9 @@ For every adversary \(A\), \(\mathrm{Distadv}[A,P_0,P_1]\le\Delta[P_0,P_1]\). So
 <li>Show the two games differ by only a negligible amount. To do this, exhibit a \(B\) whose advantage against \(P\) <em>equals</em> that difference.</li>
 <li>Conclude \(A\)'s real advantage is at most (easy advantage) + (negligible).</li>
 </ol>
-<p>Two short, complete examples follow. Both use only the definitions.</p>
+<p>A short, complete example follows; it uses only the definitions. (A second example, PRG ⇒ one-way function, is on the <a href="section2.html">Section 2 page</a>.)</p>
 
-<div class="box"><div class="label">Theorem 6.1 (PRG ⇒ OWF)</div>
-If \(G:\bits^n\to\bits^{\ell(n)}\) is a secure PRG with \(\ell(n)\ge 2n\), then \(G\) is a one-way function. (Any PRG can first be stretched to \(\ell\ge 2n\) using Section 7.)
-<br>Idea: <span class="src">MIT p.16-4</span> (one-sentence argument). HILL credit this direction to Levin '87 <span class="src">HILL Thm. 6.3, p.1385</span>. Written-out proof: <span class="me">Claude</span></div>
-<div class="proof"><span class="label">Proof.</span> Contrapositive. Suppose an efficient \(A\) inverts \(G\) with non-negligible probability
-\(p(n)=\Pr_{s}[G(A(G(s)))=G(s)]\). Define the distinguisher \(B(y)\): compute \(s'=A(y)\), and output 1 iff \(G(s')=y\). \(B\) is efficient because \(A\) and \(G\) are.
-<ul>
-<li><em>Experiment 0</em> (\(y=G(s)\)): \(B\) outputs 1 exactly when \(A\) inverts successfully, so \(\Pr[W_0]=p(n)\).</li>
-<li><em>Experiment 1</em> (\(y\) uniform in \(\bits^{\ell}\)): \(B\) can output 1 only if \(y\in\mathrm{Im}(G)\), and \(|\mathrm{Im}(G)|\le 2^n\). So \(\Pr[W_1]\le 2^{n-\ell}\le 2^{-n}\).</li>
-</ul>
-<p><strong>Advantage:</strong> \(\mathrm{PRGadv}[B,G]=\Pr[W_0]-\Pr[W_1]\ge p(n)-2^{-n}\).</p>
-<p><strong>Why this is not negligible:</strong> \(p\) is not negligible, so there is a constant \(c\) with \(p(n)\ge 1/n^c\) for infinitely many \(n\). For all large \(n\), \(2^{-n}\le \frac{1}{2n^c}\). So for infinitely many \(n\), \(\mathrm{PRGadv}[B,G]\ge \frac1{n^c}-\frac1{2n^c}=\frac{1}{2n^c}\ge\frac{1}{n^{c+1}}\) (for \(n\ge 2\)). A negligible function would have to be \(\lt 1/n^{c+1}\) for <em>all</em> large \(n\), so \(\mathrm{PRGadv}[B,G]\) is not negligible and \(G\) is not secure. ∎</p>
-<br><span class="muted">Why \(\ell\ge 2n\)? With only \(\ell = n+1\), the bound on \(\Pr[W_1]\) is \(1/2\), and \(p(n)-1/2\) could be negative. Stretching first avoids this.</span></div>
-
-<div class="box"><div class="label">Theorem 6.2 (PRGs ⇒ P ≠ NP)</div>
+<div class="box"><div class="label">Theorem 5.1 (PRGs ⇒ P ≠ NP)</div>
 If a secure PRG exists (against uniform adversaries), then \(\Pclass\ne\NP\). If one exists against nonuniform adversaries, then \(\NP\not\subseteq\Ppoly\).
 <br><span class="src">V p.145 &amp; Problem 7.3(2), p.178</span> (stated as an exercise). Proof: <span class="me">Claude</span></div>
 <div class="proof"><span class="label">Proof (an adversary in the game of Figure 2).</span> Let \(G:\bits^n\to\bits^{\ell}\) with \(\ell\gt n\). Let \(L=\{y:\ y=G(s)\text{ for some } s\}\), the set of strings \(G\) can output. \(L\in\NP\): the seed \(s\) is a certificate, checked by computing \(G(s)\). Suppose \(\Pclass=\NP\), and let \(D\) be a poly-time decider for \(L\).
@@ -408,11 +376,11 @@ If a secure PRG exists (against uniform adversaries), then \(\Pclass\ne\NP\). If
 <li><em>Experiment 0</em> (\(r=G(s)\), uniform seed \(s\)): \(r\in L\) always, so \(\Pr[W_0]=1\).</li>
 <li><em>Experiment 1</em> (\(r\) uniform in \(\bits^\ell\)): \(B\) outputs 1 only if \(r\in L\). Since \(G\) has only \(2^n\) seeds, \(\Pr[W_1]\le 2^n/2^\ell\le 1/2\).</li>
 </ul>
-<p><strong>Advantage:</strong> \(\mathrm{PRGadv}[B,G]=\Pr[W_0]-\Pr[W_1]=1-\frac{|\mathrm{Im}(G)|}{2^\ell}\ge 1-2^{n-\ell}\ge\frac12\) for every \(n\), and \(B\) is efficient because \(D\) is.</p><p><strong>Why this is not negligible:</strong> take \(c=1\) in the definition. A negligible function would be \(\lt 1/n\) for all large \(n\), but \(\mathrm{PRGadv}[B,G]\ge 1/2\ge 1/n\) for every \(n\ge 2\). So \(G\) is not secure. The value \(1/2\) is not a threshold in the definition; any non-negligible advantage breaks \(G\), and this one happens to be a constant. Contrapositive: a secure PRG implies \(\Pclass\ne\NP\). Replacing \(D\) by a polynomial-size circuit family deciding \(L\) gives the \(\Ppoly\) version. This is the same image test as the Fact in Section 9.4; here \(\Pclass=\NP\) makes it efficient instead of a short seed. ∎</p></div>
+<p><strong>Advantage:</strong> \(\mathrm{PRGadv}[B,G]=\Pr[W_0]-\Pr[W_1]=1-\frac{|\mathrm{Im}(G)|}{2^\ell}\ge 1-2^{n-\ell}\ge\frac12\) for every \(n\), and \(B\) is efficient because \(D\) is.</p><p><strong>Why this is not negligible:</strong> take \(c=1\) in the definition. A negligible function would be \(\lt 1/n\) for all large \(n\), but \(\mathrm{PRGadv}[B,G]\ge 1/2\ge 1/n\) for every \(n\ge 2\). So \(G\) is not secure. The value \(1/2\) is not a threshold in the definition; any non-negligible advantage breaks \(G\), and this one happens to be a constant. Contrapositive: a secure PRG implies \(\Pclass\ne\NP\). Replacing \(D\) by a polynomial-size circuit family deciding \(L\) gives the \(\Ppoly\) version. This is the same image test as the Fact in Section 8.4; here \(\Pclass=\NP\) makes it efficient instead of a short seed. ∎</p></div>
 <p>This explains why nobody can prove that PRGs or OWFs exist outright: doing so would separate \(\Pclass\) from \(\NP\). Everything in this area is conditional. The best hope is to reduce one assumption to another, and HILL does exactly that <span class="src">V p.145</span>.</p>
 
 <!-- ============================================================ -->
-<h2 id="s7">7. Proof strategy 2: the hybrid argument</h2>
+<h2 id="s6">6. Proof strategy 2: the hybrid argument</h2>
 
 <p>Often the two extreme distributions (fully pseudorandom vs. fully random) differ in many places at once. A <strong>hybrid argument</strong> interpolates between them one step at a time. If the extremes are distinguishable, some <em>adjacent</em> pair must be, and an adjacent pair differs in just one place, which a reduction can exploit.</p>
 
@@ -422,8 +390,8 @@ $$\Pr[T(H_0)=1]-\Pr[T(H_k)=1] = \sum_{i=1}^{k}\big(\Pr[T(H_{i-1})=1]-\Pr[T(H_i)=
 so if the left side exceeds \(k\varepsilon\), some term exceeds \(\varepsilon\).
 <span class="src">V proof of Prop. 7.14, p.149</span> <span class="src">BS proof of Thm. 3.2, p.56–59</span></div>
 
-<h3>7.1 Example: multiple samples / parallel composition</h3>
-<div class="box"><div class="label">Theorem 7.1</div>
+<h3>6.1 Example: multiple samples / parallel composition</h3>
+<div class="box"><div class="label">Theorem 6.1</div>
 If \(G\) is a secure PRG, then the parallel composition \(G'(s_1,\dots,s_k)=(G(s_1),\dots,G(s_k))\) is a secure PRG, and for every adversary \(A\) there is an adversary \(B\) with \(\mathrm{PRGadv}[A,G'] = k\cdot\mathrm{PRGadv}[B,G]\) <span class="src">BS Thm. 3.2, p.55</span>. More generally, if \(X,Y\) are computationally indistinguishable, so are \(k\) independent copies \(X^k, Y^k\), with the advantage growing by at most a factor \(k\) <span class="src">V Prop. 7.14, p.148</span>.</div>
 
 <svg class="diag" viewBox="0 0 640 250" role="img" aria-label="Hybrids H0 to H4 for k=4 blocks. H_i has the first 4-i blocks pseudorandom and the last i blocks random; consecutive hybrids differ in one block.">
@@ -453,26 +421,26 @@ If \(G\) is a secure PRG, then the parallel composition \(G'(s_1,\dots,s_k)=(G(s
 
 <p><strong>The uniform version needs a trick.</strong> A uniform adversary can't “hard-code the right \(i\)”, because which \(i\) works may change with \(n\). Boneh–Shoup instead build a single adversary \(B\) that <em>picks \(i\) at random</em> and samples the other coordinates itself (it can, because \(G\) is efficient). Averaging over \(i\), the telescoping sum gives \(\mathrm{PRGadv}[B,G]=\frac1n|p_n-p_0|\) exactly <span class="src">BS p.56–59</span>. Boneh–Shoup also explain why the tempting alternative fails for non-constant \(n\): “one of \(B_1,\dots,B_n\) must work” doesn't give a single fixed machine <span class="src">BS p.63</span>. Vadhan notes that the uniform version requires \(X\) and \(Y\) to be efficiently samplable <span class="src">V p.149</span>. <em>Takeaway:</em> in the uniform setting, “pick the hybrid index at random” is the standard move. In the nonuniform setting you may simply fix the best index.</p>
 
-<h3>7.2 Example: stretching a PRG (sequential / Blum–Micali composition)</h3>
-<div class="box"><div class="label">Theorem 7.2</div>
+<h3>6.2 Example: stretching a PRG (sequential / Blum–Micali composition)</h3>
+<div class="box"><div class="label">Theorem 6.2</div>
 Let \(G:S\to R\times S\) be a secure PRG. Define \(G'(s)\): set \(s_0=s\); for \(i=1..n\), set \((r_i,s_i)\leftarrow G(s_{i-1})\); output \((r_1,\dots,r_n,s_n)\). Then \(G'\) is secure, with \(\mathrm{PRGadv}[A,G']=n\cdot\mathrm{PRGadv}[B,G]\).
 <br>In particular, a PRG \(\bits^\ell\to\bits^{\ell+1}\) gives a PRG \(\bits^\ell\to\bits^{\ell+n}\) for any polynomial \(n\).
 <span class="src">BS §3.4.2, Thm. 3.3, p.59</span> <span class="src">HILL Prop. 3.6, p.1373</span> <span class="src">MIT p.16-3</span></div>
-<div class="proof"><span class="label">Proof sketch.</span> Hybrid \(j\): the first \(j\) blocks \(r_1..r_j\) are uniform, \(s_j\) is a fresh uniform seed, and the rest is computed honestly from \(s_j\). Hybrid 0 is the real \(G'\). Hybrid \(n\) is fully uniform. Hybrids \(j\) and \(j+1\) differ only in whether \((r_{j+1},s_{j+1})\) is \(G(\text{uniform seed})\) or uniform. A PRG adversary \(B\) for \(G\) receives a challenge \(z\), picks \(j\) at random, fills in uniform blocks before position \(j+1\), puts \(z\) at position \(j+1\), computes the rest honestly from \(z\)'s seed part, and runs \(A\). Telescoping as in 7.1 gives the factor \(n\) <span class="src">BS p.60–61</span>.
+<div class="proof"><span class="label">Proof sketch.</span> Hybrid \(j\): the first \(j\) blocks \(r_1..r_j\) are uniform, \(s_j\) is a fresh uniform seed, and the rest is computed honestly from \(s_j\). Hybrid 0 is the real \(G'\). Hybrid \(n\) is fully uniform. Hybrids \(j\) and \(j+1\) differ only in whether \((r_{j+1},s_{j+1})\) is \(G(\text{uniform seed})\) or uniform. A PRG adversary \(B\) for \(G\) receives a challenge \(z\), picks \(j\) at random, fills in uniform blocks before position \(j+1\), puts \(z\) at position \(j+1\), computes the rest honestly from \(z\)'s seed part, and runs \(A\). Telescoping as in 6.1 gives the factor \(n\) <span class="src">BS p.60–61</span>.
 <p><strong>Advantage:</strong> \(\mathrm{PRGadv}[A,G']=n\cdot\mathrm{PRGadv}[B,G]\).</p><p><strong>Why this is negligible:</strong> \(\mathrm{PRGadv}[B,G]\) is negligible because \(G\) is secure. \(n\) is polynomially bounded, so the product is negligible by the closure fact. ∎</p></div>
 <p>This is the result that justifies “1 bit of stretch is enough”. Section 2 of the site builds a 1-bit-stretch PRG and relies on this theorem for the rest.</p>
 
 <!-- ============================================================ -->
-<h2 id="s8">8. Next-bit unpredictability (Yao)</h2>
+<h2 id="s7">7. Next-bit unpredictability (Yao)</h2>
 
 <p>A seemingly weaker property: given the first \(i\) bits of the output, no efficient algorithm can predict bit \(i+1\) noticeably better than a coin flip.</p>
-<p><em>Note:</em> this is a <strong>prediction game</strong>, not a two-experiment game: there is only one experiment, and the adversary tries to predict a bit of \(G\)'s output. Its success probability is \(\frac12+\varepsilon\), and \(\varepsilon\) is the prediction advantage (Section 2.4). Theorem 8.1 is exactly the bridge between this game and the two-experiment PRG game.</p>
+<p><em>Note:</em> this is a <strong>prediction game</strong>, not a two-experiment game: there is only one experiment, and the adversary tries to predict a bit of \(G\)'s output. Its success probability is \(\frac12+\varepsilon\), and \(\varepsilon\) is the prediction advantage (Section 2.4). Theorem 7.1 is exactly the bridge between this game and the two-experiment PRG game.</p>
 <div class="box"><div class="label">Definition (unpredictable PRG)</div>
 Attack Game: the adversary picks an index \(i\). The challenger samples \(s\), computes \(r=G(s)\), and sends \(r[0..i-1]\). The adversary outputs a guess \(g\) and wins if \(g=r[i]\).
 \(\mathrm{Predadv}[A,G]=|\Pr[\text{win}]-1/2|\). \(G\) is unpredictable if this is negligible for all efficient \(A\).
 <span class="src">BS Attack Game 3.2 &amp; Def. 3.3, p.64</span> <span class="src">V Def. 7.15, p.150</span></div>
 
-<div class="box"><div class="label">Theorem 8.1 (Yao: pseudorandom ⇔ next-bit unpredictable)</div>
+<div class="box"><div class="label">Theorem 7.1 (Yao: pseudorandom ⇔ next-bit unpredictable)</div>
 (a) Secure ⇒ unpredictable, with \(\mathrm{Predadv}[A,G]=\mathrm{PRGadv}[B,G]\).
 <br>(b) Unpredictable ⇒ secure, with \(\mathrm{PRGadv}[A,G]=L\cdot\mathrm{Predadv}[B,G]\), where \(L\) is the output length.
 <span class="src">BS Thm. 3.4, p.64 and Thm. 3.6, p.67</span> <span class="src">V Prop. 7.16, p.150</span></div>
@@ -488,74 +456,23 @@ Attack Game: the adversary picks an index \(i\). The challenger samples \(s\), c
 <p><strong>Advantage:</strong> \(\mathrm{Predadv}[B,G]=\varepsilon/L=\mathrm{PRGadv}[A,G]/L\), i.e. \(\mathrm{PRGadv}[A,G]=L\cdot\mathrm{Predadv}[B,G]\).</p><p><strong>Why this is negligible:</strong> if \(G\) is unpredictable, \(\mathrm{Predadv}[B,G]\) is negligible. The output length \(L\) is polynomial, so \(L\cdot\mathrm{Predadv}[B,G]\) is negligible by the closure fact. So \(\mathrm{PRGadv}[A,G]\) is negligible for every efficient \(A\): \(G\) is secure. ∎</p></li>
 </ol></div>
 
-<p><strong>Why we need this.</strong> In Section 2 of the site, we'll build a PRG by showing that its last output bit is unpredictable from the earlier ones (the Goldreich–Levin “hardcore bit”). Theorem 8.1(b) turns that into full pseudorandomness. HILL's “hidden bit” is this same idea <span class="src">HILL §3.5, Def. 3.10, p.1374</span> <span class="src">HILL §1.1, p.1366</span>.</p>
+<p><strong>Why we need this.</strong> In Section 2 of the site, we'll build a PRG by showing that its last output bit is unpredictable from the earlier ones (the Goldreich–Levin “hardcore bit”). Theorem 7.1(b) turns that into full pseudorandomness. HILL's “hidden bit” is this same idea <span class="src">HILL §3.5, Def. 3.10, p.1374</span> <span class="src">HILL §1.1, p.1366</span>.</p>
 
 <!-- ============================================================ -->
-<h2 id="s9">9. From PRGs to derandomization: the lecture's “Hardness ⟹ Derandomization”, made rigorous</h2>
+<h2 id="s8">8. From PRGs to derandomization: the lecture's “Hardness ⟹ Derandomization”, made rigorous</h2>
 
-<p>Everything so far, and everything in Section 2 of the site (Goldreich–Levin, HILL), is about <strong>cryptographic</strong> PRGs as defined in Section 4: they fool <em>every</em> efficient adversary with negligible advantage. This section connects them to derandomizing \(\BPP\). It goes in three steps:</p>
+<div class="derand-banner"><strong>Change of setting.</strong> Sections 2–7 were about <em>cryptographic</em> PRGs: they fool every efficient adversary, with negligible advantage. In most of this section, adversaries are <strong>circuits of one fixed size \(m\)</strong>, and the advantage only has to be <strong>at most \(1/8\)</strong>. No negligible functions appear until Section 8.6, where we come back to cryptographic PRGs. Definitions and theorems in this restricted setting are drawn in green boxes like this one.</div>
+
+<h3>8.1 The goal</h3>
+<p>Recall the lecture's plan from Section 1 <span class="src">455-PTC2 p.2–3</span>. To show \(\BPP=\Pclass\), take a \(\BPP\) machine \(M\) (poly-time, error \(\le 1/3\)) and a generator \(G\) that stretches an \(O(\log n)\)-bit seed into the random bits \(M\) needs. Run \(M(x,G(s))\) for every seed \(s\) and take the majority. Two things have to hold:</p>
 <ol>
-<li>Derandomization needs much less than a cryptographic PRG.</li>
-<li>That weaker object suffices to simulate \(\BPP\) deterministically (Theorem 9.1).</li>
-<li>Cryptographic PRGs provide it, giving \(\BPP\subseteq\SUBEXP\) (Theorem 9.2).</li>
+<li>\(G\) has to be computable in polynomial time, and its seed has to be \(O(\log n)\) bits, so there are only polynomially many seeds.</li>
+<li>\(G\)'s output has to be “random enough” that the majority answer is still correct.</li>
 </ol>
-<p>Then we see why this route can't reach the lecture's \(\BPP=\Pclass\) (Section 9.4).</p>
+<p>The natural first idea is to use the PRGs we defined in Section 4.</p>
 
-<h3>9.1 What derandomization actually needs</h3>
-<p>Look back at the simulation in Section 1. To simulate one \(\BPP\) algorithm \(A\) on one input \(x\), the pseudorandom bits only have to fool one particular test: “run \(A(x;\cdot)\)”. With \(x\) hard-coded, this test is a circuit of some <em>fixed</em> polynomial size \(m=n^c\) <span class="src">455-BC1</span>. And the bits only have to keep \(A\)'s error below \(1/2\), so a <em>constant</em> advantage bound like \(1/8\) is enough. That gives a special case of the PRG attack game (Figure 2) with two restrictions:</p>
-<ul>
-<li>only adversaries that are circuits of size at most \(t\) are allowed to play;</li>
-<li>we only require their advantage to be at most \(\varepsilon\), not negligible.</li>
-</ul>
-
-<div class="box"><div class="label">Definition (\((t,\varepsilon)\) PRG)</div>
-\(G:\bits^d\to\bits^m\) (with \(d\lt m\)) is a \((t,\varepsilon)\) PRG if every circuit of size at most \(t\) has \(\mathrm{PRGadv}\le\varepsilon\) against \(G\).
-<span class="src">V Def. 7.1 &amp; 7.3, p.141–142</span></div>
-
-<p>We'll call a family of \((m,1/8)\) PRGs \(G_m:\bits^{d(m)}\to\bits^m\) a <strong>derandomization PRG</strong>. Two relaxations compared to Section 4:</p>
-<ul>
-<li>The adversaries are capped at size \(m\), so they're never bigger than the output.</li>
-<li>\(G_m\) itself may run longer than \(m\). Time \(\poly(m,2^{d(m)})\) is fine, because the simulation enumerates all \(2^{d(m)}\) seeds anyway <span class="src">V Def. 7.7 &amp; discussion, p.143</span>.</li>
-</ul>
-
-<h3>9.2 Derandomization PRGs simulate BPP</h3>
-<div class="box"><div class="label">Theorem 9.1</div>
-Suppose that for every \(m\) there is an \((m,1/8)\) PRG \(G_m:\bits^{d(m)}\to\bits^m\) computable in time \(t(m)\). Then
-$$\BPP\subseteq\bigcup_{c}\DTIME\!\Big(2^{d(n^c)}\cdot\big(n^c+t(n^c)\big)\Big).$$
-<span class="src">V Thm. 7.5, p.143</span></div>
-
-<div class="proof"><span class="label">Proof.</span> <span class="src">V p.143</span>, expanded.
-<p>Let \(L\in\BPP\) be decided by \(A(x;r)\) with error at most \(1/3\). For inputs of length \(n\), \(A\) can be simulated by circuits of size at most \(n^c\) <span class="src">455-BC1</span> (TM to circuit). Without loss of generality \(|r|=n^c\). Set \(m=n^c\) and \(G=G_m\).</p>
-<p><strong>Claim.</strong> For every \(x\) of length \(n\), \(A(x;G(U_{d(m)}))\) errs with probability \(\lt 1/2\).</p>
-<p><em>Proof of claim.</em> Suppose some \(x\) has error \(\ge 1/2\) under pseudorandom bits. Let \(T(r)=A(x;r)\), with \(x\) <strong>hard-coded</strong>. Then \(T\) is a circuit of size \(\le m\), so it is allowed to play the restricted game. On truly random \(r\), \(T\) gives the correct answer with probability \(\ge 2/3\). On \(r=G(U_d)\), it does so with probability \(\le 1/2\). So \(T\) has advantage \(\ge 2/3-1/2=1/6\gt 1/8\), a contradiction. <em>Note:</em> \(x\) is used as nonuniform advice. This is exactly why the PRG must fool <em>circuits</em>, not just uniform algorithms <span class="src">V p.143</span>.</p>
-<p><strong>Deterministic algorithm.</strong> For every seed \(s\in\bits^{d(m)}\), compute \(G(s)\) and run \(A(x;G(s))\). Output the majority answer. By the claim, strictly more than half of the seeds give the correct answer, so the majority is always correct. Running time: \(2^{d(m)}\) seeds, each costing \(t(m)\) to generate plus \(\poly(m)\) to run \(A\), giving \(2^{d(n^c)}\cdot(n^c+t(n^c))\) up to polynomial factors. ∎</p></div>
-
-<p>Plugging in seed lengths, assuming \(t(m)=\poly(m,2^{d(m)})\) <span class="src">V p.144</span>:</p>
-<table>
-<tr><th>Seed length \(d(m)\)</th><th>Conclusion</th></tr>
-<tr><td>\(m^\varepsilon\) for every \(\varepsilon\gt 0\)</td><td>\(\BPP\subseteq\bigcap_\varepsilon\DTIME(2^{n^\varepsilon})=\SUBEXP\). This already beats \(\BPP\subseteq\EXP\).</td></tr>
-<tr><td>\(\mathrm{polylog}(m)\)</td><td>\(\BPP\subseteq\tilde{\Pclass}\) (quasi-polynomial time)</td></tr>
-<tr><td>\(O(\log m)\)</td><td>\(\BPP=\Pclass\). This is the lecture's picture <span class="src">455-PTC2 p.2–3</span>.</td></tr>
-</table>
-
-<h3>9.3 Cryptographic PRGs give derandomization PRGs</h3>
-<div class="box"><div class="label">Theorem 9.2</div>
-If there is a cryptographic PRG secure against polynomial-size circuits, then \(\BPP\subseteq\SUBEXP\).
-<br>Combined with HILL (Section 2 of the site): if a one-way function secure against polynomial-size circuits exists, then \(\BPP\subseteq\SUBEXP\).
-<span class="src">V Thm. 7.11 &amp; Cor. 7.12, p.146</span> (stated; proof not given there). Written-out proof: <span class="me">Claude</span></div>
-<div class="proof"><span class="label">Proof.</span>
-<p>Let \(G:\bits^n\to\bits^{n+1}\) be a cryptographic PRG secure against polynomial-size circuits. Fix \(\varepsilon\gt 0\).</p>
-<ol>
-<li><strong>Stretch.</strong> For each \(m\), let \(n=\lceil m^\varepsilon\rceil\). Apply Theorem 7.2 with \(m-n\) iterations to get \(G_m:\bits^{n}\to\bits^m\), computable in \(\poly(m)\) time. Theorem 7.2 says \(\mathrm{PRGadv}[A,G_m]=(m-n)\cdot\mathrm{PRGadv}[B,G]\) for some adversary \(B\) against \(G\) of size \(\poly(n)\). (We use the nonuniform version: the same proof, with \(B\) hard-coding rather than sampling.) <strong>Advantage:</strong> for every efficient \(A\), \(\mathrm{PRGadv}[A,G_m]=(m-n)\cdot\mathrm{PRGadv}[B,G]\le n^{1/\varepsilon}\cdot\mathrm{PRGadv}[B,G]\). <strong>Why this is negligible:</strong> \(\mathrm{PRGadv}[B,G]\) is negligible in \(n\) because \(G\) is secure, and \(n^{1/\varepsilon}\) is a polynomial in \(n\) (\(\varepsilon\) is a fixed constant). So the product is negligible by the closure fact of Section 2.1. Hence \(G_m\) is a secure PRG.</li>
-<li><strong>Size-\(m\) circuits are efficient adversaries.</strong> The security parameter is the seed length \(n\). A circuit \(T\) of size \(m\le n^{1/\varepsilon}\) has size polynomial in \(n\), so it is one of the adversaries the cryptographic definition covers. By step 1 its advantage \(\mathrm{PRGadv}[T,G_m]\) is negligible in \(n\). <strong>From negligible to \(1/8\):</strong> apply the definition of negligible with \(c=1\). For all \(n\ge n_0\), \(\mathrm{PRGadv}[T,G_m]\lt 1/n\le 1/8\) once also \(n\ge 8\). (Strictly, “every size-\(m\) circuit” is one circuit family per \(m\); taking for each \(m\) the best size-\(m\) circuit gives a single poly-size family, so the bound holds for all of them at once.) So for all large \(m\), \(G_m\) is an \((m,1/8)\) PRG with seed length \(d(m)=\lceil m^\varepsilon\rceil\) and running time \(\poly(m)\). (Finitely many small input lengths can be handled by a lookup table.)</li>
-<li><strong>Apply Theorem 9.1.</strong> For \(L\in\BPP\) with circuit-size exponent \(c\), we get \(L\in\DTIME(2^{O(n^{c\varepsilon})}\poly(n))\). Since \(\varepsilon\) was arbitrary, choose \(\varepsilon=\delta/c\) to get \(L\in\DTIME(2^{n^{\delta}})\) for every \(\delta\gt 0\), i.e. \(L\in\SUBEXP\). ∎</li>
-</ol></div>
-<p>The key step is step 2. “Every polynomial-size adversary has negligible advantage” <em>contains</em> “size-\(m\) adversaries have advantage \(\le 1/8\)” as a special case. That's why the derandomization requirement is the weaker of the two.</p>
-
-<h3>9.4 Why this doesn't give \(\BPP=\Pclass\), and what the lecture's claim gets wrong</h3>
-<p>Theorem 9.2 lands in the first row of the table, not the last. Could a better cryptographic PRG reach the last row? No:</p>
-
-<div class="box"><div class="label">Fact: a cryptographic PRG cannot have an \(O(\log m)\)-bit seed</div>
+<h3>8.2 First attempt: cryptographic PRGs. This fails.</h3>
+<div class="box"><div class="label">Fact 8.1: a cryptographic PRG cannot have an \(O(\log m)\)-bit seed</div>
 <span class="src">V Problem 7.3(1), p.178</span> (stated as an exercise) <span class="src">BS p.48, Exercise 3.5</span> (the seed space must be super-poly). Proof: <span class="me">Claude</span></div>
 <div class="proof"><span class="label">Proof (an adversary in the game of Figure 2).</span> Suppose \(G:\bits^d\to\bits^m\) with \(d \le c\log m\). Adversary \(A(r)\): try every seed \(s\in\bits^d\), and output 1 if some \(G(s)=r\). This is the image test from Section 3.2.
 <ul>
@@ -563,33 +480,118 @@ If there is a cryptographic PRG secure against polynomial-size circuits, then \(
 <li>\(\Pr[W_1]\le 2^{d-m}\le 1/2\).</li>
 <li>\(A\) runs in time \(2^d\cdot\mathrm{time}(G)\le m^c\cdot\poly(m)\), which is polynomial.</li>
 </ul>
-<p><strong>Advantage:</strong> \(\mathrm{PRGadv}[A,G]=1-\frac{|\mathrm{Im}(G)|}{2^m}\ge 1-2^{d-m}\ge\frac12\). <strong>Why this is not negligible:</strong> with \(c=1\), a negligible function would be \(\lt 1/m\) for all large \(m\), but this one is \(\ge 1/2\) for every \(m\). Since \(A\) is efficient, \(G\) is not a secure (cryptographic) PRG. ∎</p></div>
+<p><strong>Advantage:</strong> \(\mathrm{PRGadv}[A,G]=1-\frac{|\mathrm{Im}(G)|}{2^m}\ge 1-2^{d-m}\ge\frac12\).</p>
+<p><strong>Why this is not negligible:</strong> with \(c=1\), a negligible function would be \(\lt 1/m\) for all large \(m\), but this one is \(\ge 1/2\) for every \(m\). Since \(A\) is efficient, \(G\) is not a secure (cryptographic) PRG. ∎</p></div>
 
-<p><strong>What this says about the lecture.</strong> The lecture's PRG takes \(O(\log n)\) seed bits, outputs \(\poly(n)\) bits, runs in polynomial time, and “fools poly-time TMs” <span class="src">455-PTC2 p.2</span>. Read literally, that's a cryptographic PRG with a logarithmic seed, which the Fact rules out. The seed-enumeration adversary is itself a poly-time TM; its polynomial is just bigger than \(G\)'s <span class="me">Claude: this observation</span>. What the argument actually needs is the weaker requirement of Section 9.1:</p>
+<p><strong>What this says about the lecture.</strong> The lecture's PRG takes \(O(\log n)\) seed bits, runs in polynomial time, and “fools poly-time TMs” <span class="src">455-PTC2 p.2</span>. Read literally, that's a cryptographic PRG with a logarithmic seed, which Fact 8.1 rules out. The seed-enumeration adversary is itself a poly-time TM; its polynomial is just bigger than \(G\)'s <span class="me">Claude: this observation</span>. So cryptographic PRGs ask for too much: their seed space must be superpolynomial, and our plan needs it to be polynomial.</p>
+
+<h3>8.3 The fix: ask only for what the simulation needs</h3>
+<p>Look at what the simulation actually requires. For one \(\BPP\) machine \(M\) and one input \(x\), the pseudorandom bits only have to fool one test, “run \(M(x;\cdot)\)”. With \(x\) hard-coded, that test is a circuit of some <em>fixed</em> polynomial size \(m=n^c\) <span class="src">455-BC1</span>. And they only have to keep \(M\)'s error below \(1/2\), so a <em>constant</em> advantage bound like \(1/8\) is enough. That gives the same PRG game (Figure 2) with a restricted set of players:</p>
+
+<svg class="diag" viewBox="0 0 640 175" role="img" aria-label="The restricted PRG game: same challenger as Figure 2, but the adversary must be a circuit of size at most m, and the goal is advantage at most 1/8.">
+<defs><marker id="ah5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+<rect x="10" y="20" width="230" height="120" rx="8" class="b-chal"/>
+<text x="125" y="46" text-anchor="middle" class="t-head">Challenger (same as Fig. 2)</text>
+<text x="125" y="76" text-anchor="middle">Exp. 0: r ← G(s), s ← {0,1}<tspan baseline-shift="super" font-size="10">d</tspan></text>
+<text x="125" y="102" text-anchor="middle">Exp. 1: r ← {0,1}<tspan baseline-shift="super" font-size="10">m</tspan></text>
+<rect x="400" y="20" width="230" height="120" rx="8" class="b-derand"/>
+<text x="515" y="46" text-anchor="middle" class="t-head">Adversary T</text>
+<text x="515" y="76" text-anchor="middle">must be a circuit</text>
+<text x="515" y="98" text-anchor="middle">of size ≤ m</text>
+<line x1="240" y1="62" x2="398" y2="62" class="ln" marker-end="url(#ah5)"/>
+<text x="320" y="54" text-anchor="middle">r ∈ {0,1}<tspan baseline-shift="super" font-size="10">m</tspan></text>
+<line x1="400" y1="110" x2="242" y2="110" class="ln" marker-end="url(#ah5)"/>
+<text x="320" y="130" text-anchor="middle">b̂</text>
+<text x="320" y="166" text-anchor="middle" class="t-head">Requirement: PRGadv[T, G] ≤ 1/8 for every such T (not “negligible”)</text>
+</svg>
+<p class="caption">Figure 5. The restricted PRG game used for derandomization. <span class="me">Claude: figure</span>, following <span class="src">V Def. 7.3, p.142</span>.</p>
+
+<div class="box derand"><div class="label">Definition 8.2 (\((t,\varepsilon)\) PRG; derandomization PRG)</div>
+\(G:\bits^d\to\bits^m\) (with \(d\lt m\)) is a <strong>\((t,\varepsilon)\) PRG</strong> if every circuit of size at most \(t\) has \(\mathrm{PRGadv}\le\varepsilon\) against \(G\) <span class="src">V Def. 7.1 &amp; 7.3, p.141–142</span>.
+<br>A <strong>derandomization PRG</strong> is a family of \((m,1/8)\) PRGs \(G_m:\bits^{d(m)}\to\bits^m\), one for each output length \(m\).</div>
+
+<p>Comparing with Section 4: this is a <strong>special case</strong> of the cryptographic requirement, not a rival to it. It asks to fool only <em>some</em> of the adversaries (size \(\le m\)), and only up to a constant. Section 8.6 makes this precise: every cryptographic PRG secure against circuits yields one. And it escapes Fact 8.1. The seed-enumeration adversary has size about \(2^d\cdot\mathrm{time}(G)\), which is bigger than \(m\), so it isn't allowed in the restricted game <span class="src">V p.143, p.146</span>. By the same token, \(G_m\) may itself take longer than \(m\) to compute. It only has to beat circuits of size \(m\), not circuits as big as itself <span class="src">V Def. 7.7, p.143</span>.</p>
+
+<h3>8.4 Main theorem: log-seed derandomization PRGs give \(\BPP=\Pclass\)</h3>
+<div class="box derand"><div class="label">Theorem 8.3</div>
+Suppose there is a derandomization PRG \(G_m:\bits^{d(m)}\to\bits^m\) with seed length \(d(m)=O(\log m)\) that is computable in time \(\poly(m)\). Then \(\BPP=\Pclass\).
+<br><span class="src">V Thm. 7.5, p.143</span> (general seed length) and item (3) on <span class="src">V p.144</span> (this special case).</div>
+
+<div class="proof"><span class="label">Proof.</span> <span class="src">V p.143</span>, specialized to \(d=O(\log m)\).
+<p><strong>Setup.</strong> Let \(L\in\BPP\) be decided by a poly-time machine \(A(x;r)\) with error at most \(1/3\). By TM-to-circuit conversion <span class="src">455-BC1</span>, choose a constant \(c\) such that, on inputs of length \(n\), \(A\) uses at most \(n^c\) random bits and the test circuit \(T\) below has size at most \(n^c\). Pad \(A\)'s random string to exactly \(n^c\) bits, and set \(m=n^c\) and \(G=G_m\).</p>
+<p><strong>Claim.</strong> For every \(x\) of length \(n\), \(A(x;G(s))\) is correct for more than half of the seeds \(s\).</p>
+<p><em>Proof of claim.</em> Fix \(x\) and let \(T(r)=1\) iff \(A(x;r)\) gives the correct answer for \(x\). With \(x\) and the correct answer <strong>hard-coded</strong>, \(T\) is a circuit of size about \(m\). So \(T\) is allowed to play the game of Figure 5.</p>
 <ul>
-<li>fool circuits of one fixed size \(m\), with constant advantage;</li>
-<li>\(G\) may take longer than those circuits.</li>
+<li>\(\Pr[W_1]=\Pr_{r\text{ uniform}}[A(x;r)\text{ correct}]\ge 2/3\), since \(A\) is a \(\BPP\) machine.</li>
+<li>\(\Pr[W_0]=\Pr_{s}[A(x;G(s))\text{ correct}]\), the fraction of good seeds.</li>
 </ul>
-<p>The enumeration adversary has size about \(2^d\cdot\mathrm{time}(G)\gt m\), so it isn't allowed in that restricted game, and there's no contradiction <span class="src">V p.143, p.146</span>.</p>
-
+<p>\(G\) is an \((m,1/8)\) PRG, so \(|\Pr[W_0]-\Pr[W_1]|\le 1/8\). Hence the fraction of good seeds is \(\Pr[W_0]\ge 2/3-1/8=13/24\gt 1/2\). <em>Note:</em> \(x\) is used as nonuniform advice inside \(T\). This is exactly why Definition 8.2 talks about <em>circuits</em> <span class="src">V p.143</span>.</p>
+<p><strong>Deterministic algorithm.</strong> On input \(x\), for every seed \(s\in\bits^{d(m)}\), compute \(G(s)\) and run \(A(x;G(s))\). Output the majority answer. By the claim, the majority is always correct.</p>
+<p><strong>Running time.</strong></p>
 <ul>
-<li><strong>Where log-seed derandomization PRGs would come from.</strong> Not from one-way functions. Even exponentially hard ones only reach seed length \(\mathrm{polylog}(m)\) with known constructions <span class="src">V p.146</span>. Instead, Nisan–Wigderson build them from a function in \(\mathsf{E}=\DTIME(2^{O(n)})\) that requires exponential-size circuits, which gives \(\BPP=\Pclass\) under that assumption <span class="src">V Thm. 7.19, p.153</span>. That's outside our scope; we state it only. Its proof reuses the hybrid argument and next-bit prediction from Sections 7–8, but no cryptography.</li>
-<li><strong>They exist non-constructively.</strong> A random function \(G:\bits^{O(\log m)}\to\bits^m\) is an \((m,1/8)\) PRG with high probability (Chernoff + union bound over the \(2^{\poly(m)}\) circuits of size \(m\)) <span class="src">V Prop. 7.8, p.144</span>. Hard-coding its truth table as advice and applying Theorem 9.1 re-proves \(\BPP\subseteq\Ppoly\) <span class="src">V p.144</span>, which we saw in class by a different route <span class="src">455-BC2</span>. So the whole difficulty is <em>explicitness</em>: making \(G\) efficiently computable.</li>
+<li>There are \(2^{d(m)}=2^{O(\log m)}=m^{O(1)}=n^{O(c)}\) seeds, which is polynomial.</li>
+<li>Each seed costs \(\poly(m)=\poly(n)\) to compute \(G(s)\), plus \(\poly(n)\) to run \(A\).</li>
+<li>Total: polynomial in \(n\). So \(L\in\Pclass\). ∎</li>
+</ul></div>
+
+<p>This is the lecture's sketch, made precise <span class="src">455-PTC2 p.2–3</span>. The only change is the kind of PRG: the restricted one of Definition 8.2, not a cryptographic one.</p>
+
+<h3>8.5 Where would log-seed derandomization PRGs come from?</h3>
+<p><strong>Not from cryptography</strong> (Fact 8.1). They come from <strong>circuit lower bounds</strong>, which is exactly the course's “Hardness ⟹ Derandomization” and the remark in Boolean Circuits 1 that “circuit complexity lower bounds imply derandomization” <span class="src">455-BC1</span>. We state this result without proof:</p>
+
+<div class="box derand"><div class="label">Theorem 8.4 (Nisan–Wigderson ’94; Impagliazzo–Wigderson ’97); stated, not proved</div>
+Suppose there is a function \(f\in\mathsf{E}=\DTIME(2^{O(\ell)})\) and a constant \(\alpha\gt 0\) such that, for all large \(\ell\), no circuit of size \(2^{\alpha\ell}\) computes \(f\) correctly on every input of length \(\ell\). Then for every \(m\) there is a generator \(G_m:\bits^{O(\log m)}\to\bits^m\), computable in \(\poly(m)\) time, such that no circuit of size \(m\) has advantage more than \(1/m\). In particular (for \(m\ge 8\)) it is a derandomization PRG, so by Theorem 8.3, <strong>\(\BPP=\Pclass\)</strong>.
+<br><span class="src">V Thm. 7.63 &amp; Cor. 7.64(1), p.171</span> (worst-case hardness) <span class="src">V Thm. 7.19 &amp; Cor. 7.20, p.153–154</span> (average-case hardness)</div>
+
+<p><strong>The idea, for context only</strong> <span class="src">V Def. 7.21, Thm. 7.24, p.154</span>:</p>
+<ul>
+<li>Choose sets \(S_1,\dots,S_m\) of seed positions, each of size \(\ell=O(\log m)\), any two overlapping in at most \(\log m\) positions.</li>
+<li>Output \(f(\text{seed bits in }S_1),\dots,f(\text{seed bits in }S_m)\). Computing this takes \(m\cdot 2^{O(\ell)}=\poly(m)\) time, more than the size-\(m\) circuits it fools, which Definition 8.2 allows.</li>
+<li>The proof uses Yao's next-bit theorem (Section 7), so a distinguisher yields a predictor for some output bit. Because the overlaps are small, the other output bits can be hard-coded as tiny lookup tables, and the predictor turns into a small circuit that computes \(f\) on random inputs noticeably better than a coin flip.</li>
+<li>Going from “hard in the worst case” to “hard on random inputs” requires another, longer argument (hardness amplification, <span class="src">V §7.5–7.6</span>). We don't cover it.</li>
+</ul>
+<p>Two more facts:</p>
+<ul>
+<li><strong>Such PRGs exist non-constructively.</strong> A random function \(G:\bits^{O(\log m)}\to\bits^m\) is an \((m,1/8)\) PRG with high probability (Chernoff + union bound over the \(2^{\poly(m)}\) circuits of size \(m\)) <span class="src">V Prop. 7.8, p.144</span>. Hard-coding its truth table as advice and running the proof of Theorem 8.3 re-proves \(\BPP\subseteq\Ppoly\) <span class="src">V p.144</span>, which we saw in class by a different route <span class="src">455-BC2</span>. So the whole difficulty is <em>explicitness</em>: computing \(G\) efficiently.</li>
 <li><strong>The converse direction</strong> (derandomizing PIT ⇒ circuit lower bounds) appears in the lecture only as a statement <span class="src">455-PTC2 p.7</span>. We leave it as a statement too.</li>
 </ul>
 
-<h3>9.5 The statement Section 2 will prove (in part)</h3>
-<div class="box"><div class="label">Theorem (HILL)</div>
-One-way functions exist if and only if (cryptographic) pseudorandom generators exist.
-<span class="src">HILL Thm. 6.3, p.1385</span> <span class="src">V Thm. 7.11, p.146</span>
-<br>(⇐) is Theorem 6.1 above. For (⇒), Section 2 will prove the case of one-to-one OWFs in full and outline the general case. With Theorem 9.2, this completes the chain: <strong>one-way function ⇒ cryptographic PRG ⇒ derandomization PRG ⇒ \(\BPP\subseteq\SUBEXP\)</strong>.</div>
+<h3>8.6 What cryptographic PRGs do give: \(\BPP\subseteq\SUBEXP\)</h3>
+<p>Cryptographic PRGs can't reach Theorem 8.3's hypothesis, but they reach a weaker one. First note what the proof of Theorem 8.3 used the seed length for: only to count the seeds.</p>
+
+<div class="box derand"><div class="label">Remark 8.5 (other seed lengths)</div>
+Running the proof of Theorem 8.3 with a derandomization PRG of seed length \(d(m)\), computable in time \(t(m)\), gives a deterministic algorithm running in time about \(2^{d(n^c)}\cdot\big(t(n^c)+\poly(n)\big)\) <span class="src">V Thm. 7.5, p.143</span>. For example, \(d(m)=m^{\varepsilon}\) for every \(\varepsilon\gt0\) gives \(\BPP\subseteq\bigcap_{\varepsilon}\DTIME(2^{n^\varepsilon})=\SUBEXP\) <span class="src">V p.144</span>.</div>
+
+<div class="box"><div class="label">Theorem 8.6 (cryptographic PRGs ⇒ \(\BPP\subseteq\SUBEXP\))</div>
+If there is a cryptographic PRG secure against polynomial-size circuits, then \(\BPP\subseteq\SUBEXP\).
+<span class="src">V Thm. 7.11 &amp; Cor. 7.12, p.146</span> (stated; proof not given there). Written-out proof: <span class="me">Claude</span></div>
+<div class="proof"><span class="label">Proof.</span>
+<p>Let \(G:\bits^n\to\bits^{n+1}\) be a cryptographic PRG secure against polynomial-size circuits. Fix \(\varepsilon\gt 0\).</p>
+<ol>
+<li><strong>Stretch.</strong> For each \(m\), let \(n=\lceil m^\varepsilon\rceil\). Apply Theorem 6.2 with \(m-n\) iterations to get \(G_m:\bits^{n}\to\bits^m\), computable in \(\poly(m)\) time. (We use the nonuniform version of Theorem 6.2: the same proof, with \(B\) hard-coding rather than sampling.)
+<br><strong>Advantage:</strong> for every efficient \(A\), \(\mathrm{PRGadv}[A,G_m]=(m-n)\cdot\mathrm{PRGadv}[B,G]\le n^{1/\varepsilon}\cdot\mathrm{PRGadv}[B,G]\).
+<br><strong>Why this is negligible:</strong> \(\mathrm{PRGadv}[B,G]\) is negligible in \(n\) because \(G\) is secure, and \(n^{1/\varepsilon}\) is a polynomial in \(n\) (\(\varepsilon\) is a fixed constant). So the product is negligible by the closure fact of Section 2.1. Hence \(G_m\) is a secure cryptographic PRG with security parameter \(n\).</li>
+<li><strong>Size-\(m\) circuits are among the adversaries already covered.</strong> A circuit \(T\) of size \(m\le n^{1/\varepsilon}\) has size polynomial in \(n\), so by step 1, \(\mathrm{PRGadv}[T,G_m]\) is negligible in \(n\).
+<br><strong>From negligible to \(1/8\):</strong> apply the definition of negligible with \(c=1\). For all large \(n\), \(\mathrm{PRGadv}[T,G_m]\lt 1/n\le 1/8\). (Strictly, the cryptographic definition talks about one circuit family. Taking, for each \(m\), the best size-\(m\) circuit gives a single polynomial-size family, so the bound holds for all size-\(m\) circuits at once.)
+<br>So for all large \(m\), \(G_m\) is an \((m,1/8)\) PRG with seed length \(\lceil m^\varepsilon\rceil\), computable in \(\poly(m)\) time: a derandomization PRG. (Finitely many small input lengths can be handled by a lookup table.)</li>
+<li><strong>Apply Remark 8.5.</strong> For \(L\in\BPP\) with circuit-size exponent \(c\), we get \(L\in\DTIME(2^{O(n^{c\varepsilon})}\poly(n))\). Since \(\varepsilon\) was arbitrary, choose \(\varepsilon=\delta/c\) to get \(L\in\DTIME(2^{n^{\delta}})\) for every \(\delta\gt 0\), i.e. \(L\in\SUBEXP\). ∎</li>
+</ol></div>
+<p>Step 2 is where the two settings meet. “Every polynomial-size adversary has negligible advantage” <em>contains</em> “size-\(m\) adversaries have advantage \(\le 1/8\)” as a special case.</p>
+
+<h3>8.7 Summary and what comes next</h3>
+<table>
+<tr><th>Route</th><th>Assumption (“hardness”)</th><th>PRG obtained</th><th>Conclusion</th></tr>
+<tr><td>Cryptographic (Section 2 of the site + Theorem 8.6)</td><td>a one-way function secure against circuits</td><td>cryptographic PRG, so seed \(m^\varepsilon\)</td><td>\(\BPP\subseteq\SUBEXP\)</td></tr>
+<tr><td>Nisan–Wigderson (Theorem 8.4, stated only)</td><td>a function in \(\mathsf E\) needing circuits of size \(2^{\Omega(\ell)}\)</td><td>derandomization PRG with seed \(O(\log m)\)</td><td>\(\BPP=\Pclass\) (Theorem 8.3)</td></tr>
+</table>
+<p><a href="section2.html">Section 2 of the site</a> proves the first link of the cryptographic route: from a one-way function to a cryptographic PRG (HILL), in full for one-to-one one-way functions.</p>
 
 
 <p class="muted" style="margin-top:3rem;font-size:.9rem">Self-check questions, written by Claude (not from a source):
-(1) Where exactly does Theorem 9.1's proof use nonuniformity, and what would break with a uniform PRG?
-(2) Why does the hybrid argument in Theorem 7.2 lose a factor of \(n\), and why is that fine?
-(3) In Theorem 6.1, what goes wrong if \(\ell=n+1\)?
-(4) Why can't a cryptographic PRG have an \(O(\log m)\)-bit seed, while an \((m,1/8)\) PRG can? Which step of Theorem 9.2 would fail if you tried to get \(\BPP=\Pclass\)?
+(1) Where exactly does Theorem 8.3's proof use nonuniformity, and what would break with a uniform PRG?
+(2) Why does the hybrid argument in Theorem 6.2 lose a factor of \(n\), and why is that fine?
+(3) In Theorem 8.3, the good-seed fraction came out to \(13/24\). What goes wrong if the generator were only an \((m,1/4)\) PRG?
+(4) Why can't a cryptographic PRG have an \(O(\log m)\)-bit seed, while an \((m,1/8)\) PRG can? Which step of Theorem 8.6 would fail if you tried to get \(\BPP=\Pclass\)?
 (5) Why does “fooling all statistical tests” mean no statistical test, including unbounded ones? (Trick question: it doesn't. Which definition is about unbounded tests?)</p>
 
 </main>
