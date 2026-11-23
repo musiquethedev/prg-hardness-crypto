@@ -290,17 +290,26 @@ Hence \(q\ge\varepsilon/2\). ∎</div>
 <p><strong>Why this breaks at \(\frac12+\varepsilon\):</strong> each query is then wrong with probability nearly \(\frac12\). The union bound over <em>two</em> queries only says both are right with probability \(\ge\varepsilon\), which is useless for a majority vote. The fix: <em>guess</em> the value \(\langle x,r\rangle\) instead of asking \(P\), so only one query can be wrong.</p>
 
 <h3>4.5 The real inverter, analyzed for a good \(x\)</h3>
-<p>Now \(x\) is only assumed good: \(p_x\ge\frac12+\frac\varepsilon2\). Guessing \(\langle x,r\rangle\) for many independent \(r\)'s would succeed with exponentially small probability. The trick: guess only a few values and generate many more by linearity. The generated points are only <em>pairwise</em> independent, but Chebyshev only needs pairwise independence <span class="src">Pandey §2.3–2.4</span>. Trevisan credits this version of the proof to Rackoff <span class="src">Trevisan, p.1</span>.</p>
+<p>Now \(x\) is only assumed good: \(p_x\ge\frac12+\frac\varepsilon2\). Think of \(P\) as an unreliable witness, slightly better than a coin at answering “what is the parity of this random subset of \(x\)'s bits?”. We want the bits \(x_i\) one at a time. The direct question for \(x_i\) is the point \(e_i\), since \(\langle x,e_i\rangle=x_i\). But \(e_i\) is one fixed point, and \(P\)'s guarantee only covers <em>random</em> points, so we never ask it directly. The inverter is three tricks stacked on top of each other, each fixing the problem left by the previous one <span class="me">Claude</span> (framing; the algorithm is from <span class="src">Pandey §2.3–2.4</span> <span class="src">Trevisan Lemma 3</span>).</p>
+<ol>
+<li><strong>Trick 1: disguise the question.</strong> By linearity, \(x_i=\langle x,r\rangle\oplus\langle x,r\oplus e_i\rangle\) for every \(r\). For a random \(r\), each of the two points is uniformly random on its own, so \(P\) can't tell which bit we're after, and its accuracy \(p_x\) applies to each query (Warm-up 2).
+<br><em>Problem:</em> now <em>both</em> answers must be right. Each is wrong almost half the time, so together they are right with probability only about \(\varepsilon\), which is useless.</li>
+<li><strong>Trick 2: supply one of the two answers ourselves.</strong> If we already knew \(b=\langle x,r\rangle\), we would ask \(P\) only one question and form the <em>vote</em> \(b\oplus P(y,r\oplus e_i)\). The vote equals \(x_i\) exactly when \(P\) answers correctly, so it is right with probability \(\ge\frac12+\frac\varepsilon2\). A majority over many votes, with many random \(r\)'s, then gives \(x_i\), just like error reduction for \(\BPP\).
+<br><em>Problem:</em> we don't know \(\langle x,r\rangle\). Guessing it for \(m\) independent \(r\)'s gets all \(m\) right with probability only \(2^{-m}\).</li>
+<li><strong>Trick 3: guess a few answers and expand them by linearity.</strong> Pick only \(t=O(\log n)\) random seeds \(s_1,\dots,s_t\) and guess the \(t\) bits \(\langle x,s_j\rangle\). Every XOR-combination \(r_T=\bigoplus_{j\in T}s_j\) then has a known answer, \(\langle x,r_T\rangle=\bigoplus_{j\in T}\langle x,s_j\rangle\). That turns \(t\) guesses into \(m=2^t-1\approx 2n/\varepsilon^2\) points with known answers. There are only \(2^t=\poly(n)\) possible guesses, so we <strong>try them all</strong>. One of them is right. We can't tell which, but we don't need to: each guess produces a candidate \(z\), and we <strong>check \(f(z)=y\)</strong>. That works because \(f\) is easy to compute forwards.
+<br><em>Price:</em> the points \(r_T\) are only <em>pairwise</em> independent (Claim 4.3). So we use Chebyshev instead of Hoeffding, and Chebyshev is weaker, which is why \(m\) must be about \(2n/\varepsilon^2\) (Claim 4.4).</li>
+</ol>
+<p>Trevisan credits this version of the proof to Rackoff <span class="src">Trevisan, p.1</span>. In the formal version below, each line is tagged with the trick it implements.</p>
 
 <div class="box"><div class="label">Inverter \(I(y)\)</div>
-Parameters: \(t=\lceil\log_2(2n/\varepsilon^2+1)\rceil\), and \(m=2^t-1\ge 2n/\varepsilon^2\).
+Parameters: \(t=\lceil\log_2(2n/\varepsilon^2+1)\rceil\), and \(m=2^t-1\ge 2n/\varepsilon^2\). <em class="muted">(Trick 3: few seeds, \(t=O(\log n)\); enough points, \(m\approx 2n/\varepsilon^2\), for Chebyshev)</em>
 <ol style="margin:.3rem 0">
-<li>Pick \(s_1,\dots,s_t\in\bits^n\) uniformly and independently. For each nonempty \(T\subseteq\{1..t\}\), let \(r_T=\bigoplus_{j\in T}s_j\). These are \(m\) strings.</li>
-<li>For each guess \((b_1,\dots,b_t)\in\bits^t\), meant to be \(\langle x,s_1\rangle,\dots,\langle x,s_t\rangle\):
+<li>Pick \(s_1,\dots,s_t\in\bits^n\) uniformly and independently. For each nonempty \(T\subseteq\{1..t\}\), let \(r_T=\bigoplus_{j\in T}s_j\). These are \(m\) strings. <em class="muted">(Trick 3: expand \(t\) seeds into \(m\) pairwise-independent points)</em></li>
+<li>For each guess \((b_1,\dots,b_t)\in\bits^t\), meant to be \(\langle x,s_1\rangle,\dots,\langle x,s_t\rangle\): <em class="muted">(Trick 3: try every guess; one of them is right)</em>
  <ul>
- <li>for each nonempty \(T\), set \(b_T=\bigoplus_{j\in T}b_j\), meant to be \(\langle x,r_T\rangle\);</li>
- <li>for each \(i=1..n\), set \(z_i=\mathrm{majority}_T\big(b_T\oplus P(y,\,r_T\oplus e_i)\big)\);</li>
- <li>if \(f(z)=y\), output \(z=z_1\cdots z_n\) and stop.</li>
+ <li>for each nonempty \(T\), set \(b_T=\bigoplus_{j\in T}b_j\), meant to be \(\langle x,r_T\rangle\); <em class="muted">(Trick 3: linearity turns the \(t\) guessed answers into \(m\) known answers)</em></li>
+ <li>for each \(i=1..n\), set \(z_i=\mathrm{majority}_T\big(b_T\oplus P(y,\,r_T\oplus e_i)\big)\); <em class="muted">(Trick 1: ask about the disguised point \(r_T\oplus e_i\), never \(e_i\). Trick 2: supply \(b_T\) ourselves, so each vote needs only one correct answer from \(P\). Majority over the \(m\) votes)</em></li>
+ <li>if \(f(z)=y\), output \(z=z_1\cdots z_n\) and stop. <em class="muted">(Trick 3: we can't tell which guess was right, so verify each candidate using that \(f\) is easy to compute)</em></li>
  </ul></li>
 <li>If no guess worked, output anything.</li>
 </ol>
