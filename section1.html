@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Section 1: PRG and Cryptography Introduction</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\(',right:'\\)',display:false}],macros:{'\\negl':'\\mathrm{negl}','\\Adv':'\\mathrm{Adv}','\\poly':'\\mathrm{poly}','\\BPP':'\\mathsf{BPP}','\\Ppoly':'\\mathsf{P/poly}','\\NP':'\\mathsf{NP}','\\Pclass':'\\mathsf{P}','\\DTIME':'\\mathsf{DTIME}','\\SUBEXP':'\\mathsf{SUBEXP}','\\EXP':'\\mathsf{EXP}','\\bits':'\\{0,1\\}'}});"></script>
+<style>
+:root{
+  --bg:#fdfcf9; --fg:#1f1f1f; --muted:#666; --rule:#e2ded6; --card:#f4f1ea;
+  --accent:#2b5c8a; --warn-bg:#fff4d6; --warn-fg:#6b4e00; --warn-rule:#e9c766;
+  --src-bg:#e7eef6; --src-fg:#234a70; --me-bg:#fbe3e3; --me-fg:#8a2b2b;
+  --dr:#2e7d4f; --dr-bg:#e9f5ee;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16181b; --fg:#e6e3dc; --muted:#a0a0a0; --rule:#33363b; --card:#1f2226;
+    --accent:#8db8e0; --warn-bg:#3a3014; --warn-fg:#f2d78a; --warn-rule:#7a6420;
+    --src-bg:#1f3247; --src-fg:#b5d2ee; --me-bg:#4a2222; --me-fg:#f2b8b8;
+    --dr:#7fd1a0; --dr-bg:#1c3326;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16181b; --fg:#e6e3dc; --muted:#a0a0a0; --rule:#33363b; --card:#1f2226;
+  --accent:#8db8e0; --warn-bg:#3a3014; --warn-fg:#f2d78a; --warn-rule:#7a6420;
+  --src-bg:#1f3247; --src-fg:#b5d2ee; --me-bg:#4a2222; --me-fg:#f2b8b8;
+  --dr:#7fd1a0; --dr-bg:#1c3326;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:Georgia,"Times New Roman",serif;line-height:1.65;font-size:17px}
+main{max-width:780px;margin:0 auto;padding:2rem 16px 5rem}
+h1{font-size:1.9rem;line-height:1.25;margin:.2rem 0 .4rem}
+h2{font-size:1.4rem;margin:2.8rem 0 .6rem;padding-top:.6rem;border-top:1px solid var(--rule)}
+h3{font-size:1.1rem;margin:1.8rem 0 .4rem}
+a{color:var(--accent)}
+.banner{background:var(--warn-bg);color:var(--warn-fg);border:1px solid var(--warn-rule);border-radius:6px;padding:.8rem 1rem;margin:1rem 0 1.5rem;font-family:system-ui,sans-serif;font-size:.92rem;line-height:1.5}
+.box{background:var(--card);border-left:3px solid var(--accent);border-radius:4px;padding:.7rem 1rem;margin:1rem 0;overflow-x:auto}
+.box > .label{font-family:system-ui,sans-serif;font-weight:600;font-size:.85rem;letter-spacing:.02em;text-transform:uppercase;color:var(--accent);margin-bottom:.2rem}
+.proof{border-left:2px solid var(--rule);padding:.2rem 0 .2rem 1rem;margin:.6rem 0 1rem}
+.proof > .label{font-style:italic}
+.src,.me{display:inline-block;font-family:system-ui,sans-serif;font-size:.72rem;line-height:1.3;padding:.08rem .45rem;border-radius:999px;margin:0 .1rem;vertical-align:.1em;white-space:nowrap}
+.src{background:var(--src-bg);color:var(--src-fg)}
+.me{background:var(--me-bg);color:var(--me-fg)}
+table{border-collapse:collapse;width:100%;font-size:.92rem;margin:1rem 0;display:block;overflow-x:auto}
+th,td{border:1px solid var(--rule);padding:.4rem .55rem;text-align:left;vertical-align:top}
+th{background:var(--card);font-family:system-ui,sans-serif;font-size:.85rem}
+.toc{font-family:system-ui,sans-serif;font-size:.92rem;background:var(--card);border-radius:6px;padding:.6rem 1rem}
+.toc ol{margin:.3rem 0;padding-left:1.3rem}
+.katex-display{overflow-x:auto;overflow-y:hidden;padding:.2rem 0}
+.muted{color:var(--muted)}
+code{font-size:.9em}
+svg.diag{display:block;width:100%;max-width:640px;height:auto;margin:1.2rem auto .3rem;color:var(--fg)}
+svg.diag text{fill:currentColor;font-family:system-ui,sans-serif;font-size:14px}
+svg.diag .t-head{font-weight:600}
+svg.diag .ln{stroke:currentColor;stroke-width:1.5;fill:none}
+svg.diag .b-chal{fill:var(--card);stroke:var(--accent);stroke-width:1.5}
+svg.diag .b-adv{fill:var(--bg);stroke:currentColor;stroke-width:1.5}
+svg.diag .b-wrap{fill:none;stroke:var(--accent);stroke-width:1.5;stroke-dasharray:6 4}
+svg.diag .c-x{fill:var(--src-bg);stroke:currentColor}
+svg.diag .c-y{fill:var(--bg);stroke:currentColor}
+svg.diag .c-chg{stroke:var(--me-fg);stroke-width:3}
+.caption{font-family:system-ui,sans-serif;font-size:.85rem;color:var(--muted);text-align:center;margin:.2rem 0 1.2rem}
+.box.derand{border-left-color:var(--dr);background:var(--dr-bg)}
+.box.derand > .label{color:var(--dr)}
+.derand-banner{border:1px solid var(--dr);background:var(--dr-bg);border-radius:6px;padding:.7rem 1rem;margin:1rem 0;font-family:system-ui,sans-serif;font-size:.92rem;line-height:1.5}
+svg.diag .b-derand{fill:var(--dr-bg);stroke:var(--dr);stroke-width:2}
+.plan{background:var(--card);border-radius:4px;padding:.45rem .8rem;margin:.4rem 0 .8rem;font-size:.95rem}
+.plan p{margin:.25rem 0}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap">
+<link rel="stylesheet" href="assets/slides.css">
+<link rel="stylesheet" href="assets/rococo.css">
+<script src="assets/slides.js" defer></script>
+</head>
+<body>
+<main>
+<p class="muted" style="font-family:system-ui,sans-serif;font-size:.85rem;margin:0"><a href="index.html">← site home</a></p>
+<h1>Section 1: PRG and Cryptography Introduction</h1>
+<figure class="painting"><div class="frame"><img src="assets/paintings/watteau-pilgrimage.jpg" width="960" height="630" alt="Couples in silk gather on a hillside at dusk, about to set sail for the island of love." loading="lazy" decoding="async"></div><figcaption><a href="https://commons.wikimedia.org/wiki/File:L%27Embarquement_pour_Cyth%C3%A8re,_by_Antoine_Watteau,_from_C2RMF_retouched.jpg" rel="noopener"><span class="p-title">Pilgrimage to Cythera</span></a><br><span class="p-artist">Jean-Antoine Watteau, 1717</span></figcaption></figure>
+
+<p>In the course, we gave a very high-level sketch explaining why the existence of something called a “Pseudorandom Generator” would lead to the derandomization result \(\Pclass=\BPP\). The sketch left out many lower-level details and even omitted explaining how such a proof would be formalized in the first place. What does it mean for bits to “look random” to a poly-time TM? to <em>all</em> poly-time TMs?</p>
+<p>In this section, we introduce foundational ideas in cryptography to formalize this “computational indistinguishability” as well as proof techniques that will allow us to reason about them. We then attempt to prove the result from lecture—no matter whether we actually manage to show \(\Pclass=\BPP\) or some different result, we'll have all the foundations needed for the next section.</p>
+
+<div class="toc"><strong>Table of contents</strong>
+<ol>
+<li><a href="#s1">Recap of UCT Content</a></li>
+<li><a href="#s2">Background: Negligibility and the Adversary's Computational Model</a></li>
+<li><a href="#s3">Attack Games and Computational Indistinguishability</a></li>
+<li><a href="#s4">Pseudorandom Generators (PRGs)</a></li>
+<li><a href="#s5">Security Reductions</a></li>
+<li><a href="#s6">The Hybrid Argument Lemma</a></li>
+<li><a href="#s7">From PRGs to Derandomization: is the Lecture Proof Fixable Now?</a></li>
+</ol></div>
+
+
+<!-- ============================================================ -->
+<h2 id="s1">1. Recap of UCT Content</h2>
+<figure class="painting"><div class="frame"><img src="assets/paintings/chardin-soap-bubbles.jpg" width="960" height="928" alt="A young man leans out of a window, blowing a soap bubble through a straw." loading="lazy" decoding="async"></div><figcaption><a href="https://commons.wikimedia.org/wiki/File:Soap_Bubbles_MET_DP356133.jpg" rel="noopener"><span class="p-title">Soap Bubbles</span></a><br><span class="p-artist">Jean-Siméon Chardin, c. 1733–34</span></figcaption></figure>
+
+<p>Derandomization, in general, is the process of taking algorithms that use random bits and creating equivalent algorithms that don't. The simplest derandomization result is \(\BPP\subseteq\EXP\): we can run any \(\BPP\) algorithm on all possible random strings in \(\EXP\) time, thus removing its need to use randomness at all. This relies on the fact that if a random algorithm uses at most \(k\) random bits, there are at most \(2^k\) sequences of random strings it can be run on.</p>
+
+<p>The number of random bits used by any \(\BPP\) algorithm is bounded by \(\poly(n)\). But what if it was bounded by \(O(\log n)\) instead? Then we could run such a \(\BPP\) algorithm on all \(2^{O(\log n)}\) random strings in \(\poly(n)\) time; the resulting derandomized algorithm would be in \(\Pclass\), ending up with \(\Pclass=\BPP\). This would be a huge theoretical result, with huge implications across the entire spectrum of theoretical computer science. Therefore, in order to prove \(\Pclass=\BPP\), it suffices to show that every \(\BPP\)-time TM can be converted into a poly-time probabilistic TM that uses \(O(\log n)\) bits.</p>
+
+<p>In lecture, this is where we introduced the Pseudorandom Generator (PRG), a TM \(G\) that turns \(O(\log n)\) truly random seed bits into \(\poly(n)\) bits that “look random” to all poly-time machines. The new machine is \(M'(x,s) = M(x, G(s))\). The deterministic simulation then works like this:</p>
+<ul>
+<li>Run \(M'(x,s)\) for <em>every</em> seed \(s\). There are only \(2^{O(\log n)} = \poly(n)\) of them.</li>
+<li>Output the <em>majority</em> answer.</li>
+</ul>
+<p>The answers need <em>not</em> agree across seeds. Even with truly random bits, \(M\) is wrong on up to \(1/3\) of random strings. What “fooling \(M\)” guarantees is that the <em>fraction</em> of seeds giving the right answer is close to the fraction of truly random strings giving the right answer (at least \(2/3\)). So more than half the seeds are right, and the majority vote is correct. If the fraction under \(G\) were far from what random bits give, then “run \(M(x,\cdot)\) and check the answer” would itself be a test that tells \(G\)'s output apart from random.</p>
+
+
+<p>As mentioned in lecture, we “believe” such PRGs exist because hard functions can be turned into pseudorandomness (“Hardness ⟹ Derandomization”), but we give no definitions or proofs. “Randomness is in the eye of the beholder”, as we say.</p>
+
+<p>In this section, we will systematically go through each element this proof omits or glazes over and flesh it out at a low-level, introducing key proof techniques used in cryptography along the way. The elements that the proof misses are as follows:</p>
+<ol>
+<li>What exactly does “looks random to poly-time machines” mean?</li>
+<li>What exactly is a “hard function”? (we'll actually cover this in <a href="section2.html">Section 2</a>, with one-way functions)</li>
+<li>What proof techniques let us use these definitions?</li>
+<li>What exactly is the derandomization process?</li>
+</ol>
+
+
+<!-- ============================================================ -->
+<h2 id="s2">2. Background: Negligibility and the Adversary's Computational Model</h2>
+<figure class="painting"><div class="frame"><img src="assets/paintings/fragonard-reader.jpg" width="960" height="1207" alt="A girl in a lemon-yellow dress reads a small book, propped on a cushion." loading="lazy" decoding="async"></div><figcaption><a href="https://commons.wikimedia.org/wiki/File:Jean_Honor%C3%A9_Fragonard,_Young_Girl_Reading,_c._1769,_NGA_46303.jpg" rel="noopener"><span class="p-title">Young Girl Reading</span></a><br><span class="p-artist">Jean-Honoré Fragonard, c. 1769</span></figcaption></figure>
+
+<h3>Adversarial Thinking</h3>
+<p>As stated in lecture, we're interested in functions (we'll call them PRGs) that turn \(O(\log n)\) truly random bits into \(\poly(n)\) bits that “look random” to poly-time machines. This is inherently an adversarial relationship: the PRGs that generate the bits versus the poly-time machines that try to distinguish them from truly random bits. We'll put ourselves in the shoes of the PRG, while the poly-time machine doing the distinguishing work will be the adversary.</p>
+<p>One can always consider, as a baseline, a poly-time machine adversary that just randomly guesses whether it's looking at truly random bits or PRG output. Thus, we need to consider how much better a given adversary performs compared to this baseline: that will be its “advantage”.</p>
+
+<h3>Negligible functions</h3>
+<p>We say that polynomially-bounded functions are “reasonably large”, while exponentially-bounded functions are “unreasonably large”, in terms of computation bounds. Likewise, we might want to say that functions of the form \(1/\poly(n)\) are “reasonably small”. Anything smaller than \(1/\poly(n)\) would thus be “unreasonably small”; in other words, negligibly small.</p>
+
+<div class="box"><div class="label">Definition (negligible), formally</div>
+\(\varepsilon:\mathbb{Z}_{\ge 1}\to\mathbb{R}\) is <em>negligible</em> if for every \(c\gt 0\) there is an \(n_0\) with \(|\varepsilon(n)| \lt 1/n^c\) for all \(n\ge n_0\). Equivalently, \(\lim_{n\to\infty} \varepsilon(n)\,n^c = 0\) for every \(c\gt 0\). A function \(s\) is <em>super-poly</em> if \(1/s\) is negligible.</div>
+
+<div class="box"><div class="label">Closure facts</div>
+If \(\varepsilon,\varepsilon'\) are negligible and \(p\) is polynomially bounded, then \(\varepsilon+\varepsilon'\) and \(p\cdot\varepsilon\) are negligible.</div>
+<div class="proof"><span class="label">Proof of the second fact.</span> Say \(p(n)\le n^k\) for large \(n\). Given \(c\), apply negligibility with \(c+k\): for large \(n\), \(\varepsilon(n)\lt 1/n^{c+k}\), so \(p(n)\varepsilon(n)\lt n^k/n^{c+k}=1/n^c\). ∎</div>
+
+<p>On the other hand, if a function is “non-negligible”, there is a constant \(c\) with \(\varepsilon(n)\ge 1/n^c\) for infinitely many \(n\) (not necessarily for all \(n\); think about how big O only needs to hold after the \(n_0\) boundary).</p>
+
+<h3>Adversaries and their Computational Models</h3>
+<p>In lecture, we just talk about poly-time TMs. However, we're actually going to expand that definition a little bit: our adversaries will instead be (potentially nonuniform) polynomial-sized circuit families, corresponding to the class \(\Ppoly\).</p>
+<p>By fooling these nonuniform machines, we'll actually be proving a stronger result than if we fooled \(\Pclass\)-time machines or \(\BPP\)-time machines or something similar. However, there's a really good reason we want to make this change: pretty much all of our proofs will be by contrapositive, meaning the extra power afforded by nonuniformity will be a huge boon to making our proofs cleaner and more natural.</p>
+
+
+<!-- ============================================================ -->
+<h2 id="s3">3. Attack Games and Computational Indistinguishability</h2>
+<figure class="painting"><div class="frame"><img src="assets/paintings/fragonard-blind-mans-buff.jpg" width="960" height="1235" alt="A blindfolded young woman gropes forward in a garden game while a companion watches." loading="lazy" decoding="async"></div><figcaption><a href="https://commons.wikimedia.org/wiki/File:Jean-Honor%C3%A9_Fragonard_-_Blind-Man%E2%80%99s_Buff_-_Google_Art_Project.jpg" rel="noopener"><span class="p-title">Blind-Man’s Buff</span></a><br><span class="p-artist">Jean-Honoré Fragonard, c. 1750–52</span></figcaption></figure>
+
+<h3>Attack Games</h3>
+<p>Let's actually formally define what we mean by adversaries and “fooling”. Every definition in derandomization and in security can be described as an <strong>attack game</strong> between two parties:</p>
+<ul>
+<li>a <strong>challenger</strong>, who follows a fixed, simple procedure (corresponds to the “PRG” in the lecture content), and sends some data \(x\) to the adversary.</li>
+<li>an <strong>adversary</strong> \(A\), who may use any strategy to distinguish something about the challenger from the data \(x\) that they sent (corresponds to the “poly time TMs” in the lecture content)</li>
+</ul>
+<p>Notice the challenger is allowed to change up their strategy depending on the experiment, while the adversary's chosen algorithm must work the same way across both experiments.</p>
+<p>More formally, the game will play across two experiments, labelled 0 and 1. The challenger will choose some data \(x\) from some distribution \(P_b\), where \(b\) represents which experiment we are in. The adversary \(A\) receives \(x\) and runs their algorithm on \(x\), and must output a \(\hat b\), their guess for which experiment we are in (equivalently, whether \(x\) was drawn from \(P_0\) or \(P_1\)).</p>
+<p>Let \(W_b\) be the event that \(A\) outputs 1 in experiment \(b\). So \(W_1\) occurs when the experiment is 1 and \(A\) correctly distinguishes that, while \(W_0\) occurs when the experiment is 0 and \(A\) incorrectly thinks it's experiment 1. We can then have the following advantage.</p>
+
+<div class="box"><div class="label">Attack Game (distinguishing \(P_0\) from \(P_1\))</div>
+In Experiment \(b\in\{0,1\}\), the challenger samples \(x\leftarrow P_b\) and sends \(x\) to \(A\). Then \(A\) outputs \(\hat b\in\{0,1\}\).
+$$\mathrm{Distadv}[A,P_0,P_1] := \big|\Pr[W_0]-\Pr[W_1]\big|.$$</div>
+
+<p>This is distinct from \(A\)'s success probability: consider an adversary that always outputs 1: \(\Pr[W_0]=\Pr[W_1]=1\), so their advantage is 0. This makes sense because they have no “intuitive” advantage; they don't know anything about the challenger.</p>
+
+<h3>Statistical Distance: the Bounds of an All-Powerful Adversary</h3>
+<p>Notice that we still haven't fixed the adversaries to be poly-time bounded or to be restricted to a particular computational model. That means we can consider the following question: if an all-powerful adversary played the attack game as before, what's the best possible advantage they could achieve? Our bound will be based off the following observation: if the data \(x\) that the challenger sent is equally likely in \(P_0\) and \(P_1\), then no adversary can reliably choose the correct \(P_b\); only if \(x\) is more likely in one than the other can any adversary extract any advantage.</p>
+<p>Assume \(A\) is running a deterministic algorithm (we'll show that randomness here is not very important). Then \(A\) essentially boils down to outputting 1 if and only if \(x\) falls into some set \(R'\) (the “language” of \(A\)'s algorithm), which is a subset of \(R\), the codomain of the challenger's \(x\) generation function. Then \(A\)'s advantage is exactly:</p>
+$$\Pr[W_0]-\Pr[W_1] = P_0[R']-P_1[R'] = \sum_{r\in R'}\big(P_0(r)-P_1(r)\big).$$
+<p>To choose an \(R'\) that will maximize this advantage value, we'll fill \(R'\) with every \(r\) that is more likely under \(P_0\) than \(P_1\). This means its advantage becomes:</p>
+$$\sum_{r:\,P_0(r)\gt P_1(r)}\big(P_0(r)-P_1(r)\big) \;=\; \tfrac12\sum_{r\in R}\big|P_0(r)-P_1(r)\big|.$$
+<p>This holds because the area of \(P_0\) that exceeds \(P_1\) is exactly the same as the area of \(P_1\) that exceeds \(P_0\); they're both distributions, so they both must sum to 1. A randomized algorithm by the adversary would just average several deterministic ones, meaning it wouldn't do any better.</p>
+
+<div class="box"><div class="label">Definition (statistical distance)</div>
+$$\Delta(P_0,P_1) := \tfrac12\sum_{r\in R}|P_0(r)-P_1(r)| \;=\; \max_{R'\subseteq R}\big|P_0[R']-P_1[R']\big|.$$
+By the argument above, this is exactly <strong>the best advantage any adversary, efficient or not, can achieve</strong> in the distinguishing game.</div>
+
+<p>As a lemma, we can see that applying any (reasonable) function \(f\) to the sample can't increase \(\Delta\), since any adversary could just compute \(f\) themselves too. This gives us the following lemma:</p>
+<div class="box"><div class="label">Lemma (applying a function can't increase \(\Delta\))</div>
+$$\Delta(f(X),f(Y))\le\Delta(X,Y).$$</div>
+
+<h3>Seeds and Secrets</h3>
+<p>So far, we've been considering the challenger as simply drawing \(x\) from probability distributions \(P_0\) and \(P_1\). How does this relate to the PRGs the lecture mentioned, which use the log-sized random bits as a seed? How does this relate to cryptographic algorithms that use shared secrets?</p>
+<p>In the secret view, the challenger samples a secret uniformly, say \(s\in\bits^n\), and computes what it sends from \(s\). The adversary only ever sees the output, so all that matters to it is the probability of each possible output. That output distribution is \(P_0\) or \(P_1\).</p>
+<p>A single pair \(P_0,P_1\) on a single finite set gives each adversary just one number as its advantage. So \(P_0\) and \(P_1\) are really sequences: for each \(n\), a pair \(P_0^{(n)},P_1^{(n)}\) on a set \(R_n\), such as \(\bits^{L(n)}\). In the secret view, \(n\) is exactly the secret length you sample for that member of the family. The adversary is a circuit family \(\{A_n\}\), and \(A_n\) plays against the \(n\)-th pair. This means that the advantage of \(A\) now becomes a function of \(n\).</p>
+
+<h3>Computational Indistinguishability</h3>
+<p>Now restrict the adversaries to efficient algorithms (poly-sized circuits).</p>
+<div class="box"><div class="label">Definition (computational indistinguishability)</div>
+\(P_0\) and \(P_1\) are <strong>computationally indistinguishable</strong> if \(\mathrm{Distadv}[A,P_0,P_1]\) is negligible for every efficient adversary \(A\).</div>
+
+<div class="box"><div class="label">Theorem (statistical ⇒ computational)</div>
+For every adversary \(A\), \(\mathrm{Distadv}[A,P_0,P_1]\le\Delta(P_0,P_1)\). So if \(\Delta\) is negligible, \(P_0\) and \(P_1\) are computationally indistinguishable.</div>
+<div class="proof"><span class="label">Proof.</span> \(\Delta\) is the best advantage over <em>all</em> adversaries (see above). Efficient adversaries are some of those, so none of them can beat it. ∎</div>
+
+
+<!-- ============================================================ -->
+<h2 id="s4">4. Pseudorandom Generators (PRGs)</h2>
+<figure class="painting"><div class="frame"><img src="assets/paintings/watteau-pierrot.jpg" width="960" height="1198" alt="A commedia dell’arte clown in white satin stands facing the viewer, with actors behind him." loading="lazy" decoding="async"></div><figcaption><a href="https://commons.wikimedia.org/wiki/File:Jean-Antoine_Watteau_-_Pierrot,_dit_autrefois_Gilles.jpg" rel="noopener"><span class="p-title">Pierrot (formerly known as Gilles)</span></a><br><span class="p-artist">Jean-Antoine Watteau, c. 1718–19</span></figcaption></figure>
+
+<h3>PRG Definition</h3>
+<p>A PRG is an efficient deterministic algorithm \(G:\bits^\ell\to\bits^L\) with \(L\gt\ell\). The security of a PRG will be defined by the advantage of an attack game, our first of many attack games.</p>
+<p>The PRG attack game is the attack game of Section 3 with a specific pair of distributions. In Experiment 0, the challenger picks a uniformly random seed \(s\in\bits^\ell\) and sends \(x=G(s)\); so \(P_0\) is the distribution of \(G(s)\) over a uniform seed. In Experiment 1, the challenger sends a uniformly random \(x\in\bits^L\); so \(P_1\) is uniform on \(\bits^L\). The adversary sees only \(x\) and outputs its guess \(\hat b\).</p>
+
+<div class="box"><div class="label">Definition (secure PRG)</div>
+\(\mathrm{PRGadv}[A,G] := |\Pr[W_0]-\Pr[W_1]|\) in the PRG attack game. \(G\) is <strong>secure</strong> if \(\mathrm{PRGadv}[A,G]\) is negligible for every efficient \(A\).</div>
+
+<p>Equivalently, we can say that a PRG \(G\) is secure if \(G(\bits^\ell)\) is computationally indistinguishable from \(\bits^L\). From now on, we'll call (the uniform distribution on) \(\bits^k\) by the symbol \(U_k\) for simplicity.</p>
+<p>Note: the definition only requires that the PRG's output size be \(L\ge\ell+1\), one bit longer than its input size. We'll show later that this one bit of length increase is sufficient to create polynomially-long PRG outputs.</p>
+
+<h3>Other possible definitions</h3>
+<p>Here are some other ways we could've tried to define PRGs and why they are not smart.</p>
+<ol>
+<li><strong>“\(G\)'s output should be distributed (almost) uniformly.”</strong> Impossible. \(G(U_\ell)\) has statistical distance at least \(1/2\) from uniform: it can take at most \(2^\ell\) of the \(2^L\) possible values.</li>
+<li><strong>“\(G\)'s output should pass a standard list of statistical tests”</strong> (balanced 0s and 1s, balanced pairs, χ², …). Not enough. There are generators that pass all such standard tests yet are completely predictable: from a prefix of the output you can compute the rest. A fixed list of tests says nothing about the test an adversary designs specifically against \(G\).</li>
+</ol>
+<p>Our definition sits between these two. It quantifies over <em>every</em> test, like (1), but only <em>efficient</em> ones, which makes it achievable.</p>
+
+
+<!-- ============================================================ -->
+<h2 id="s5">5. Security Reductions</h2>
+<figure class="painting"><div class="frame"><img src="assets/paintings/chardin-house-of-cards.jpg" width="960" height="1201" alt="A boy at a table carefully builds a tower of playing cards." loading="lazy" decoding="async"></div><figcaption><a href="https://commons.wikimedia.org/wiki/File:Jean_Sim%C3%A9on_Chardin,_The_House_of_Cards,_probably_1737,_NGA_97.jpg" rel="noopener"><span class="p-title">The House of Cards</span></a><br><span class="p-artist">Jean-Siméon Chardin, c. 1737</span></figcaption></figure>
+
+<h3>Definition</h3>
+<p>Almost every theorem in this area has the form “if primitive \(P\) is secure, then construction \(C\) is secure.” It is proved by <strong>reduction</strong>, usually in the contrapositive: given any efficient adversary \(A\) that breaks \(C\), build an efficient adversary \(B\) that breaks \(P\). Usually \(B\) runs \(A\) as a subroutine and plays the challenger for \(A\). This is similar to computational complexity reductions, which use one function as a subroutine for another to show hardness implications: security reductions equivalently show security implications.</p>
+
+<svg class="diag" viewBox="0 0 640 230" role="img" aria-label="Reduction: adversary B receives a challenge z from the challenger for primitive P, builds an input for A from z, runs A, and forwards A's output bit.">
+<defs><marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+<rect x="10" y="60" width="160" height="110" rx="8" class="b-chal"/>
+<text x="90" y="90" text-anchor="middle" class="t-head">Challenger</text>
+<text x="90" y="112" text-anchor="middle">for primitive P</text>
+<text x="90" y="134" text-anchor="middle">(Experiment b)</text>
+<rect x="230" y="20" width="400" height="190" rx="10" class="b-wrap"/>
+<text x="430" y="42" text-anchor="middle" class="t-head">Adversary B (the reduction)</text>
+<rect x="250" y="60" width="160" height="120" rx="8" class="b-chal"/>
+<text x="330" y="88" text-anchor="middle" class="t-head">B plays</text>
+<text x="330" y="108" text-anchor="middle">challenger for C,</text>
+<text x="330" y="128" text-anchor="middle">embedding z</text>
+<rect x="460" y="60" width="150" height="120" rx="8" class="b-adv"/>
+<text x="535" y="110" text-anchor="middle" class="t-head">A</text>
+<text x="535" y="132" text-anchor="middle">(breaks C)</text>
+<line x1="170" y1="90" x2="248" y2="90" class="ln" marker-end="url(#ah3)"/>
+<text x="209" y="82" text-anchor="middle">z</text>
+<line x1="410" y1="95" x2="458" y2="95" class="ln" marker-end="url(#ah3)"/>
+<text x="434" y="87" text-anchor="middle">view</text>
+<line x1="460" y1="150" x2="412" y2="150" class="ln" marker-end="url(#ah3)"/>
+<text x="436" y="168" text-anchor="middle">b̂</text>
+<line x1="250" y1="150" x2="172" y2="150" class="ln" marker-end="url(#ah3)"/>
+<text x="211" y="168" text-anchor="middle">output</text>
+</svg>
+<p class="caption">Figure 1. A reduction. \(B\) attacks primitive \(P\) by running \(A\) (which attacks construction \(C\)) on a game built from \(P\)'s challenge \(z\). If \(b=0\) makes \(A\) see the real \(C\)-game and \(b=1\) makes it see an “easy” game, then \(B\)'s advantage equals the difference between the two.</p>
+
+<p>Here is the general template for a security reduction:</p>
+<ol>
+<li><strong>Assume an attacker.</strong> Suppose an efficient \(A\) has non-negligible advantage \(\varepsilon\) against \(C\). We know nothing else about \(A\), so we use it as a black box.</li>
+<li><strong>Build \(B\) around \(A\).</strong> \(B\) takes \(P\)'s challenge, turns it into a challenge for \(A\) (playing \(A\)'s challenger), runs \(A\), and uses \(A\)'s answer as its own guess.</li>
+<li><strong>Check what \(A\) sees.</strong> In each of \(B\)'s experiments, \(A\) must get a correctly distributed challenge (or one it provably can't do well on), or \(\varepsilon\) says nothing.</li>
+<li><strong>Compute \(B\)'s advantage</strong> as an explicit formula in \(\varepsilon\).</li>
+<li><strong>Show it is non-negligible.</strong> Then \(B\) breaks \(P\), contradicting \(P\)'s security.</li>
+</ol>
+
+<h3>Example: PRGs exist ⟹ \(\Pclass\ne\NP\)</h3>
+<p>While this proof won't exactly use another adversary as a subroutine, and so doesn't exactly follow the steps outlined above, the general structure is the same.</p>
+<p>Additionally, I know that when defining our terms, we said that adversaries are poly-bounded circuits. For this proof, pretend they also could be poly-time TMs (as in lecture). That allows us to achieve the much more auraful result of \(\NP\subsetneq\Pclass\) rather than the mundane \(\NP\not\subseteq\Ppoly\).</p>
+
+<div class="box"><div class="label">Theorem 5.1 (PRGs ⇒ \(\Pclass\ne\NP\))</div>
+If a PRG exists that is secure against poly-time adversaries, then \(\Pclass\ne\NP\).</div>
+<div class="proof"><span class="label">Proof.</span> Suppose \(\Pclass=\NP\). Let \(L=\{y:\ y=G(s)\text{ for some } s\}\), the set of strings \(G\) can output. \(L\in\NP\): the seed \(s\) is a certificate, checked by running the algorithm for \(G\). (This is where we use that \(G\) is uniform.) Since \(\Pclass=\NP\), there is a poly-time TM \(D\) deciding \(L\).
+<p><strong>Adversary \(B(r)\):</strong> output 1 iff \(D(r)\) accepts. In words, “say <em>pseudorandom</em> iff \(r\) is something \(G\) could have produced.” \(B\) is a poly-time TM, so it is an efficient adversary.</p>
+<ul>
+<li><em>Experiment 0</em> (\(r=G(s)\), uniform seed \(s\)): \(r\in L\) always, so \(\Pr[W_0]=1\).</li>
+<li><em>Experiment 1</em> (\(r\) uniform in \(\bits^\ell\)): \(B\) outputs 1 only if \(r\in L\), which only occurs if \(r\) happens to appear in \(G\)'s postimage by chance. Since \(G\) has only \(2^n\) seeds, \(\Pr[W_1]\le 2^n/2^\ell\le 1/2\).</li>
+</ul>
+<p><strong>Advantage:</strong> \(\mathrm{PRGadv}[B,G]=\Pr[W_0]-\Pr[W_1]=1-\frac{|\mathrm{Im}(G)|}{2^\ell}\ge 1-2^{n-\ell}\ge\frac12\) for every \(n\), which is clearly non-negligible with respect to \(n\). ∎</p></div>
+
+<p>Replacing \(D\) with a poly-size nonuniform circuit family instead gives \(\NP\not\subseteq\Ppoly\), by the same logic.</p>
+<p>This is a bit of a barrier to proving PRGs exist outright. I'm sure it's nothing 5 trillion claudes couldn't solve in the next 3 weeks.</p>
+
+
+<!-- ============================================================ -->
+<h2 id="s6">6. The Hybrid Argument Lemma</h2>
+<figure class="painting"><div class="frame"><img src="assets/paintings/fragonard-swing.jpg" width="960" height="1225" alt="A woman in a pink dress swings high in a leafy garden, kicking off her slipper." loading="lazy" decoding="async"></div><figcaption><a href="https://commons.wikimedia.org/wiki/File:Jean-Honor%C3%A9_Fragonard_-_The_Swing_-_WGA08061.jpg" rel="noopener"><span class="p-title">The Swing</span></a><br><span class="p-artist">Jean-Honoré Fragonard, 1767</span></figcaption></figure>
+
+<h3>Definition</h3>
+<p>Often the differences between the two experiments we want to compare, the fully pseudorandom experiment and the fully random experiment, differ in many places at once. A <strong>hybrid argument</strong> walks from one to the other with small, intermediary experiments. Each step makes a small change to the construction whose effect on the advantage can be quantified. In the end, the difference between the two important experiments (the advantage) can be bounded in terms of the intermediate steps using the triangle inequality.</p>
+<p>We'll define this hybrid argument in general, and then use it to prove two useful lemmas: the first will show that independent repeats of computationally indistinguishable distributions remain indistinguishable, and the second will show that a PRG can be manipulated into larger PRGs while retaining its security.</p>
+
+<h3>Toy example</h3>
+<p>Let \(G:\bits^\ell\to\bits^L\) be a secure PRG, and let \(G'(s_1,s_2)=(G(s_1),G(s_2))\). Is \(G'\) secure? Take any efficient adversary \(A\) against \(G'\) and look at three games, changing one block at a time:</p>
+<table>
+<tr><th>Game</th><th>block 1</th><th>block 2</th><th>\(p_i=\Pr[A\text{ outputs }1]\)</th></tr>
+<tr><td>Game 0 (real \(G'\))</td><td>\(G(s_1)\)</td><td>\(G(s_2)\)</td><td>\(p_0\)</td></tr>
+<tr><td>Game 1</td><td><strong>uniform</strong></td><td>\(G(s_2)\)</td><td>\(p_1\)</td></tr>
+<tr><td>Game 2 (uniform)</td><td>uniform</td><td><strong>uniform</strong></td><td>\(p_2\)</td></tr>
+</table>
+<p>\(\mathrm{PRGadv}[A,G']=|p_0-p_2|\le|p_0-p_1|+|p_1-p_2|\) (triangle inequality). Each term on the right is the advantage of an adversary against <em>one</em> copy of \(G\):</p>
+<ul>
+<li>\(B_1(z)\): put the challenge \(z\) in block 1, put \(G(s_2)\) for a fresh seed in block 2, and run \(A\). If \(z=G(s)\) this is Game 0; if \(z\) is uniform it's Game 1. So \(\mathrm{PRGadv}[B_1,G]=|p_0-p_1|\).</li>
+<li>\(B_2(z)\): put a uniform string in block 1 and \(z\) in block 2. This gives Game 1 vs. Game 2, so \(\mathrm{PRGadv}[B_2,G]=|p_1-p_2|\).</li>
+</ul>
+<p>Both terms are negligible because \(G\) is secure, so their sum is negligible and \(G'\) is secure. That's the whole idea. The general version just has more games.</p>
+
+<h3>Hybrid Lemma (generalized)</h3>
+<div class="box"><div class="label">Hybrid Lemma</div>
+Let \(X,Y\) be distributions and \(H_0,H_1,\dots,H_k\) a chain of distributions. Suppose that for each step \(i\) there is an efficient (possibly randomized) procedure \(T_i\) such that
+$$T_i(X)\ \text{is distributed as}\ H_{i-1}\qquad\text{and}\qquad T_i(Y)\ \text{is distributed as}\ H_i .$$
+Then for every efficient adversary \(A\) there is an efficient adversary \(B\) with
+$$\big|\Pr[A(H_0)=1]-\Pr[A(H_k)=1]\big|\ \le\ k\cdot\big|\Pr[B(X)=1]-\Pr[B(Y)=1]\big|.$$<p style="margin:.4rem 0 0">This is equivalent to saying “\(A\)'s advantage in distinguishing \(H_0\) from \(H_k\) is bounded by \(k\) times \(B\)'s advantage in distinguishing \(X\) from \(Y\)”.</p></div>
+
+<div class="proof"><span class="label">Proof.</span>
+<p>Let \(p_i=\Pr[A(H_i)=1]\), and assume \(p_0\ge p_k\) (otherwise flip \(A\)'s output). The sum telescopes:
+$$p_0-p_k=\sum_{i=1}^{k}\big(p_{i-1}-p_i\big).$$
+A sum of \(k\) terms is at most \(k\) times its largest term, so some step \(i^*\) has \(p_{i^*-1}-p_{i^*}\ge\frac1k(p_0-p_k)\).</p>
+<p>Let \(B(z)=A(T_{i^*}(z))\), with \(i^*\) hard-coded. Since \(T_{i^*}(X)\sim H_{i^*-1}\) and \(T_{i^*}(Y)\sim H_{i^*}\):</p>
+<ul>
+<li>\(\Pr[B(X)=1]=p_{i^*-1}\);</li>
+<li>\(\Pr[B(Y)=1]=p_{i^*}\).</li>
+</ul>
+<p><strong>Advantage:</strong> \(\Pr[B(X)=1]-\Pr[B(Y)=1]=p_{i^*-1}-p_{i^*}\ge\frac1k(p_0-p_k)\). Rearranged, that is the inequality in the statement. \(B\) is efficient because \(A\) and \(T_{i^*}\) are. ∎</p></div>
+
+<p><strong>How to use it.</strong> Every hybrid proof on this site follows the same recipe:</p>
+<ol>
+<li>write down the chain \(H_0,\dots,H_k\);</li>
+<li>for each step, describe the procedure \(T_i\) that builds \(H_{i-1}\) from a sample of \(X\) and \(H_i\) from a sample of \(Y\);</li>
+<li>apply the lemma, and use the closure facts (Section 2) to see that \(k\) times a negligible advantage is still negligible.</li>
+</ol>
+
+
+
+<p><strong>The toy example, in the lemma's terms.</strong> Take \(k=2\), \(X=G(U_\ell)\) (one PRG output on a fresh seed) and \(Y=U_L\) (one uniform block). The chain is the three games:</p>
+<ul>
+<li>\(H_0=(G(s_1),G(s_2))\) (Game 0), \(H_1=(\text{uniform},G(s_2))\) (Game 1), \(H_2=(\text{uniform},\text{uniform})\) (Game 2).</li>
+<li>\(T_1(z)=(z,\,G(s_2))\) for a fresh seed \(s_2\): then \(T_1(X)\sim H_0\) and \(T_1(Y)\sim H_1\).</li>
+<li>\(T_2(z)=(\text{uniform},\,z)\): then \(T_2(X)\sim H_1\) and \(T_2(Y)\sim H_2\).</li>
+</ul>
+<p>The lemma gives an efficient \(B\) with \(\mathrm{PRGadv}[A,G']\le 2\cdot\mathrm{PRGadv}[B,G]\). That \(B\) is \(B_1\) or \(B_2\) from the toy example, whichever step is larger.</p>
+
+<h3>Applications: Copies of indistinguishable distributions</h3>
+<div class="box"><div class="label">Theorem 6.1</div>
+If \(X\) and \(Y\) are computationally indistinguishable and efficiently samplable, then so are \(k\) independent copies \(X^k\) and \(Y^k\), for any polynomial \(k\). In particular, if \(G\) is a secure PRG, so is \(G'(s_1,\dots,s_k)=(G(s_1),\dots,G(s_k))\).</div>
+
+<svg class="diag" viewBox="0 0 640 250" role="img" aria-label="Hybrids H0 to H4 for k=4 blocks. H_i has the first 4-i blocks pseudorandom and the last i blocks random; consecutive hybrids differ in one block.">
+<text x="20" y="22" class="t-head">hybrid</text>
+<text x="330" y="22" text-anchor="middle" class="t-head">block 1 · block 2 · block 3 · block 4</text>
+<g>
+<text x="20" y="58">H₀ = real G′</text>
+<rect x="170" y="40" width="80" height="28" class="c-x"/><rect x="250" y="40" width="80" height="28" class="c-x"/><rect x="330" y="40" width="80" height="28" class="c-x"/><rect x="410" y="40" width="80" height="28" class="c-x"/>
+<text x="20" y="98">H₁</text>
+<rect x="170" y="80" width="80" height="28" class="c-x"/><rect x="250" y="80" width="80" height="28" class="c-x"/><rect x="330" y="80" width="80" height="28" class="c-x"/><rect x="410" y="80" width="80" height="28" class="c-y c-chg"/>
+<text x="20" y="138">H₂</text>
+<rect x="170" y="120" width="80" height="28" class="c-x"/><rect x="250" y="120" width="80" height="28" class="c-x"/><rect x="330" y="120" width="80" height="28" class="c-y c-chg"/><rect x="410" y="120" width="80" height="28" class="c-y"/>
+<text x="20" y="178">H₃</text>
+<rect x="170" y="160" width="80" height="28" class="c-x"/><rect x="250" y="160" width="80" height="28" class="c-y c-chg"/><rect x="330" y="160" width="80" height="28" class="c-y"/><rect x="410" y="160" width="80" height="28" class="c-y"/>
+<text x="20" y="218">H₄ = uniform</text>
+<rect x="170" y="200" width="80" height="28" class="c-y c-chg"/><rect x="250" y="200" width="80" height="28" class="c-y"/><rect x="330" y="200" width="80" height="28" class="c-y"/><rect x="410" y="200" width="80" height="28" class="c-y"/>
+</g>
+<rect x="510" y="60" width="18" height="18" class="c-x"/><text x="536" y="74">G(fresh seed)</text>
+<rect x="510" y="96" width="18" height="18" class="c-y"/><text x="536" y="110">truly random</text>
+<rect x="510" y="132" width="18" height="18" class="c-y c-chg"/><text x="536" y="146">just changed</text>
+</svg>
+<p class="caption">Figure 2. Hybrids for \(k=4\). Each step changes exactly one block, so an adversary that notices a step yields an adversary against a single copy of \(G\).. Here \(X=G(\text{fresh seed})\) and \(Y\) = uniform.</p>
+
+<div class="proof"><span class="label">Proof.</span>
+<ol>
+<li><strong>Chain:</strong> \(H_i=X^{k-i}Y^{i}\), i.e. the first \(k-i\) copies from \(X\) and the last \(i\) from \(Y\). So \(H_0=X^k\) and \(H_k=Y^k\).</li>
+<li><strong>Step \(i\):</strong> \(H_{i-1}\) and \(H_i\) differ only in copy number \(k-i+1\). Procedure \(T_i(z)\): sample \(k-i\) fresh copies of \(X\) and \(i-1\) fresh copies of \(Y\), and output \((x_1,\dots,x_{k-i},\,z,\,y_{1},\dots,y_{i-1})\). Then \(T_i(X)\sim H_{i-1}\) and \(T_i(Y)\sim H_i\).</li>
+<li><strong>Lemma:</strong> there is an efficient \(B\) with
+\(\big|\Pr[A(X^k)=1]-\Pr[A(Y^k)=1]\big|\le k\cdot\big|\Pr[B(X)=1]-\Pr[B(Y)=1]\big|\).</li>
+</ol>
+<p>For the PRG statement, take \(X=G(U_\ell)\) and \(Y=U_L\): then \(X^k=G'(\text{uniform})\) and \(Y^k\) is uniform, so \(\mathrm{PRGadv}[A,G']\le k\cdot\mathrm{PRGadv}[B,G]\), which is negligible by the closure facts (Section 2). ∎</p>
+<p><span class="muted">(Circuits don't even need samplability: by averaging, \(B\) can hard-code the best fixed values for the other copies. All distributions we use are samplable anyway.)</span></p></div>
+
+<h3>Applications: “Stretching” a PRG</h3>
+<div class="box"><div class="label">Theorem 6.2</div>
+Let \(G:\bits^\ell\to\bits^{\ell+1}\) be a secure PRG, and write its output as \(G(s)=(r,s')\), where \(r\) is one bit and \(s'\) is \(\ell\) bits. For a polynomial \(k\), define \(G'(s)\): set \(s_0=s\); for \(i=1,\dots,k\), set \((r_i,s_i)=G(s_{i-1})\); output \((r_1,\dots,r_k,s_k)\). Then \(G':\bits^\ell\to\bits^{\ell+k}\) is a secure PRG.</div>
+
+<div class="proof"><span class="label">Proof.</span>
+<p>\(G'\) runs \(G\) \(k\) times, feeding each new seed back in. For example, with \(k=3\): \((r_1,s_1)=G(s_0)\), \((r_2,s_2)=G(s_1)\), \((r_3,s_3)=G(s_2)\), output \(r_1r_2r_3s_3\).</p>
+<p><strong>Chain.</strong> In \(H_j\), the first \(j\) bits \(r_1,\dots,r_j\) and the seed \(s_j\) are uniform, and the rest is computed honestly from \(s_j\). For \(k=3\) (“u” = fresh uniform, “G” = computed honestly):</p>
+<table>
+<tr><th></th><th>\(r_1\)</th><th>\(r_2\)</th><th>\(r_3\)</th><th>\(s_3\)</th></tr>
+<tr><td>\(H_0\) (\(s_0\) uniform)</td><td>G</td><td>G</td><td>G</td><td>G</td></tr>
+<tr><td>\(H_1\) (\(r_1,s_1\) uniform)</td><td>u</td><td>G</td><td>G</td><td>G</td></tr>
+<tr><td>\(H_2\) (\(r_1,r_2,s_2\) uniform)</td><td>u</td><td>u</td><td>G</td><td>G</td></tr>
+<tr><td>\(H_3\)</td><td>u</td><td>u</td><td>u</td><td>u</td></tr>
+</table>
+<p>So \(H_0=G'(\text{uniform seed})\) and \(H_k\) is uniform. Consecutive hybrids differ in exactly one call of \(G\): in \(H_{j-1}\), \(s_{j-1}\) is uniform and \((r_j,s_j)=G(s_{j-1})\); in \(H_j\), \((r_j,s_j)\) is uniform. Everything after that is computed the same way from \(s_j\).</p>
+<p><strong>Step \(j\).</strong> Procedure \(T_j(z)\), for \(z=(r,s)\): pick \(r_1,\dots,r_{j-1}\) uniformly, set \((r_j,s_j)=z\), compute the rest honestly, and output \(r_1\cdots r_k\,s_k\). If \(z=G(\text{uniform seed})\), the output is distributed as \(H_{j-1}\); if \(z\) is uniform, it is distributed as \(H_j\). \(T_j\) calls \(G\) at most \(k\) times, so it is efficient.</p>
+<p><strong>Lemma</strong>, with \(X=G(U_\ell)\) and \(Y=U_{\ell+1}\): there is an efficient \(B\) with \(\mathrm{PRGadv}[A,G']\le k\cdot\mathrm{PRGadv}[B,G]\), which is negligible by the closure facts since \(k\) is polynomial. (\(B\) hard-codes the best step \(j^*\), which may be different for each \(n\); that is fine because adversaries are circuit families.) ∎</p>
+</div>
+
+<p><strong>Why only polynomially many rounds?</strong> The number of rounds \(k\) has to be polynomial for two reasons. \(G'\) must run in polynomial time, and it calls \(G\) \(k\) times. And the bound \(k\cdot\mathrm{PRGadv}[B,G]\) is only guaranteed to be negligible when \(k\) is polynomial (closure facts). With superpolynomially many rounds, neither holds.</p>
+
+<p>This is the result that justifies why our PRG definition only needs the output size to be one bit bigger than the input; we can just use this method to enlarge it.</p>
+
+
+<!-- ============================================================ -->
+<h2 id="s7">7. From PRGs to Derandomization: is the Lecture Proof Fixable Now?</h2>
+<figure class="painting"><div class="frame"><img src="assets/paintings/tiepolo-planets-continents.jpg" width="960" height="1272" alt="A sunlit ceiling sketch: Apollo and the gods of the planets above figures for the four continents." loading="lazy" decoding="async"></div><figcaption><a href="https://commons.wikimedia.org/wiki/File:Allegory_of_the_Planets_and_Continents_MET_1977_1.3.jpg" rel="noopener"><span class="p-title">Allegory of the Planets and Continents</span></a><br><span class="p-artist">Giovanni Battista Tiepolo, 1752</span></figcaption></figure>
+
+<h3>The goal</h3>
+<p>Recall the lecture's plan from Section 1. To show \(\BPP=\Pclass\), take a \(\BPP\) machine \(M\) (poly-time, error \(\le 1/3\)) and a generator \(G\) that stretches an \(O(\log n)\)-bit seed into the random bits \(M\) needs. Run \(M(x,G(s))\) for every seed \(s\) and take the majority. Two things have to hold:</p>
+<ol>
+<li>\(G\) has to be computable in polynomial time, and its seed has to be \(O(\log n)\) bits, so there are only polynomially many seeds.</li>
+<li>\(G\)'s output has to be “random enough” that the majority answer is still correct.</li>
+</ol>
+<p>The natural first idea is to use the PRGs we defined in Section 4.</p>
+
+<h3>First attempt: Using Our PRG Definition</h3>
+<div class="box"><div class="label">Fact 7.1: a cryptographic PRG (a PRG following our definitions) cannot have an \(O(\log m)\) seed (equivalently, its seed space must be super-poly)</div></div>
+<div class="proof"><span class="label">Proof.</span> Suppose \(G:\bits^d\to\bits^m\) with \(d \le c\log m\). Adversary \(A(r)\): try every seed \(s\in\bits^d\), and output 1 if some \(G(s)=r\). This is the same image test as in Theorem 5.1.
+<ul>
+<li>\(\Pr[W_0]=1\).</li>
+<li>\(\Pr[W_1]\le 2^{d-m}\le 1/2\).</li>
+<li>\(A\) runs in time \(2^d\cdot\mathrm{time}(G)\le m^c\cdot\poly(m)\), which is polynomial.</li>
+</ul>
+<p><strong>Advantage:</strong> \(\mathrm{PRGadv}[A,G]=1-\frac{|\mathrm{Im}(G)|}{2^m}\ge 1-2^{d-m}\ge\frac12\). ∎</p>
+</div>
+
+<p>Importantly, this means that the construction from lecture, a PRG that takes a logarithmic seed, runs in polynomial time, and fools poly-time TMs is impossible. An adversary that enumerates all seeds can still run in polynomial time; just a larger polynomial time than the PRG itself. This means a cryptographic PRG, like the ones we've defined, won't work for this derandomization proof.</p>
+
+<h3>The fix: a subtly different PRG definition</h3>
+<p>The cryptographic PRG requirement of fooling <em>all</em> poly-time TMs may be a bit overkill here. Based on what the simulation strategy actually requires, it needs one \(\BPP\) machine \(M\) and one input \(x\) to fool one single test, “run \(M(x;\cdot)\)” (here \(M(x;r)\) means running \(M\) on input \(x\) with random bits \(r\), and the \(\cdot\) is the slot for the random bits). With \(x\) hard-coded, that test is a circuit of some fixed polynomial size \(m=n^c\). \(M\)'s error also just needs to be below one-half (to be in \(\BPP\)), so a constant advantage bound like \(1/8\) is enough. This gives a PRG game with a restricted set of adversaries:</p>
+
+<div class="box derand"><div class="label">Definition 7.2 (\((t,\varepsilon)\) PRG; derandomization PRG)</div>
+\(G:\bits^d\to\bits^m\) (with \(d\lt m\)) is a <strong>\((t,\varepsilon)\) PRG</strong> if every circuit of size at most \(t\) has \(\mathrm{PRGadv}\le\varepsilon\) against \(G\).
+<br>A <strong>derandomization PRG</strong> is a family of \((m,1/8)\) PRGs \(G_m:\bits^{d(m)}\to\bits^m\), one for each output length \(m\).</div>
+
+<p>This is a special case of the cryptographic PRG requirement; the “PRG” need only fool a subset of the adversaries fooled by its cryptographic equivalent.</p>
+
+<h3>Main theorem: Derandomization PRGs give \(\BPP=\Pclass\)</h3>
+<div class="box derand"><div class="label">Theorem 7.3</div>
+Suppose there is a derandomization PRG \(G_m:\bits^{d(m)}\to\bits^m\) with seed length \(d(m)=O(\log m)\) that is computable in time \(\poly(m)\). Then \(\BPP=\Pclass\).</div>
+
+<div class="proof"><span class="label">Proof.</span>
+<p><strong>Setup.</strong> Let \(L\in\BPP\) be decided by a poly-time machine \(A(x;r)\) with error at most \(1/3\). By TM-to-circuit conversion, choose a constant \(c\) such that, on inputs of length \(n\), \(A\) uses at most \(n^c\) random bits and the test circuit \(T\) below has size at most \(n^c\). Pad \(A\)'s random string to exactly \(n^c\) bits, and set \(m=n^c\) and \(G=G_m\).</p>
+<p><strong>Claim.</strong> For every \(x\) of length \(n\), \(A(x;G(s))\) is correct for more than half of the seeds \(s\).</p>
+<p><em>Proof of claim.</em> Fix \(x\) and let \(T(r)=1\) iff \(A(x;r)\) gives the correct answer for \(x\). With \(x\) and the correct answer <strong>hard-coded</strong>, \(T\) is a circuit on \(m\) input bits with at most \(n^c=m\) gates, by the choice of \(c\) (circuit size counts AND/OR gates, not inputs or negations). So Definition 7.2 applies to \(T\).</p>
+<ul>
+<li>\(\Pr[W_1]=\Pr_{r\text{ uniform}}[A(x;r)\text{ correct}]\ge 2/3\), since \(A\) is a \(\BPP\) machine.</li>
+<li>\(\Pr[W_0]=\Pr_{s}[A(x;G(s))\text{ correct}]\), the fraction of good seeds.</li>
+</ul>
+<p>\(G\) is an \((m,1/8)\) PRG, so \(|\Pr[W_0]-\Pr[W_1]|\le 1/8\). Hence the fraction of good seeds is \(\Pr[W_0]\ge 2/3-1/8=13/24\gt 1/2\). <em>Note:</em> \(x\) is hard-coded as advice inside \(T\). This is exactly why adversaries are circuits (Section 2).</p>
+<p><strong>Deterministic algorithm.</strong> On input \(x\), for every seed \(s\in\bits^{d(m)}\), compute \(G(s)\) and run \(A(x;G(s))\). Output the majority answer. By the claim, the majority is always correct.</p>
+<p><strong>Running time.</strong></p>
+<ul>
+<li>There are \(2^{d(m)}=2^{O(\log m)}=m^{O(1)}=n^{O(c)}\) seeds, which is polynomial.</li>
+<li>Each seed costs \(\poly(m)=\poly(n)\) to compute \(G(s)\), plus \(\poly(n)\) to run \(A\).</li>
+<li>Total: polynomial in \(n\). So \(L\in\Pclass\). ∎</li>
+</ul></div>
+
+<h3>Why did I explain it this way.</h3>
+<p>At this point you, the reader, might be shaking and crying in anguish, agony, despair, etc. Why did I go through all the work of defining cryptographic PRGs if this theorem doesn't even use them?</p>
+<p>First off, we can adapt this proof to use cryptographic PRGs; if we do, the result will be showing \(\NP\subseteq\SUBEXP\), which is the intersection of all \(O(2^{n^\varepsilon})\)-time solvable problems.</p>
+<p>Secondly, cryptographic PRGs are the tool used for all the theorems left in the course. Stay tuned!</p>
+
+</main>
+</body>
+</html>

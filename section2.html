@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Section 2: One-Way Functions and Derandomization</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\(',right:'\\)',display:false}],macros:{'\\negl':'\\mathrm{negl}','\\Adv':'\\mathrm{Adv}','\\poly':'\\mathrm{poly}','\\BPP':'\\mathsf{BPP}','\\Ppoly':'\\mathsf{P/poly}','\\NP':'\\mathsf{NP}','\\Pclass':'\\mathsf{P}','\\DTIME':'\\mathsf{DTIME}','\\SUBEXP':'\\mathsf{SUBEXP}','\\EXP':'\\mathsf{EXP}','\\bits':'\\{0,1\\}'}});"></script>
+<style>
+:root{
+  --bg:#fdfcf9; --fg:#1f1f1f; --muted:#666; --rule:#e2ded6; --card:#f4f1ea;
+  --accent:#2b5c8a; --warn-bg:#fff4d6; --warn-fg:#6b4e00; --warn-rule:#e9c766;
+  --src-bg:#e7eef6; --src-fg:#234a70; --me-bg:#fbe3e3; --me-fg:#8a2b2b;
+  --dr:#2e7d4f; --dr-bg:#e9f5ee;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16181b; --fg:#e6e3dc; --muted:#a0a0a0; --rule:#33363b; --card:#1f2226;
+    --accent:#8db8e0; --warn-bg:#3a3014; --warn-fg:#f2d78a; --warn-rule:#7a6420;
+    --src-bg:#1f3247; --src-fg:#b5d2ee; --me-bg:#4a2222; --me-fg:#f2b8b8;
+    --dr:#7fd1a0; --dr-bg:#1c3326;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16181b; --fg:#e6e3dc; --muted:#a0a0a0; --rule:#33363b; --card:#1f2226;
+  --accent:#8db8e0; --warn-bg:#3a3014; --warn-fg:#f2d78a; --warn-rule:#7a6420;
+  --src-bg:#1f3247; --src-fg:#b5d2ee; --me-bg:#4a2222; --me-fg:#f2b8b8;
+  --dr:#7fd1a0; --dr-bg:#1c3326;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:Georgia,"Times New Roman",serif;line-height:1.65;font-size:17px}
+main{max-width:780px;margin:0 auto;padding:2rem 16px 5rem}
+h1{font-size:1.9rem;line-height:1.25;margin:.2rem 0 .4rem}
+h2{font-size:1.4rem;margin:2.8rem 0 .6rem;padding-top:.6rem;border-top:1px solid var(--rule)}
+h3{font-size:1.1rem;margin:1.8rem 0 .4rem}
+a{color:var(--accent)}
+.banner{background:var(--warn-bg);color:var(--warn-fg);border:1px solid var(--warn-rule);border-radius:6px;padding:.8rem 1rem;margin:1rem 0 1.5rem;font-family:system-ui,sans-serif;font-size:.92rem;line-height:1.5}
+.box{background:var(--card);border-left:3px solid var(--accent);border-radius:4px;padding:.7rem 1rem;margin:1rem 0;overflow-x:auto}
+.box > .label{font-family:system-ui,sans-serif;font-weight:600;font-size:.85rem;letter-spacing:.02em;text-transform:uppercase;color:var(--accent);margin-bottom:.2rem}
+.proof{border-left:2px solid var(--rule);padding:.2rem 0 .2rem 1rem;margin:.6rem 0 1rem}
+.proof > .label{font-style:italic}
+.src,.me{display:inline-block;font-family:system-ui,sans-serif;font-size:.72rem;line-height:1.3;padding:.08rem .45rem;border-radius:999px;margin:0 .1rem;vertical-align:.1em;white-space:nowrap}
+.src{background:var(--src-bg);color:var(--src-fg)}
+.me{background:var(--me-bg);color:var(--me-fg)}
+table{border-collapse:collapse;width:100%;font-size:.92rem;margin:1rem 0;display:block;overflow-x:auto}
+th,td{border:1px solid var(--rule);padding:.4rem .55rem;text-align:left;vertical-align:top}
+th{background:var(--card);font-family:system-ui,sans-serif;font-size:.85rem}
+.toc{font-family:system-ui,sans-serif;font-size:.92rem;background:var(--card);border-radius:6px;padding:.6rem 1rem}
+.toc ol{margin:.3rem 0;padding-left:1.3rem}
+.katex-display{overflow-x:auto;overflow-y:hidden;padding:.2rem 0}
+.muted{color:var(--muted)}
+code{font-size:.9em}
+svg.diag{display:block;width:100%;max-width:640px;height:auto;margin:1.2rem auto .3rem;color:var(--fg)}
+svg.diag text{fill:currentColor;font-family:system-ui,sans-serif;font-size:14px}
+svg.diag .t-head{font-weight:600}
+svg.diag .ln{stroke:currentColor;stroke-width:1.5;fill:none}
+svg.diag .b-chal{fill:var(--card);stroke:var(--accent);stroke-width:1.5}
+svg.diag .b-adv{fill:var(--bg);stroke:currentColor;stroke-width:1.5}
+svg.diag .b-wrap{fill:none;stroke:var(--accent);stroke-width:1.5;stroke-dasharray:6 4}
+svg.diag .c-x{fill:var(--src-bg);stroke:currentColor}
+svg.diag .c-y{fill:var(--bg);stroke:currentColor}
+svg.diag .c-chg{stroke:var(--me-fg);stroke-width:3}
+.caption{font-family:system-ui,sans-serif;font-size:.85rem;color:var(--muted);text-align:center;margin:.2rem 0 1.2rem}
+.box.derand{border-left-color:var(--dr);background:var(--dr-bg)}
+.box.derand > .label{color:var(--dr)}
+.derand-banner{border:1px solid var(--dr);background:var(--dr-bg);border-radius:6px;padding:.7rem 1rem;margin:1rem 0;font-family:system-ui,sans-serif;font-size:.92rem;line-height:1.5}
+svg.diag .b-derand{fill:var(--dr-bg);stroke:var(--dr);stroke-width:2}
+.plan{background:var(--card);border-radius:4px;padding:.45rem .8rem;margin:.4rem 0 .8rem;font-size:.95rem}
+.plan p{margin:.25rem 0}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap">
+<link rel="stylesheet" href="assets/slides.css">
+<link rel="stylesheet" href="assets/rococo.css">
+<script src="assets/slides.js" defer></script>
+</head>
+<body>
+<main>
+<p class="muted" style="font-family:system-ui,sans-serif;font-size:.85rem;margin:0"><a href="index.html">← site home</a></p>
+<h1>Section 2: One-Way Functions and Derandomization</h1>
+<figure class="painting"><div class="frame"><img src="assets/paintings/lancret-camargo.jpg" width="960" height="686" alt="The ballerina Marie Camargo dances in a wooded glade, accompanied by musicians." loading="lazy" decoding="async"></div><figcaption><a href="https://commons.wikimedia.org/wiki/File:Nicolas_Lancret,_La_Camargo_Dancing,_c._1730,_NGA_96.jpg" rel="noopener"><span class="p-title">La Camargo Dancing</span></a><br><span class="p-artist">Nicolas Lancret, c. 1730</span></figcaption></figure>
+
+<p>One-way functions have been a recurring background character throughout the entire course, but they've mostly been introduced as black-box tools that make random proofs from across the field possible. In this section, we (finally) formally define one-way functions and use the cryptographic tools from the first section to (finally) meaningfully connect them directly to derandomization results.</p>
+<p>The major theorem of this section (and of the site in general) is the HILL Theorem (Håstad, Impagliazzo, Levin, and Luby, 1999), which states that one-way functions exist if and only if pseudorandom generators exist. We'll introduce smaller theorems along the way that help put this result into context. As for the proof of the theorem itself, we prove the backward direction (PRG ⟹ OWF) in full, while we restrict the forward direction to a specific type of one-way functions; the reason why will become clear.</p>
+
+<div class="toc"><strong>Table of Contents</strong>
+<ol>
+<li><a href="#t1">One-Way Functions</a></li>
+<li><a href="#t2">PRGs exist ⟹ OWFs exist</a></li>
+<li><a href="#t3">“Hardcore Bits”</a></li>
+<li><a href="#t4">The Goldreich–Levin Theorem</a></li>
+<li><a href="#t5">Warm-Up: One-Way Permutations ⟹ PRGs exist</a></li>
+<li><a href="#t6">Lemmas: collisions, hashing, and the Leftover Hash Lemma</a></li>
+<li><a href="#t7">Full proof: One-to-One OWFs exist ⟹ PRGs exist</a></li>
+<li><a href="#t8">In Perspective</a></li>
+</ol></div>
+
+
+<!-- ============================================================ -->
+<h2 id="t1">1. One-Way Functions</h2>
+<figure class="painting"><div class="frame"><img src="assets/paintings/fragonard-pursuit.jpg" width="960" height="1419" alt="A young man offers a rose to a startled young woman in a flowering garden." loading="lazy" decoding="async"></div><figcaption><a href="https://commons.wikimedia.org/wiki/File:The_Progress_of_Love_-_The_Pursuit_-_Fragonard_1771-72.jpg" rel="noopener"><span class="p-title">The Progress of Love: The Pursuit</span></a><br><span class="p-artist">Jean-Honoré Fragonard, 1771–72</span></figcaption></figure>
+
+<h3>Definition</h3>
+<p>A one-way function (OWF) is a function that has the property of being computationally difficult for an efficient adversary to invert: given an OWF output, the probability that the adversary will be able to find any input that matches this output is negligible. More formally:</p>
+
+<div class="box"><div class="label">Definition 1.1 (one-way function, OWF)</div>
+\(f:\bits^*\to\bits^*\) is one-way if
+<ol style="margin:.3rem 0">
+<li>\(f\) is computable by a polynomial-time algorithm, and</li>
+<li>for every efficient adversary \(A\) (a polynomial-size circuit family, Section 1, §2), \(\displaystyle\Pr_{x\leftarrow\bits^n}\big[f(A(f(x)))=f(x)\big]\) is negligible in \(n\).</li>
+</ol></div>
+
+<p>Here are some key points to keep in mind:</p>
+<ul>
+<li><strong>“Find <em>some</em> preimage,” not “find \(x\)”.</strong> \(A\) succeeds if it outputs any \(x'\) with \(f(x')=f(x)\). If success meant recovering \(x\) itself, a constant function \(f(x)=1\) would count as “one-way”: you can never tell which \(x\) was used, even though inverting it is trivial.</li>
+<li><strong>Average case, not worst case.</strong> \(f\) must be hard to invert on a <em>random</em> input. NP-hardness, which you may think has a similar definition to OWFs in that there is a certificate (the input), is a worst-case notion (“some instance is hard”), which is useless for cryptography, where we need almost every key to be secure (in NP it is sufficient for one instance to not be computable in poly time). This is why we assume OWFs instead of just \(\Pclass\ne\NP\).</li>
+<li><strong>The limits on how hard \(f\) can be.</strong> Inverting can't be easier than evaluating \(f\), and brute force over all \(2^n\) inputs always works. So the possible security levels lie between those two extremes.</li>
+</ul>
+<p>While no true one-way functions have been found, the closest functions we are aware of are factoring and modular logarithm, which you may be familiar with from other classes.</p>
+<p>Throughout the rest of the proofs, OWFs, like PRGs, will usually take both a public and private input, like \(f(x,r)\). This works the same as with PRGs; it's still an OWF, just with multiple logical inputs merged into one actual input.</p>
+
+<h3>OWF Special Cases</h3>
+<p>For all the proofs we're interested in, the less structured the output of the OWF gets, the harder the proof gets. The general definition for OWFs above gives little structure other than that it preserves enough randomness to foil adversaries. With the following special cases of OWFs, we'll be able to work up to harder and harder versions of the theorem.</p>
+
+<div class="box"><div class="label">One-way permutation</div>
+A one-way function \(f:\bits^n\to\bits^n\) that is a <strong>bijection</strong> for every \(n\): every \(n\)-bit string is the output of exactly one input.</div>
+
+<p>Important note: when \(X\) is uniform, \(f(X)\) (\(=\) the entire codomain) is also exactly uniform. This is the key fact that makes studying one-way permutations easy.</p>
+
+<div class="box"><div class="label">One-to-one (injective) one-way function</div>
+A one-way function \(f:\bits^n\to\bits^{\ell(n)}\) with \(\ell(n)\ge n\) such that \(f(x)\ne f(x')\) whenever \(x\ne x'\). The output may be longer than the input.</div>
+
+<p>Important note: All the bits of randomness are preserved, but \(f\) is no longer uniform over the entire codomain; only on its image.</p>
+
+
+<!-- ============================================================ -->
+<h2 id="t2">2. PRGs exist ⟹ OWFs exist</h2>
+<figure class="painting"><div class="frame"><img src="assets/paintings/fragonard-meeting.jpg" width="960" height="1239" alt="A young man climbs a garden wall to meet a young woman, who glances back nervously." loading="lazy" decoding="async"></div><figcaption><a href="https://commons.wikimedia.org/wiki/File:Jean-Honor%C3%A9_Fragonard_-_Les_Progr%C3%A8s_de_l%27amour_-_Le_rendez-vous_-_Google_Art_Project.jpg" rel="noopener"><span class="p-title">The Progress of Love: The Meeting</span></a><br><span class="p-artist">Jean-Honoré Fragonard, 1771–73</span></figcaption></figure>
+
+<h3>Proof</h3>
+<p>This proof will follow the traditional, non-hybrid security reduction proof technique outlined in Section 1.</p>
+
+<div class="box"><div class="label">Theorem 2.1 (PRG ⇒ OWF)</div>
+If \(G:\bits^n\to\bits^{\ell(n)}\) is a secure PRG with \(\ell(n)\ge 2n\), then \(G\) is a one-way function. (Any PRG can first be stretched to \(\ell\ge 2n\) using Theorem 6.2 of Section 1.)</div>
+<div class="proof"><span class="label">Proof.</span> Contrapositive. Suppose an efficient \(A\) inverts \(G\) with non-negligible probability
+\(p(n)=\Pr_{s}[G(A(G(s)))=G(s)]\). Using the OWF inverter adversary \(A\), we want to show that we can create an adversary to distinguish the PRG \(G\) from random bits, showing that it must not be a PRG.
+<p>Define the distinguisher \(B(y)\): compute \(s'=A(y)\), and output 1 iff \(G(s')=y\). \(B\) is efficient because \(A\) and \(G\) are.</p>
+<ul>
+<li><em>Experiment 0</em> (\(y=G(s)\)): \(B\) outputs 1 exactly when \(A\) inverts successfully, so \(\Pr[W_0]=p(n)\).</li>
+<li><em>Experiment 1</em> (\(y\) uniform in \(\bits^{\ell}\)): \(B\) can output 1 only if \(y\in\mathrm{Im}(G)\), and \(|\mathrm{Im}(G)|\le 2^n\). So \(\Pr[W_1]\le 2^{n-\ell}\le 2^{-n}\).</li>
+</ul>
+<p><strong>Advantage:</strong> \(\mathrm{PRGadv}[B,G]=\Pr[W_0]-\Pr[W_1]\ge p(n)-2^{-n}\).</p>
+<p>Since \(p(n)\) is non-negligible, this is a non-negligible advantage. Therefore, we have successfully distinguished \(G\) from truly random bits in the PRG attack game. This completes the contrapositive proof. ∎</p>
+<br><span class="muted">Why \(\ell\ge 2n\)? With only \(\ell = n+1\), the bound on \(\Pr[W_1]\) is \(1/2\), and \(p(n)-1/2\) could be negative. Stretching first avoids this.</span></div>
+
+
+<!-- ============================================================ -->
+<h2 id="t3">3. “Hardcore Bits”</h2>
+<figure class="painting"><div class="frame"><img src="assets/paintings/fragonard-love-letter.jpg" width="960" height="1188" alt="A woman in blue silk at her writing desk turns toward the viewer, holding a letter and flowers." loading="lazy" decoding="async"></div><figcaption><a href="https://commons.wikimedia.org/wiki/File:The_Love_Letter_MET_DP-1014-001.jpg" rel="noopener"><span class="p-title">The Love Letter</span></a><br><span class="p-artist">Jean-Honoré Fragonard, early 1770s</span></figcaption></figure>
+
+<h3>Motivation and Definition</h3>
+<p>In order to tackle the forward direction, we'll need a couple more tools in our toolkit than just simple attack game proof techniques.</p>
+<p>Right now, there's a glaring flaw in our understanding of OWFs. OWFs promise that the input \(x\) is hard to recover <em>as a whole</em>; it makes no guarantees about adversaries being able to reconstruct individual bits or groups of bits of \(x\). For example, if \(f'\) is one-way, so is \(f(x_1,x_2)=(x_1,f'(x_2))\), where \(x_1,x_2\) are the two halves of \(x\). Yet \(f(x)\) reveals the whole first half of \(x\).</p>
+<p>So our first step will be to prove that there is some bit computable from an OWF output that is completely unpredictable to adversaries. We'll call this bit a <em>hardcore bit</em>.</p>
+
+<div class="box"><div class="label">Definition 3.1 (hardcore bit), a prediction game</div>
+A poly-time computable \(b:\bits^n\to\bits\) is a <strong>hardcore bit</strong> for \(f\) if for every efficient predictor \(P\),
+$$\Pr_{x\leftarrow\bits^n}\big[P(f(x))=b(x)\big]\le \tfrac12+\varepsilon(n)\quad\text{with }\varepsilon\text{ negligible.}$$
+\(\varepsilon\) is \(P\)'s prediction advantage.</div>
+
+<h3>Proof Strategies for Prediction</h3>
+<p>This definition is a bit (hah) different from the attack games we've seen so far: usually the attack games force the adversary to distinguish between two experiments, but here we're asking the adversary to generate a bit and see whether it matches. As you'll see below, these two settings are equivalent.</p>
+
+<div class="box"><div class="label">Lemma 3.2 (predicting ⇔ distinguishing)</div>
+Let \(X\) be uniform on \(\bits^n\), and let \(\beta\) be a uniform bit independent of \(X\). Compare
+$$\text{Experiment 0: }(f(X),\,b(X))\qquad\text{vs.}\qquad\text{Experiment 1: }(f(X),\,\beta).$$
+<ul style="margin:.3rem 0">
+<li>(a) From a predictor with prediction advantage \(\varepsilon\), we get a distinguisher with \(\Pr[W_0]-\Pr[W_1]=\varepsilon\).</li>
+<li>(b) From a distinguisher with \(\Pr[W_0]-\Pr[W_1]=\varepsilon\), we get a predictor with prediction advantage \(\varepsilon\).</li>
+</ul>
+So \(b\) is hardcore for \(f\) iff the two experiments are computationally indistinguishable.</div>
+<div class="proof"><span class="label">Proof.</span>
+<p><strong>(a)</strong> Given predictor \(P\), let \(D(y,c)=1\) iff \(P(y)=c\).</p>
+<ul>
+<li>Experiment 0: \(\Pr[W_0]=\Pr[P(f(X))=b(X)]=\frac12+\varepsilon\).</li>
+<li>Experiment 1: \(\beta\) is independent of \(P\)'s input, so \(\Pr[W_1]=\Pr[P(f(X))=\beta]=\frac12\).</li>
+</ul>
+<p><strong>Advantage:</strong> \(\Pr[W_0]-\Pr[W_1]=\varepsilon\).</p>
+<p><strong>(b)</strong> Given distinguisher \(D\), define the predictor \(P(y)\): pick a uniform bit \(c\); if \(D(y,c)=1\) output \(c\), otherwise output \(1-c\). (“If \(D\) says the pair looks real, trust \(c\); otherwise flip it.”) This is the distinguisher/predictor lemma. Write \(V=f(X)\) and \(B=b(X)\). Let
+$$\alpha=\Pr[D(V,B)=1]\quad(\text{Experiment 0}),\qquad \beta'=\Pr[D(V,1-B)=1]\quad(\text{the wrong bit}).$$</p>
+<ul>
+<li><em>Experiment 1 in terms of \(\alpha,\beta'\).</em> In Experiment 1 the bit is a uniform \(c\) independent of \((V,B)\). It equals \(B\) half the time and \(1-B\) half the time, so \(\Pr[W_1]=\frac12\alpha+\frac12\beta'\). Hence
+$$\varepsilon=\Pr[W_0]-\Pr[W_1]=\alpha-\tfrac12(\alpha+\beta')=\tfrac12(\alpha-\beta').$$</li>
+<li><em>\(P\)'s success.</em> Condition on whether \(c=B\); each case has probability \(\frac12\), and conditioning doesn't change the distribution of \((V,B)\) because \(c\) is independent of it. If \(c=B\), \(P\) is right iff \(D(V,B)=1\), which has probability \(\alpha\). If \(c=1-B\), \(P\) outputs \(1-c=B\), so it is right iff \(D(V,1-B)=0\), which has probability \(1-\beta'\). So
+$$\Pr[P(V)=B]=\tfrac12\alpha+\tfrac12(1-\beta')=\tfrac12+\tfrac12(\alpha-\beta')=\tfrac12+\varepsilon.$$</li>
+</ul>
+<p><strong>Advantage:</strong> \(P\)'s prediction advantage is exactly \(\varepsilon\). \(P\) is efficient: it runs \(D\) once, plus one coin flip. ∎</p></div>
+
+<p>As you can see, we haven't actually shown any constructions for hardcore bits yet, or even shown whether they exist for OWFs at all. Be patient. It's on the next slide.</p>
+
+
+<!-- ============================================================ -->
+<h2 id="t4">4. The Goldreich–Levin Theorem</h2>
+<figure class="painting"><div class="frame"><img src="assets/paintings/longhi-fortune-teller.jpg" width="639" height="800" alt="In a Venetian arcade, an old fortune teller reads the palm of a masked woman in a black cape." loading="lazy" decoding="async"></div><figcaption><a href="https://commons.wikimedia.org/wiki/File:Longhi_-_A_Fortune_Teller_at_Venice,_about_1756,_NG1334.jpg" rel="noopener"><span class="p-title">A Fortune Teller at Venice</span></a><br><span class="p-artist">Pietro Longhi, 1756</span></figcaption></figure>
+
+<h3>Definition</h3>
+<p>I hope you liked IP (Inner Product) last time it appeared (in circuit lower bounds), because it's making another guest appearance!</p>
+<p>Let's extend OWFs slightly by adding a second argument that represents a public (non-secret) random string \(r\). This \(r\) in cryptographic applications usually represents something like a public key. Goldreich and Levin found in 1989 the inner product of \(x\) and \(r\) functions as a hardcore bit for the OWF.</p>
+<p>More formally:</p>
+
+<div class="box"><div class="label">Theorem 4.1 (Goldreich–Levin)</div>
+Let \(f\) be any one-way function. For \(x,r\in\bits^n\), \(\langle x,r\rangle=x_1r_1\oplus\cdots\oplus x_nr_n\) is a hardcore bit for \(f'(x,r)=(f(x),r)\). That is, for every efficient \(P\),
+$$\Pr_{x,r}\big[P(f(x),r)=\langle x,r\rangle\big]\le\tfrac12+\mathrm{negl}(n).$$</div>
+
+<p>Equivalently:</p>
+
+<div class="box"><div class="label">Theorem 4.1, two-experiment form</div>
+Let \(f\) be any one-way function, let \(X,R\) be uniform on \(\bits^n\), and let \(\beta\) be a uniform bit. Then \((f(X),R,\langle X,R\rangle)\) and \((f(X),R,\beta)\) are computationally indistinguishable.</div>
+
+<p>Since \(r\) is part of the public output, we are doing everything in terms of \(n=|x|\).</p>
+<p>We'll need the following two properties of IP for our proof:</p>
+<ul>
+<li><strong>Linearity:</strong> \(\langle x,r\oplus r'\rangle=\langle x,r\rangle\oplus\langle x,r'\rangle\).</li>
+<li><strong>Reading off a bit:</strong> \(\langle x,e_i\rangle=x_i\), where \(e_i\) is the \(i\)-th unit vector.</li>
+</ul>
+
+<h3>Proof</h3>
+<h4>Proof overview</h4>
+
+<p>Contrapositive. Suppose an efficient \(P\) has
+$$\Pr_{x,r}[P(f(x),r)=\langle x,r\rangle]=\tfrac12+\varepsilon(n)$$
+with \(\varepsilon\) not negligible. So there is a constant \(c\) with \(\varepsilon(n)\ge 1/n^c\) for infinitely many \(n\). We build an efficient inverter \(I\) for \(f\) that succeeds with non-negligible probability. \(I\) hard-codes \(c\) and uses \(\varepsilon:=1/n^c\) as its estimate. The analysis below is for the infinitely many \(n\) where \(P\)'s advantage really is at least \(1/n^c\).</p>
+<p><strong>How the proof is organized:</strong></p>
+<ol>
+<li><strong>Restrict to good \(x\)'s.</strong> Define the inputs on which \(P\) is useful, and show they make up at least an \(\varepsilon/2\) fraction. <em>This restriction stays in force through the real inverter’s analysis.</em></li>
+<li><strong>Two warm-ups.</strong> Still for one fixed \(x\), but assuming \(P\) is <em>even better</em> on it than “good” guarantees. They show why the naive approaches break and motivate the real inverter. The final argument doesn't use them.</li>
+<li><strong>The real inverter</strong>, and its analysis for one good \(x\) (Claims 4.3–4.4).</li>
+<li><strong>Remove the restriction.</strong> Multiply “\(x\) is good” by “success given good” to get the success probability for a uniformly random \(x\), which is what one-wayness is about.</li>
+</ol>
+<p>The restriction exists only in the <em>analysis</em>. The inverter runs the same algorithm on every \(y\) it is given, and it has no way to tell whether the hidden \(x\) is good.</p>
+
+<h4>Restricting to good \(x\)'s</h4>
+<p><strong>Why restrict at all?</strong> What we are given is an <em>average</em> over both \(x\) and \(r\): \(P\) is right with probability \(\frac12+\varepsilon\). But the inverter is handed a single \(y=f(x)\). It cannot change \(x\); all it controls is which \(r\)'s it asks \(P\) about. So what matters to it is \(P\)'s accuracy <em>on this one \(x\)</em>, over random \(r\):</p>
+$$p_x=\Pr_r\big[P(f(x),r)=\langle x,r\rangle\big],\qquad\text{and}\qquad \mathbb{E}_x[p_x]=\tfrac12+\varepsilon .$$
+<p>The average can hide a lot. With \(\varepsilon=0.1\), \(P\) could be always right on 20% of the \(x\)'s (\(p_x=1\)) and a pure coin flip on the other 80% (\(p_x=\frac12\)): \(0.2\cdot1+0.8\cdot\frac12=0.6\). On the 80%, \(P\)'s answers say nothing about \(x\), and no inverter can use them. So we don't try to invert every \(x\). We only need a non-negligible inversion probability.</p>
+<div class="box"><div class="label">Definition (good \(x\))</div>
+\(x\) is <strong>good</strong> if \(p_x\ge\frac12+\frac\varepsilon2\): on this \(x\), \(P\) keeps at least half of its overall edge over guessing.</div>
+<p>Why half? Any threshold strictly below \(\varepsilon\) would work. A higher threshold gives a stronger guarantee per \(x\) but fewer guaranteed good \(x\)'s, and at threshold exactly \(\varepsilon\) the averaging argument guarantees nothing. With \(\frac\varepsilon2\), both the per-\(x\) edge and the fraction of good \(x\)'s are \(\varepsilon/2\).</p>
+<div class="box"><div class="label">Claim 4.2</div>\(\Pr_x[x\text{ good}]\ge\varepsilon/2\).</div>
+<div class="proof"><span class="label">Proof.</span> Let \(q=\Pr_x[x\text{ good}]\). A good \(x\) has \(p_x\le 1\). A bad \(x\) has \(p_x\lt\frac12+\frac\varepsilon2\). So
+\(\frac12+\varepsilon=\mathbb{E}_x[p_x]\le q\cdot1+(1-q)(\frac12+\frac\varepsilon2)\le q+\frac12+\frac\varepsilon2\).
+Hence \(q\ge\varepsilon/2\). ∎</div>
+<p><strong>From now on, through the real inverter’s analysis, fix a good \(x\)</strong> and write \(y=f(x)\). The inverter is given \(y\) and doesn't know \(x\); only the analysis knows \(x\). The only randomness left is the inverter's own choice of query points \(r\), and on uniformly random points \(P\) is right with probability \(p_x\). That per-\(x\) guarantee is exactly what the next sections use. The last step removes the restriction.</p>
+
+<h4>Warm-up 1: a perfect predictor</h4>
+<p><em>Warm-up: assumes more than goodness, namely \(p_x=1\), and isn't used in the final argument.</em> If \(p_x=1\), then \(P(y,e_i)=\langle x,e_i\rangle=x_i\), and \(n\) queries recover \(x\). This fails as soon as \(P\) is imperfect. \(e_i\) is one <em>fixed</em> point, and \(P\) might be wrong on every unit vector while still being right on most \(r\). The fix is to only ever query \(P\) at <strong>uniformly random-looking points</strong>, where its success rate \(p_x\) applies.</p>
+
+<h4>Warm-up 2: a predictor with \(p_x\ge\frac34+\frac\varepsilon2\)</h4>
+<p><em>Warm-up: again a stronger assumption than goodness, and not used in the final argument.</em> Pick a uniform \(r\) and compute \(P(y,r)\oplus P(y,r\oplus e_i)\). If both answers are correct, this equals \(\langle x,r\rangle\oplus\langle x,r\oplus e_i\rangle=x_i\) by linearity. Both \(r\) and \(r\oplus e_i\) are uniform, so each answer is wrong with probability at most \(\frac14-\frac\varepsilon2\). By a union bound, both are right with probability at least \(1-2(\frac14-\frac\varepsilon2)=\frac12+\varepsilon\). Repeating with independent \(r\)'s and taking a majority vote recovers \(x_i\) with high probability (Hoeffding, as in the course's error reduction) (referring to the warm-up from the previous lecture).</p>
+<p><strong>Why this breaks at \(\frac12+\varepsilon\):</strong> each query is then wrong with probability nearly \(\frac12\). The union bound over <em>two</em> queries only says both are right with probability \(\ge\varepsilon\), which is useless for a majority vote. The fix: <em>guess</em> the value \(\langle x,r\rangle\) instead of asking \(P\), so only one query can be wrong.</p>
+
+<h4>The real inverter, analyzed for a good \(x\)</h4>
+<p>Now \(x\) is only assumed good: \(p_x\ge\frac12+\frac\varepsilon2\). Think of \(P\) as an unreliable witness, slightly better than a coin at answering “what is the parity of this random subset of \(x\)'s bits?”. While it would be great to just ask \(P\) about \(\langle x,e_i\rangle\) to retrieve \(x_i\), we have no guarantee that \(P\) guesses well on any particular \(r\) we pass in. We just know that it has to do well on randomly chosen \(r\)'s, overall (which doesn't apply for \(e_i\)).</p>
+<p>The actual inverter is incredibly mathematically dense and hard to explain. I will do my best to explain how it works.</p>
+<ol>
+<li><strong>Trick 1: Retrieving \(x_i\) without querying \(P\) on \(e_i\).</strong> We can't be confident about querying \(P\) on \(e_i\) because \(e_i\) is a fixed string, not uniformly random. If we could query \(P\) on uniformly random strings and still retrieve \(x_i\), we could continue the proof by just performing probability analysis on its results. Luckily, we can: we know \(x_i=\langle x,r\rangle\oplus\langle x,r\oplus e_i\rangle\) for every \(r\). Additionally, each of these seeds are uniformly random, so we can use its probabilistic properties.
+<br><em>Problem:</em> both answers must be right for this to be correct.</li>
+<li><strong>Trick 2: Scaffolding off of already known bits.</strong> If we already knew \(b=\langle x,r\rangle\) for some \(r\), we could ask \(P\) only one question, through \(x_i=b\oplus P(y,r\oplus e_i)\). Now only one \(P\) needs to answer correctly once in order to recover \(x_i\), and we could boost that by taking a majority over many votes with many random \(r\)'s (given that we knew them).
+<br><em>Problem:</em> We don't know \(\langle x,r\rangle\), and we can't just guess that value for all the possible \(r\)'s.</li>
+<li><strong>Trick 3: Guessing on only a subset of \(\langle x,r\rangle\).</strong> If we guessed on every \(\langle x,r\rangle\), over all the possible \(r\)'s, we'd have to guess one bit per \(r\), which means the probability all of our guesses are right is exponentially low. What if we only guessed on some of the \(\langle x,r\rangle\) values? Suppose we guessed on \(t\) \(\langle x,r\rangle\) values; equivalently, we randomly choose \(t\) seeds \(s_j\), and then guess their IP function outputs with \(x\). Then we assume that our guesses are correct. The key here is that these \(t\) guesses (assuming they are correct) don't actually only give us \(t\) IP values to work with: we actually get \(2^t\) IP values: any arbitrary subset \(T\) of the randomly chosen seeds, when you xor the seeds together to get \(r_T=\bigoplus_{j\in T}s_j\), yields the following equality: \(\langle x,r_T\rangle=\bigoplus_{j\in T}\langle x,s_j\rangle\). These \(2^t\) points with known answers (given that our \(t\) guesses were correct) are enough to do a majority vote (as in trick 2) for each \(x_i\), reconstructing a candidate \(x\)-value \(z\), which we then plug into \(f(z)\) and manually check if it's correct. With a smart value of \(t\), we get both that this has a good probability to occur, and that \(t\) is logarithmic. \(t\) being logarithmic means we can do both of the following: iterate over all subsets of the randomly chosen \(t\) seeds, and even iterate over all possible initial assignments of guesses. Remember when we said we had to assume our initial \(t\) guesses were correct? Well, now we iterate over all possible guesses, so not anymore!</li>
+</ol>
+<p>More formally:</p>
+
+<div class="box"><div class="label">Inverter \(I(y)\)</div>
+Parameters: \(t=\lceil\log_2(2n/\varepsilon^2+1)\rceil\), and \(m=2^t-1\ge 2n/\varepsilon^2\). <em class="muted">(Trick 3: few seeds, \(t=O(\log n)\); enough points, \(m\approx 2n/\varepsilon^2\), for Chebyshev)</em>
+<ol style="margin:.3rem 0">
+<li>Pick \(s_1,\dots,s_t\in\bits^n\) uniformly and independently. For each nonempty \(T\subseteq\{1..t\}\), let \(r_T=\bigoplus_{j\in T}s_j\). These are \(m\) strings. <em class="muted">(Trick 3: expand \(t\) seeds into \(m\) pairwise-independent points)</em></li>
+<li>For each guess \((b_1,\dots,b_t)\in\bits^t\), meant to be \(\langle x,s_1\rangle,\dots,\langle x,s_t\rangle\): <em class="muted">(Trick 3: try every guess; one of them is right)</em>
+ <ul>
+ <li>for each nonempty \(T\), set \(b_T=\bigoplus_{j\in T}b_j\), meant to be \(\langle x,r_T\rangle\); <em class="muted">(Trick 3: linearity turns the \(t\) guessed answers into \(m\) known answers)</em></li>
+ <li>for each \(i=1..n\), set \(z_i=\mathrm{majority}_T\big(b_T\oplus P(y,\,r_T\oplus e_i)\big)\); <em class="muted">(Trick 1: ask about the disguised point \(r_T\oplus e_i\), never \(e_i\). Trick 2: supply \(b_T\) ourselves, so each vote needs only one correct answer from \(P\). Majority over the \(m\) votes)</em></li>
+ <li>if \(f(z)=y\), output \(z=z_1\cdots z_n\) and stop. <em class="muted">(Trick 3: we can't tell which guess was right, so verify each candidate using that \(f\) is easy to compute)</em></li>
+ </ul></li>
+<li>If no guess worked, output anything.</li>
+</ol></div>
+
+<div class="box"><div class="label">Claim 4.3 (pairwise independence)</div>
+Each \(r_T\) is uniform on \(\bits^n\), and for \(T\ne T'\), \(r_T\) and \(r_{T'}\) are independent. The same holds for the shifted points \(r_T\oplus e_i\).</div>
+<div class="proof"><span class="label">Proof.</span> Since \(T\ne T'\), some \(j\) is in exactly one of them; say \(j\in T'\setminus T\) (the other case is symmetric). Condition on every \(s_{j'}\) with \(j'\ne j\). Then \(r_T\) is fixed, while \(r_{T'}=s_j\oplus(\text{fixed})\) is uniform. So given any value of \(r_T\), \(r_{T'}\) is uniform: they are independent, and \(r_{T'}\) is uniform. Uniformity of each single \(r_T\) is the same argument with any \(j\in T\). XOR-ing every point with the fixed string \(e_i\) preserves all of this. ∎</div>
+
+<div class="box"><div class="label">Claim 4.4</div>
+Fix a good \(x\) and consider the iteration with the <strong>correct guess</strong> \(b_j=\langle x,s_j\rangle\) for all \(j\). With probability at least \(\frac12\) over the choice of \(s_1,\dots,s_t\), that iteration produces \(z=x\).</div>
+<div class="proof"><span class="label">Proof.</span>
+<p>With the correct guess, linearity gives \(b_T=\langle x,r_T\rangle\) for every \(T\). Also \(\langle x,r_T\oplus e_i\rangle=\langle x,r_T\rangle\oplus x_i\). So the vote \(b_T\oplus P(y,r_T\oplus e_i)\) equals \(x_i\) exactly when \(P\) answers correctly on the point \(r_T\oplus e_i\).</p>
+<p>Fix \(i\). Let \(Z_T=1\) if \(P\) is correct on \(r_T\oplus e_i\), and \(Z=\sum_T Z_T\). By Claim 4.3 each point is uniform, so \(\mathbb{E}[Z_T]=p_x\ge\frac12+\frac\varepsilon2\) and \(\mathbb{E}[Z]\ge m(\frac12+\frac\varepsilon2)\). (If \(P\) is randomized, give it fresh coins on every call; nothing changes.) The \(Z_T\) are pairwise independent, so variances add: \(\mathrm{Var}[Z]\le m/4\).</p>
+<p>The majority is wrong only if \(Z\le m/2\), which forces \(Z\le\mathbb{E}[Z]-m\varepsilon/2\). By Chebyshev,
+$$\Pr[z_i\ne x_i]\le\Pr\big[|Z-\mathbb{E}Z|\ge \tfrac{m\varepsilon}2\big]\le\frac{m/4}{(m\varepsilon/2)^2}=\frac{1}{m\varepsilon^2}\le\frac1{2n},$$
+using \(m\ge 2n/\varepsilon^2\). A union bound over the \(n\) bits gives \(\Pr[z\ne x]\le n\cdot\frac1{2n}=\frac12\). ∎</p></div>
+
+<h4>Removing the restriction: explicit success probability</h4>
+<p>Claim 4.4 holds only for good \(x\)'s. One-wayness is about a <em>uniformly random</em> \(x\), so we now pay for the restriction by multiplying in how often \(x\) is good.</p>
+<p><strong>Inversion probability.</strong> For a random \(x\):</p>
+<ul>
+<li>with probability \(\ge\varepsilon/2\), \(x\) is good (Claim 4.2);</li>
+<li>given that, with probability \(\ge\frac12\), the correct-guess iteration outputs \(x\) (Claim 4.4), which passes the check \(f(z)=y\).</li>
+</ul>
+<p>\(I\) might stop earlier at a different \(z\) with \(f(z)=y\), but that is also a correct inversion. So</p>
+$$\Pr_x\big[f(I(f(x)))=f(x)\big]\ \ge\ \frac\varepsilon2\cdot\frac12=\frac{\varepsilon}{4}\ \ge\ \frac{1}{4n^c}\quad\text{for infinitely many }n.$$
+<p><strong>Efficiency.</strong> \(2^t\le 2(2n/\varepsilon^2+1)=O(n^{2c+1})\) guesses. Each makes \(n\cdot m=O(n^{2c+2})\) calls to \(P\) and one evaluation of \(f\). The total is polynomial.</p>
+<p>So \(I\) is an efficient inverter with non-negligible success, contradicting the one-wayness of \(f\). ∎</p>
+<p><span class="muted">For circuits: if \(P\) is a circuit, \(I\) is a circuit of polynomially larger size.</span></p>
+
+
+
+<!-- ============================================================ -->
+<h2 id="t5">5. Warm-Up: One-Way Permutations ⟹ PRGs exist</h2>
+<figure class="painting"><div class="frame"><img src="assets/paintings/watteau-fetes-venitiennes.jpg" width="960" height="1186" alt="A dancing couple at an outdoor party, with musicians and guests under a statue in a park." loading="lazy" decoding="async"></div><figcaption><a href="https://commons.wikimedia.org/wiki/File:Jean-Antoine_Watteau_-_F%C3%AAtes_Venitiennes_-_Google_Art_Project.jpg" rel="noopener"><span class="p-title">Fêtes vénitiennes</span></a><br><span class="p-artist">Jean-Antoine Watteau, 1718–19</span></figcaption></figure>
+
+<p>This proof will restrict our one-way functions a lot, but this ends up making the proof a lot easier. We'll reuse the proof structure once we relax the restrictions, so it's worth seeing this proof structure here.</p>
+
+<div class="box"><div class="label">Theorem 5.1</div>
+Let \(f\) be a one-way <strong>permutation</strong> (a bijection on \(\bits^n\)). Then \(G(x,r)=(f(x),\,r,\,\langle x,r\rangle)\), from \(2n\) bits to \(2n+1\) bits, is a PRG.</div>
+<div class="proof"><span class="label">Proof.</span> Contrapositive. Suppose \(G\) is not a PRG: some efficient adversary \(A\) has \(\mathrm{PRGadv}[A,G]=\varepsilon(n)\) with \(\varepsilon\) non-negligible. We use \(A\) to build a predictor for the Goldreich–Levin bit.
+<ul>
+<li>Experiment 0 gives \(A\) the string \(G(X,R)=(f(X),R,\langle X,R\rangle)\).</li>
+<li>Experiment 1 gives \(A\) a uniform \((2n+1)\)-bit string. <strong>Key observation:</strong> since \(f\) is a bijection, \(f(X)\) is uniform on \(\bits^n\). So \((f(X),R,\beta)\) is <em>exactly</em> uniform on \(\bits^{2n+1}\), and Experiment 1 can equivalently give \(A\) the string \((f(X),R,\beta)\).</li>
+</ul>
+<p>So \(A\)'s two PRG experiments are exactly the two experiments of Lemma 3.2, for \(f'(x,r)=(f(x),r)\) and the bit \(\langle x,r\rangle\): \(\Pr[W_0]-\Pr[W_1]=\varepsilon\).</p>
+<p><strong>Predictor.</strong> By Lemma 3.2(b), \(A\) gives an efficient predictor \(P\): given \((f(x),r)\), pick a uniform bit \(c\), run \(A\) on \((f(x),r,c)\), and output \(c\) if \(A\) outputs 1, otherwise \(1-c\).</p>
+<p><strong>Advantage:</strong> \(P\)'s prediction advantage is exactly \(\mathrm{PRGadv}[A,G]=\varepsilon\), which is non-negligible. So \(P\) predicts \(\langle x,r\rangle\) from \((f(x),r)\), contradicting Goldreich–Levin, since \(f\) is one-way. ∎</p></div>
+
+<p>Would this proof work without the permutation? Let's look at the properties of \(f\) that the proof used:</p>
+<ol>
+<li>\(f(X)\) is uniform on \(\bits^n\)</li>
+<li>no randomness is lost from \(x\) to \(f(x)\)</li>
+</ol>
+<p>Fact 1 does not hold for one-to-one OWFs, and fact 2 does not even hold for OWFs in general.</p>
+<p>Let's look at an example one-to-one OWF where this doesn't work. Let \(f'\) be a one-way permutation on \(n\) bits, and let \(f(x)=(0,f'(x))\). This \(f\) is still an OWF and is one-to-one, but not a permutation. However, it's not uniform over its codomain: an adversary could guess that it was generated by the one-way function whenever the data they receive starts with 0; they'd be true half the time for true random bits, and true every time for OWF-generated bits, meaning they'd have a non-negligible advantage.</p>
+<p>To relax our restrictions, we'll have to repair \(f\)'s now broken uniformity. We'll do that by hashing.</p>
+
+
+<!-- ============================================================ -->
+<h2 id="t6">6. Lemmas: Collisions, Hashing, and the Leftover Hash Lemma</h2>
+<figure class="painting"><div class="frame"><img src="assets/paintings/watteau-gersaint.jpg" width="960" height="537" alt="Inside a Paris art shop, porters pack a portrait into a crate while customers inspect paintings." loading="lazy" decoding="async"></div><figcaption><a href="https://commons.wikimedia.org/wiki/File:L%27enseigne_de_Gersaint.jpg" rel="noopener"><span class="p-title">The Shop Sign of Gersaint</span></a><br><span class="p-artist">Jean-Antoine Watteau, 1720</span></figcaption></figure>
+
+<h3>Collision Probability</h3>
+<p>One way to measure how uniform a distribution is is to measure the opposite: how concentrated it is. This is analogous to measuring how often the distribution takes the same values, which can be reframed as the probability that two independent random draws from it collide.</p>
+
+<div class="box"><div class="label">Definition 6.1</div>
+For a random variable \(Z\) and an independent copy \(Z'\), the <strong>collision probability</strong> is \(\mathrm{Col}(Z)=\Pr[Z=Z']=\sum_z\Pr[Z=z]^2\).</div>
+<ul>
+<li>If \(Z\) is uniform on a set of size \(2^K\), then \(\mathrm{Col}(Z)=2^K\cdot 2^{-2K}=2^{-K}\). We'll say \(Z\) has “\(K\) bits of randomness”.</li>
+<li>For independent copies, \(\mathrm{Col}(Z_1,\dots,Z_k)=\prod_i\mathrm{Col}(Z_i)\) (collide everywhere ⇔ collide in each coordinate).</li>
+</ul>
+
+<h3>Pairwise-Independent Hash Functions</h3>
+<p>We mentioned earlier that we'll repair non-uniformity with hashing. As it turns out, we need our hash functions to have a very particular property in order to do this. The property is as follows:</p>
+
+<div class="box"><div class="label">Definition 6.2</div>
+A family \(\mathcal H\) of functions \(\bits^N\to\bits^j\) is <strong>pairwise independent</strong> if, for a random \(h\in\mathcal H\) and every pair \(z\ne z'\), the pair \((h(z),h(z'))\) is uniform on \(\bits^{2j}\).</div>
+
+<p>We use \(h_{M,v}(z)=Mz\oplus v\), with \(M\) a uniform \(j\times N\) bit matrix and \(v\) a uniform \(j\)-bit vector. It's pairwise independent (a standard fact), computable in polynomial time, and choosing \(h\) just means choosing \(p=jN+j\) uniform bits, which is also how \(h\) appears in the output.</p>
+
+<h3>Leftover Hash Lemma</h3>
+<div class="box"><div class="label">Lemma 6.3 (leftover hash lemma)</div>
+Let \(Z\) be a random variable on \(\bits^N\) with \(\mathrm{Col}(Z)\le 2^{-K}\). Let \(h\) be uniform from a pairwise-independent family \(\bits^N\to\bits^j\) with \(j=K-2e\). Then
+$$\Delta\big((h,\,h(Z)),\ (h,\,U_j)\big)\ \le\ 2^{-(e+1)}.$$
+Here \(\Delta\) is statistical distance (Section 1, §3): \(\Delta(P_0,P_1)=\tfrac12\sum_r|P_0(r)-P_1(r)|\), the best advantage any adversary, even an unbounded one, can get in telling \(P_0\) and \(P_1\) apart.</div>
+
+<p>In words: hashing \(K\) bits of randomness down to \(K-2e\) bits gives an output that is nearly uniform, even to an all-powerful adversary that also sees \(h\). Shaving off \(2e\) bits buys error \(2^{-(e+1)}\).</p>
+
+<div class="proof"><span class="label">Proof.</span> Following, with steps expanded.
+<p><strong>Reduce to one \(h\) at a time.</strong> For a fixed \(h\) and \(a\in\bits^j\), let \(p_h(a)=\Pr_Z[h(Z)=a]\). Both distributions pick \(h\) the same way, so (by the sum formula for \(\Delta\))
+$$\Delta=\mathbb{E}_h\Big[\tfrac12\sum_a\big|p_h(a)-2^{-j}\big|\Big]=\tfrac12\sum_a \mathbb{E}_h\big|p_h(a)-2^{-j}\big|.$$</p>
+<div><strong>Bound the second moment.</strong> Fix \(a\). Write \(p_h(a)-2^{-j}=\mathbb{E}_Z[\,\mathbf 1\{h(Z)=a\}-2^{-j}\,]\). Squaring and using an independent copy \(Z'\):
+$$\mathbb{E}_h\big[(p_h(a)-2^{-j})^2\big]=\mathbb{E}_{Z,Z'}\Big[\mathbb{E}_h\big[(\mathbf 1\{h(Z)=a\}-2^{-j})(\mathbf 1\{h(Z')=a\}-2^{-j})\big]\Big].$$
+<ul>
+<li>If \(Z\ne Z'\): \(h(Z)\) and \(h(Z')\) are independent and uniform (pairwise independence). So the inner expectation is a product of two terms that are each \(2^{-j}-2^{-j}=0\).</li>
+<li>If \(Z=Z'=z\): the inner expectation is \(\mathrm{Var}(\mathbf 1\{h(z)=a\})=2^{-j}(1-2^{-j})\le 2^{-j}\).</li>
+</ul>
+So \(\mathbb{E}_h[(p_h(a)-2^{-j})^2]\le\Pr[Z=Z']\cdot2^{-j}=\mathrm{Col}(Z)\,2^{-j}\le 2^{-K-j}\).</div>
+<p><strong>From second moment to first moment.</strong> For any random variable \(W\), \((\mathbb{E}|W|)^2\le\mathbb{E}[W^2]\), because the difference is \(\mathrm{Var}(|W|)\ge0\). So \(\mathbb{E}_h|p_h(a)-2^{-j}|\le 2^{-(K+j)/2}\).</p>
+<p><strong>Sum over \(a\).</strong>
+$$\Delta\le\tfrac12\cdot 2^j\cdot 2^{-(K+j)/2}=\tfrac12\cdot2^{-(K-j)/2}=\tfrac12\cdot 2^{-e}=2^{-(e+1)}.$$ ∎</p></div>
+
+
+<!-- ============================================================ -->
+<h2 id="t7">7. Full proof: One-to-One OWFs exist ⟹ PRGs exist</h2>
+<figure class="painting"><div class="frame"><img src="assets/paintings/tiepolo-cleopatra.jpg" width="960" height="671" alt="Cleopatra, at a feast in a marble hall, prepares to dissolve a pearl in vinegar before Mark Antony." loading="lazy" decoding="async"></div><figcaption><a href="https://commons.wikimedia.org/wiki/File:Giambattista_Tiepolo_-_The_Banquet_of_Cleopatra_-_Google_Art_Project.jpg" rel="noopener"><span class="p-title">The Banquet of Cleopatra</span></a><br><span class="p-artist">Giovanni Battista Tiepolo, 1743–44</span></figcaption></figure>
+
+<h3>1-bit gaps: OWF Constructions look more random than they are</h3>
+<p>Let \(f:\bits^n\to\bits^\ell\) be a one-to-one one-way function (\(\ell\ge n\)). Let \(X,R\) be uniform on \(\bits^n\) and \(\beta\) a uniform bit. Define</p>
+$$D=(f(X),\,R,\,\langle X,R\rangle)\qquad\text{and}\qquad E=(f(X),\,R,\,\beta),$$
+<p>both on \(\bits^{\ell+n+1}\). Consider these three facts about \(D\) and \(E\):</p>
+<ol>
+<li><strong>\(D\) and \(E\) are computationally indistinguishable.</strong> This is the two-experiment form of Goldreich–Levin.</li>
+<li><strong>\(E\) has \(2n+1\) bits of randomness.</strong> \(f\) is one-to-one, so the triple \((f(x),r,\beta)\) determines \((x,r,\beta)\). So \(E\) is uniform on a set of exactly \(2^{2n+1}\) strings, and \(\mathrm{Col}(E)=2^{-(2n+1)}\).</li>
+<li><strong>\(D\) has only \(2n\) bits of randomness.</strong> It's a function of the \(2n\) input bits.</li>
+</ol>
+<p>So \(D\) <em>looks</em> like it has one more bit of randomness than it really has: it is indistinguishable from a distribution with more randomness than its \(2n\)-bit input. But \(D\) is not uniform, so \(g\) is not yet a PRG.</p>
+
+<h3>Proof Overview</h3>
+<ul>
+<li>The leftover hash lemma turns randomness into near-uniformity. Hashing \(E\) down to slightly fewer than \(2n+1\) bits would give a nearly uniform string. Since \(D\approx E\), hashing \(D\) should <em>look</em> nearly uniform too, and \(D\) only cost \(2n\) seed bits.</li>
+<li><strong>Problem:</strong> the lemma loses \(2e\) bits for error \(2^{-(e+1)}\). For negligible error we need \(e\) to grow (e.g. \(e=n\)), but one copy only gains 1 bit.</li>
+<li><strong>Fix:</strong> take \(k\) independent copies. The real randomness is \(2nk\), the apparent randomness is \((2n+1)k\), and the gap is \(k\) bits, which can exceed \(2e\).</li>
+</ul>
+
+
+<h3>The construction</h3>
+<p>At a high level, this construction will do the following: we'll hash all \(k\) independent copies of \(D\) together, then bundle that with a full description of the hash function.</p>
+
+<div class="box"><div class="label">Construction 7.1</div>
+Parameters: \(k=4n\) copies, \(e=n\), input length to the hash \(N=k(\ell+n+1)\), output length \(j=k(2n+1)-2e\). Let \(\mathcal H\) be the pairwise-independent family \(\bits^N\to\bits^j\) of §6, with description length \(p\).
+$$G(x_1,r_1,\dots,x_k,r_k,\,h)=\Big(h,\ h\big(g(x_1,r_1),\dots,g(x_k,r_k)\big)\Big),\qquad g(x,r)=(f(x),r,\langle x,r\rangle).$$
+<ul style="margin:.3rem 0">
+<li>Seed length: \(2nk+p\).</li>
+<li>Output length: \(p+j=p+2nk+k-2e=(\text{seed length})+(k-2e)=(\text{seed length})+2n\).</li>
+<li>\(G\) is computable in polynomial time.</li>
+</ul></div>
+
+<div class="box"><div class="label">Theorem 7.2</div>
+If \(f\) is a one-to-one one-way function, then \(G\) of Construction 7.1 is a PRG (with stretch \(2n\)).</div>
+<div class="proof"><span class="label">Proof.</span> Let \(A\) be any efficient adversary. Let \(D_1,\dots,D_k\) be independent copies of \(D\), and \(E_1,\dots,E_k\) independent copies of \(E\). Consider three distributions on the output space \(\bits^{p+j}\):
+<table>
+<tr><th></th><th>distribution</th><th>what it is</th></tr>
+<tr><td>\(Q_0\)</td><td>\((h,\ h(D_1,\dots,D_k))\)</td><td>\(G\) on a uniform seed (Experiment 0)</td></tr>
+<tr><td>\(Q_{\text{mid}}\)</td><td>\((h,\ h(E_1,\dots,E_k))\)</td><td>a hybrid</td></tr>
+<tr><td>\(Q_1\)</td><td>\((h,\ U_j)\)</td><td>uniform on \(\bits^{p+j}\) (Experiment 1), since \(h\)'s description is uniform bits</td></tr>
+</table>
+<p>Write \(q_\bullet=\Pr[A(Q_\bullet)=1]\). Then \(\mathrm{PRGadv}[A,G]=|q_0-q_1|\le|q_0-q_{\text{mid}}|+|q_{\text{mid}}-q_1|\).</p>
+
+<p><strong>Second term (statistical).</strong> \(Z=(E_1,\dots,E_k)\) has \(\mathrm{Col}(Z)=\mathrm{Col}(E)^k=2^{-k(2n+1)}\). Apply the leftover hash lemma with \(K=k(2n+1)\) and \(j=K-2e\):
+\(\Delta(Q_{\text{mid}},Q_1)\le 2^{-(e+1)}=2^{-(n+1)}\). By the statistical ⇒ computational theorem (Section 1, §3), \(|q_{\text{mid}}-q_1|\le 2^{-(n+1)}\).</p>
+
+<p><strong>First term (computational).</strong> Build \(B(z_1,\dots,z_k)\): sample a random \(h\) itself, and output \(A(h,h(z_1,\dots,z_k))\).</p>
+<ul>
+<li>On \(k\) copies of \(D\), \(B\) outputs 1 with probability \(q_0\).</li>
+<li>On \(k\) copies of \(E\), \(B\) outputs 1 with probability \(q_{\text{mid}}\).</li>
+</ul>
+<p><em>Move 1: strip off the hash.</em> So \(B\) distinguishes \(D^k\) from \(E^k\) with advantage \(|q_0-q_{\text{mid}}|\). The hash costs \(B\) nothing: \(h\) is public and efficient to compute, so \(B\) can apply it itself. That is why a distinguisher for the <em>hashed</em> copies gives one for the <em>raw</em> copies with the same advantage.</p>
+<p><em>Move 2: from \(k\) copies down to one.</em> Distinguishing \(D^k\) from \(E^k\) is exactly the setting of the multiple-copies theorem (Theorem 6.1 of Section 1), which is proved with the Hybrid Lemma. Applied with \(X=D\) and \(Y=E\), it turns \(B\) into an efficient \(B'\) that distinguishes a <em>single</em> \(D\) from \(E\), losing a factor of \(k\):
+\(|q_0-q_{\text{mid}}|\le k\cdot\mathrm{Distadv}[B',D,E]\). The theorem asks for \(D\) and \(E\) to be efficiently samplable. They are: sample \(x,r,\beta\) and compute \(f\).</p>
+
+<p><strong>Advantage:</strong>
+$$\mathrm{PRGadv}[A,G]\ \le\ 4n\cdot\mathrm{Distadv}[B',D,E]\ +\ 2^{-(n+1)}.$$</p>
+<p>\(\mathrm{Distadv}[B',D,E]\) is negligible by Goldreich–Levin (two-experiment form), so the whole bound is negligible by the closure facts (Section 1, §2). (The security parameter of \(G\) is its seed length \(2nk+p\), a polynomial in \(n\); polynomially related parameters give the same notion of negligible.) So \(G\) is a secure PRG. ∎</p></div>
+
+<p>The reason why we include \(h\) in the output of the PRG is to reclaim the randomness bits that were used to pick \(h\) from its family in the first place. Since the description of \(h\) is itself uniform random, that doesn't hurt our PRG's performance.</p>
+
+
+<!-- ============================================================ -->
+<h2 id="t8">8. In Perspective</h2>
+<figure class="painting"><div class="frame"><img src="assets/paintings/fragonard-lover-crowned.jpg" width="960" height="1269" alt="In a garden, a young woman places a wreath of flowers on her kneeling suitor while an artist sketches." loading="lazy" decoding="async"></div><figcaption><a href="https://commons.wikimedia.org/wiki/File:The_Progress_of_Love_-_The_Lover_Crowned_-_Fragonard_1771-72.jpg" rel="noopener"><span class="p-title">The Progress of Love: The Lover Crowned</span></a><br><span class="p-artist">Jean-Honoré Fragonard, 1771–72</span></figcaption></figure>
+
+<h3>Recap of main theorem</h3>
+<div class="box"><div class="label">Theorem 8.1 (HILL; the part proved on these pages)</div>
+<ol style="margin:.3rem 0">
+<li>If a PRG exists, then a one-way function exists (Theorem 2.1).</li>
+<li>If a <strong>one-to-one</strong> one-way function exists, then a PRG exists, with any polynomial stretch (Theorem 7.2 + Theorem 6.2 of Section 1).</li>
+<li>(Stated only.) If <em>any</em> one-way function exists, then a PRG exists.</li>
+</ol></div>
+
+<h3>Interesting corollary</h3>
+<div class="box"><div class="label">Corollary 8.2</div>
+If a one-to-one one-way function secure against polynomial-size circuits exists, then \(\BPP\subseteq\SUBEXP\).</div>
+<div class="proof"><span class="label">Proof.</span> Every reduction on this page turns a circuit adversary into a circuit adversary:
+<ul>
+<li>the Goldreich–Levin inverter;</li>
+<li>the hybrid over copies (Theorem 6.1 of Section 1);</li>
+<li>the hashing step, which is statistical.</li>
+</ul>
+So Theorem 7.2 gives a PRG secure against polynomial-size circuits, and the cryptographic-PRG version of Theorem 7.3 (end of Section 1, §7) finishes. ∎</div>
+<p>This completes the cryptographic route mentioned at the end of Section 1: one-to-one one-way function ⇒ cryptographic PRG ⇒ derandomization PRG ⇒ \(\BPP\subseteq\SUBEXP\).</p>
+
+
+<h3>Next Steps</h3>
+<p>Proving HILL for <em>every</em> one-way function, not just one-to-one ones, needs a few tools beyond these pages. At a high level:</p>
+<ol>
+<li><strong>A finer way to measure randomness.</strong> For a general \(f\), \(f(X)\) isn't uniform on its image, so “uniform on \(2^K\) strings” no longer describes it. HILL measure randomness with Shannon entropy and related notions.</li>
+<li><strong>Concentration over many copies.</strong> The leftover hash lemma needs a collision-probability bound. Over many independent copies, Shannon entropy turns into such a bound, which is why the general construction uses far more copies than our \(k=4n\).</li>
+<li><strong>Recovering lost randomness.</strong> When outputs have many preimages, append a hash of \(x\) to restore the missing bits. This needs the number of preimages, which a general \(f\) doesn't reveal, so the construction guesses it.</li>
+<li><strong>A chain of weaker generators.</strong> The guess only yields a false-entropy generator. More copies and hashing upgrade it to a pseudoentropy generator, and then to a PRG; our §7 is the last link of this chain, in the one-to-one case.</li>
+<li><strong>Removing the guess.</strong> The guessed preimage count is advice. HILL remove it so the PRG is one uniform algorithm.</li>
+<li><strong>Only for uniform adversaries:</strong> a uniform version of Impagliazzo's hardcore lemma. Under our convention that adversaries are circuits, this isn't needed.</li>
+</ol>
+
+
+
+</main>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Pseudorandom Generators: From Hardness to Cryptography</title>
+  <title>Pseudorandom Generators: Derandomization and Cryptography</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap">
   <style>
@@ -17,23 +17,27 @@
 </head>
 <body>
   <header>
-    <h1>Pseudorandom Generators: From Hardness to Cryptography</h1>
+    <h1>Pseudorandom Generators: Derandomization and Cryptography</h1>
     <p class="author">musiquethedev</p>
     <figure class="painting"><div class="frame"><img src="assets/paintings/boucher-pompadour.jpg" width="960" height="1242" alt="A pastel portrait of Madame de Pompadour framed by a garland of roses held by cherubs, above books, a palette and music." decoding="async"></div><figcaption><a href="https://commons.wikimedia.org/wiki/File:Fran%C3%A7ois_Boucher_-_Madame_de_Pompadour_-_Google_Art_Project.jpg" rel="noopener"><span class="p-title">Madame de Pompadour</span></a><br><span class="p-artist">François Boucher, 1754</span></figcaption></figure>
   </header>
 
-  <section id="prg-review">
-    <h2>1. PRG Review</h2>
-    <p><a href="study/section1.html">Section 1 study notes</a> (AI-generated, temporary; will be replaced by my own writing)</p>
+  <section id="section-1">
+    <h2>Section 1: PRG and Cryptography Introduction</h2>
+    <p>In the course, we gave a very high-level sketch explaining why the existence of something called a “Pseudorandom Generator” would lead to the derandomization result P = BPP. The sketch left out many lower-level details and even omitted explaining how such a proof would be formalized in the first place. What does it mean for bits to “look random” to a poly-time TM? to <em>all</em> poly-time TMs?</p>
+    <p>In this section, we introduce foundational ideas in cryptography to formalize this “computational indistinguishability” as well as proof techniques that will allow us to reason about them. We then attempt to prove the result from lecture—no matter whether we actually manage to show P = BPP or some different result, we'll have all the foundations needed for the next section.</p>
+    <p><a href="section1.html">Go to Section 1 →</a></p>
   </section>
 
-  <section id="theoretical-milestones">
-    <h2>2. Theoretical Milestones</h2>
-    <p><a href="study/section2.html">Section 2 study notes</a> (AI-generated, temporary; will be replaced by my own writing)</p>
+  <section id="section-2">
+    <h2>Section 2: One-Way Functions and Derandomization</h2>
+    <p>One-way functions have been a recurring background character throughout the entire course, but they've mostly been introduced as black-box tools that make random proofs from across the field possible. In this section, we (finally) formally define one-way functions and use the cryptographic tools from the first section to (finally) meaningfully connect them directly to derandomization results.</p>
+    <p>The major theorem of this section (and of the site in general) is the HILL Theorem (Håstad, Impagliazzo, Levin, and Luby, 1999), which states that one-way functions exist if and only if pseudorandom generators exist. We'll introduce smaller theorems along the way that help put this result into context. As for the proof of the theorem itself, we prove the backward direction (PRG ⟹ OWF) in full, while we restrict the forward direction to a specific type of one-way functions; the reason why will become clear.</p>
+    <p><a href="section2.html">Go to Section 2 →</a></p>
   </section>
 
-  <section id="applications">
-    <h2>3. Applications</h2>
+  <section id="citations">
+    <h2>Section 3: Citations and AI Use</h2>
   </section>
 </body>
 </html>
