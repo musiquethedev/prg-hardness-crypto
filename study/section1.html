@@ -174,6 +174,7 @@ If \(\varepsilon,\varepsilon'\) are negligible and \(p\) is polynomially bounded
 
 <h3>2.4 Conventions used on this page</h3>
 <p>We use Boneh–Shoup's convention throughout. Advantage is a difference of probabilities, written \(\mathrm{PRGadv}[A,G]\), \(\mathrm{Distadv}[A,P_0,P_1]\), and so on. “Secure” means the advantage is negligible for every efficient adversary. When a reduction gives an exact relation, such as \(\mathrm{PRGadv}[A,G']=n\cdot\mathrm{PRGadv}[B,G]\), we record it, because it shows how much security is lost <span class="src">BS Thm. 3.2, p.55</span>. Section 9 introduces one restricted variant of the PRG game when derandomization needs it.</p>
+<p><strong>One formula for distinguishing.</strong> Every distinguishing game on this site, in this section and the next ones, uses the two-experiment formula \(\Pr[W_0]-\Pr[W_1]\). (Boneh–Shoup also define an equivalent “bit-guessing” formulation <span class="src">BS §2.2.5</span>. We don't use it.) The only other kind of game is a <strong>prediction game</strong> (Section 8, and Goldreich–Levin later). There the adversary predicts a bit of data, and we always write its success probability as \(\frac12+\varepsilon\) and call \(\varepsilon\) its <em>prediction advantage</em>. In both kinds of game, “secure” means the advantage is negligible. In a prediction game it is the success probability, not the advantage, that sits near \(\frac12\).</p>
 
 <!-- ============================================================ -->
 <h2 id="s3">3. Indistinguishability and the attack-game style</h2>
@@ -223,7 +224,6 @@ In Experiment \(b\in\{0,1\}\), the challenger samples \(x\leftarrow P_b\) and se
 $$\mathrm{Distadv}[A,P_0,P_1] := \big|\Pr[W_0]-\Pr[W_1]\big|.$$
 <span class="src">BS Attack Game 3.3, p.82</span></div>
 
-<p><strong>Bit-guessing form.</strong> Instead of two separate experiments, the challenger flips a random bit \(b\), runs Experiment \(b\), and the adversary tries to guess \(b\). The bit-guessing advantage \(|\Pr[\hat b=b]-1/2|\) is exactly half the distinguishing advantage <span class="src">BS §2.2.5 eq. (2.11); eq. (3.14), p.83</span>. Section 4 has a worked example. Use whichever form makes a proof cleaner.</p>
 
 <p><strong>Dropping the absolute value.</strong> In proofs we usually assume \(\Pr[W_0]-\Pr[W_1] \gt \varepsilon\) without the absolute value. If the difference is negative, flip \(A\)'s output bit, which costs nothing <span class="src">V proof of Prop. 7.14, p.149</span>.</p>
 
@@ -310,7 +310,6 @@ For every adversary \(A\), \(\mathrm{Distadv}[A,P_0,P_1]\le\Delta[P_0,P_1]\). So
 <tr><td>any \(G\)</td><td>always output 1</td><td>1</td><td>1</td><td>0: this adversary learns nothing</td></tr>
 <tr><td>a biased \(G\) whose output bits are independent and each is 1 with probability \(0.6\)</td><td>count the 1s in \(r\); output 1 iff more than \(0.55L\)</td><td>\(\approx 1\)</td><td>\(\approx 0\)</td><td>\(\approx 1\) for large \(L\) (Chernoff/Hoeffding): broken</td></tr>
 </table>
-<p><em>Same example in bit-guessing form.</em> Take the parity generator. The challenger flips \(b\), and the adversary guesses “\(b=0\)” iff the parity check passes. If \(b=0\) the check always passes, so the guess is right. If \(b=1\) the check fails with probability \(1/2\), so the guess is right with probability \(1/2\). Overall \(\Pr[\hat b=b]=\frac12\cdot1+\frac12\cdot\frac12=\frac34\). The bit-guessing advantage is \(\frac34-\frac12=\frac14\), exactly half of the \(\frac12\) in the table <span class="src">BS eq. (3.1), p.48</span>.</p>
 <p>Notice what <em>breaking</em> required in each case: one efficient test whose acceptance probability differs noticeably between the two worlds. <em>Security</em> requires that no such test exists, among all efficient tests at once.</p>
 
 <p><strong>One bit of stretch suffices.</strong> The definition only asks for \(L\ge\ell+1\). Any PRG with 1 bit of stretch can be extended to any polynomial stretch <span class="src">HILL Prop. 3.6, p.1373</span> <span class="src">BS §3.4.2, p.59</span>. This is proved in Section 7.</p>
@@ -467,6 +466,7 @@ Let \(G:S\to R\times S\) be a secure PRG. Define \(G'(s)\): set \(s_0=s\); for \
 <h2 id="s8">8. Next-bit unpredictability (Yao)</h2>
 
 <p>A seemingly weaker property: given the first \(i\) bits of the output, no efficient algorithm can predict bit \(i+1\) noticeably better than a coin flip.</p>
+<p><em>Note:</em> this is a <strong>prediction game</strong>, not a two-experiment game: there is only one experiment, and the adversary tries to predict a bit of \(G\)'s output. Its success probability is \(\frac12+\varepsilon\), and \(\varepsilon\) is the prediction advantage (Section 2.4). Theorem 8.1 is exactly the bridge between this game and the two-experiment PRG game.</p>
 <div class="box"><div class="label">Definition (unpredictable PRG)</div>
 Attack Game: the adversary picks an index \(i\). The challenger samples \(s\), computes \(r=G(s)\), and sends \(r[0..i-1]\). The adversary outputs a guess \(g\) and wins if \(g=r[i]\).
 \(\mathrm{Predadv}[A,G]=|\Pr[\text{win}]-1/2|\). \(G\) is unpredictable if this is negligible for all efficient \(A\).
